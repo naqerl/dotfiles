@@ -58,19 +58,21 @@ curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fi
 fisher update
 chsh -s `which fish`
 
-ln -s "$HOME/.config/tmux/tmux.conf" .tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-xdg-settings set default-web-browser org.qutebrowser.qutebrowser.desktop
-xdg-mime default org.pwmt.zathura.desktop application/pdf
-xdg-mime default feh.desktop image/jpeg
-xdg-mime default feh.desktop image/png
+cd "$HOME/dotfiles" && stow .
+
+paru -S python-pipx \
+     python-poetry \
+     --noconfirm
+
+pipx install pyright
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+rustup component add rust-analyzer
 
 paru -S docker \
         docker-buildx \
         docker-compose \
         --noconfirm
-
-cd "$HOME/dotfiles" && stow .
