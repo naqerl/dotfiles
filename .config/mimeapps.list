@@ -1,0 +1,16 @@
+[Default Applications]
+text/html=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/http=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/https=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/about=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/unknown=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/notion=notion-app.desktop
+application/pdf=org.pwmt.zathura.desktop
+application/wps-office.docx=google-chrome.desktop
+image/jpeg=feh.desktop
+image/png=feh.desktop
+text/plain=emacsclient.desktop
+text/csv=emacsclient.desktop
+
+[Added Associations]
+application/wps-office.docx=google-chrome.desktop;

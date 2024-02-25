@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+fd --follow --max-depth 2 '^temp$' /sys/class/thermal \
+	| xargs sed 's/\([0-9][0-9]\).*/\1/' \
+	| awk '{ sum += $1 } END { print int(sum/NR) }'

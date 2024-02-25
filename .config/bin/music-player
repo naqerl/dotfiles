@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+PLAYLISTS_BASE_DIR="$HOME/notes/music"
+MPV_SOCKET_PATH="/tmp/music-player-mpv.socket"
+STATUS_PATH="/tmp/mpv-status.json"
+
+set -e
+
+_fetch_thumbnail_url() {
+	local url="$1"
+	local video_id
+
+	video_id=$(echo "$url" | awk -F 'v=' '{print $2}')
+	curl -s "https://www.youtube.com/watch?v=$video_id" | rg -oP 'og:image" content="\K[^"]+'
+}
+
+_play() {
+	local title="$1"
+	local author="$2"
+	local link="$3"
+
+	echo "Playing $link" >&2
+
+	local thumbnail_url
+	thumbnail_url=$(_fetch_thumbnail_url "$link")
+	local thumbnail_path="/tmp/thumbnail_$title.png"
+	curl -o "$thumbnail_path" "$thumbnail_url"
+	eww update mpv_player_reveal=true
+	eww update mpv_thumbnail_path="$thumbnail_path"
+	eww update mpv_title="$title - $author"
+
+	local status="{'reveal': true, 'thumbnail_path': '$thumbnail_path', 'title': '$title', 'is_paused': false}"
+	echo "$status" >> "$STATUS_PATH"
+
+	mpv --no-video "$link" --input-ipc-server="$MPV_SOCKET_PATH"
+
+	eww update mpv_player_reveal=false
+	rm -f "$thumbnail_path" 
+	echo "{'reveal': false, 'thumbnail_path': null, 'title': null, 'is_paused': false}" >> "$STATUS_PATH"
+}
+
+play() {
+	local playlist_path="$1"
+
+	export MPV_SOCKET_PATH
+	export STATUS_PATH
+	export -f _fetch_thumbnail_url
+	export -f _play
+
+	xq -rc '.[] | @sh "_play \(.title) \(.author) \(.source)"' < "$playlist_path" | bash
+}
+
+
+_find_all_playlists() {
+	local playlists_path="$1"
+	cd "$playlists_path"
+
+	local playlists
+	playlists=$(fd -e json | sed 's/\(.*\)\.json$/\1/')
+	cd - >/dev/null
+
+	echo "$playlists"
+}
+
+_pause() {
+	local reveal
+	reveal=$(eww get mpv_player_reveal)
+
+	if [[ "$reveal" == "true" ]]; then
+		reveal="false"
+	else
+		reveal="true"
+	fi
+
+	eww update mpv_player_reveal="$reveal"
+	mpv-controller toggle-pause
+}
+
+_get_current_volume() {
+	echo '{ "command": ["get_property", "volume"] }' | socat - "$MPV_SOCKET_PATH" | xq '.data'
+}
+
+_set_volume() {
+	local volume="$1"
+	echo "{ \"command\": [\"set_property\", \"volume\", $volume] }" | socat - "$MPV_SOCKET_PATH"
+}
+
+
+pid=$(pgrep -a mpv | rg "$MPV_SOCKET_PATH" | awk '{print $1}')
+
+restart() {
+	local pid="$1"
+	ppid=$(ps -o ppid= -p "$pid")
+	kill "$ppid"
+	kill "$pid"
+	eww update mpv_player_reveal=false
+	echo "{'reveal': false, 'thumbnail_path': null, 'title': null}" > "$STATUS_PATH"
+
+	playlist=$(_find_all_playlists "$PLAYLISTS_BASE_DIR" | fuzzel --dmenu)
+	play "$PLAYLISTS_BASE_DIR/$playlist.json"
+}
+
+if [ -n "$pid" ]; then
+	echo "Already playing"
+	menu_opts=("1 next track" "5 previous track" "2 next chapter" "6 previous chapter" "4 choose another" "3 toggle pause")
+	menu_actions=("kill $pid" "notify-send 'Not implemented'" "mpv-controller next-chapter" "mpv-controller prev-chapter" "restart $pid" "_pause")
+	option=$(printf "%s\n" "${menu_opts[@]}" | fuzzel --dmenu --index)
+	
+	${menu_actions[$option]}
+else
+	echo "{'reveal': false, 'thumbnail_path': null, 'title': null}" > "$STATUS_PATH"
+	playlist=$(_find_all_playlists "$PLAYLISTS_BASE_DIR" | fuzzel --dmenu)
+	play "$PLAYLISTS_BASE_DIR/$playlist.json"
+fi
+
+

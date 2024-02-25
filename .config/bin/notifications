@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+sleep 5
+
+# How long each line stays on screen
+duration=5
+
+##############################################################################
+
+tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "timeout": "#timeout"}' |
+	while read -r notif; do
+		app=$(echo "$notif" | xq '.source' | xargs)
+
+		case "$app" in
+			"Telegram Desktop") 
+				app=" "
+				# mpv "$HOME/.config/notification_sounds/telegram_default.mp3" >/dev/null 2>&1 &
+				;;
+			"Slack")
+				app=" "
+				# mpv "$HOME/.config/notification_sounds/slack_default.mp3" >/dev/null 2>&1 &
+				;;
+			"Google Chrome")
+				app=" "
+				mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+				;;
+			"Hyprshot")
+				app=" "
+				;;
+			"notify-send")
+				app=" "
+				mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+				;;
+			"blueman")
+				app=" "
+				;;
+			"Spotify")
+				app=" "
+				;;
+			"Vieb")
+				app="󰖟 "
+				;;
+			"thunar")
+				app=" "
+				;;
+			"Nicotine+")
+				app="󱗆 "
+				;;
+			*)
+				app="$app:"
+				mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+				;;
+		esac
+
+		summary=$(echo "$notif" | xq '.summary' | xargs)
+		body="$app $summary"
+
+		eww update notification_text="$body"
+		mpv /usr/share/sounds/freedesktop/stereo/message.oga &
+		eww update notification_reveal=true
+		sleep "$duration"
+		eww update notification_reveal=false
+	done

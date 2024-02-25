@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -e
+
+get_current_volume() {
+	volume=$(echo "$raw_volume" | awk '{print $2}')
+	python -c "print(int(min($volume, 2) / 2 * 100))"
+}
+
+if [[ "$1" == "+" ]]; then
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+
+elif [[ "$1" == "-" ]]; then
+	wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-
+elif [[ "$1" == "mute" ]]; then
+	wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+elif [[ "$1" == "current" ]]; then
+	raw_volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+	get_current_volume "$raw_volume"
+	exit 0
+else
+	exit 1
+fi
+
+raw_volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+
+if [[ "$raw_volume" == *"MUTED"* ]]; then
+	eww update "volume_percent=0"
+	exit 0
+fi
+
+volume=$(get_current_volume "$raw_volume")
+eww update "volume_percent=$volume"

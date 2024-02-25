@@ -1,0 +1,245 @@
+; Depends on plyaerctl, mpv-mpris
+(defpoll time :interval "5s" `date +'{"h": "%H", "m": "%M"}'`)
+
+(defvar current_workspace_name "?")
+
+(defvar notification_reveal false)
+(defvar notification_text "")
+
+(defvar warning_cpu_temp 55)
+(defvar warning_used_mem_perc 80)
+
+(defpoll volume_percent :interval "1h" `$HOME/.config/eww/scripts/volume current`)
+
+(deflisten playing_reveal "while true; do if [[ $(playerctl status) == 'Playing' ]]; then echo t; else echo f; fi; sleep 1; done")
+(deflisten playing_title "while true; do playerctl metadata title; sleep 1; done")
+; (deflisten playing_art "while true; do playerctl metadata mpris:artUrl | sed \'s/file:\/\///; s/$/.png/\'; sleep 1; done")
+(defvar mpv_player_reveal false)
+(defvar mpv_thumbnail_path "")
+(defvar mpv_title "")
+(defvar layout_alert_reveal false)
+(defvar mpv_state "")
+
+(defpoll net :interval "10s"
+         :initial `0`
+         `nmcli -t -f SIGNAL,ACTIVE device wifi | awk -F':' '{ if ($2=="yes") print $1 }'`)
+
+(defpoll wireguard_vpn :interval "5s"
+         :initial ``
+         `nmcli device | rg pixelplex-vpn | awk '{print "active"}'`)
+
+(defpoll cpu_temp :interval "10s"
+         :initial "0"
+         `$HOME/.config/eww/scripts/temp`)
+
+(defwidget mpv_player []
+           (revealer
+             :transition "slideleft"
+             :reveal {playing_reveal == 't' ? true : false}
+             :duration "500ms"
+             (box :class "mpv_player" :orientation "h" :space-evenly false :hexpand true :width "20px"
+                  ; (image :path playing_art :image-height 15)
+                  (space)
+                  (label
+                    :text {'  ' + playing_title}
+                    :limit-width 35)
+                  (space))))
+
+(defwidget layout_alert []
+           (revealer
+             :transition "slideright"
+             :reveal layout_alert_reveal
+             :duration "250ms"
+             (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+                  (space)
+                  (label
+                    :class "layout_alert"
+                    :text "ru"
+                    :tooltip "brightness")
+                  )))
+
+(defwidget cpu_temp_alert []
+           (revealer
+             :transition "slideright"
+             :reveal {cpu_temp >= warning_cpu_temp}
+             :duration "250ms"
+             (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+                  (space)
+                  (label
+                    :class "cpu_temp_alert"
+                    :text "${cpu_temp}󰔄 "
+                    :tooltip "brightness"))))
+
+(defwidget ram_alert []
+           (revealer
+             :transition "slideright"
+             :reveal {EWW_RAM.used_mem_perc >= warning_used_mem_perc}
+             :duration "250ms"
+             (box :orientation "h" :space-evenly "false" :vexpand "false" :hexpand "false"
+                  (space)
+                  (label
+                    :class "cpu_temp_alert"
+                    :text " ${round(EWW_RAM.used_mem_perc, 0)}%"
+                    :tooltip "brightness")
+                  )))
+
+(defwidget battery []
+           (box :class "bat_module" :vexpand "false" :hexpand "false"
+                (circular-progress :value {EWW_BATTERY.BAT0.capacity}
+                                   :class "circle_bar bat_bar ${EWW_BATTERY.BAT0.status == 'Charging' ? 'battery_charging' : 'battery_discharging'}"
+                                   :thickness 3
+                                   (button
+                                     :class "iconbat"
+                                     :limit-width 2
+                                     :tooltip "battery on ${EWW_BATTERY.BAT0.capacity }%"
+                                     :show_truncated false
+                                     :onclick "$HOME/.config/eww/scripts/pop system"
+                                     :wrap false
+                                     " "))))
+
+(defwidget space []
+           (box :class "" :vexpand "false" :hexpand "false"
+                (label :class "space" :text " ")))
+
+(defwidget clock_module []
+           (eventbox :onhover "eww update time_rev=true"
+                     :onhoverlost "eww update time_rev=false"
+                     (box :space-evenly "false" :orientation "h" :spacing "2" :class "box"
+                          (label :text {time.h} )
+                          (label :text "󰇙" :class "clock_time_sep" )
+                          (label :text {time.m} ))))
+
+(defwidget workspace []
+           (box :space-evenly "false" :orientation "h" :spacing "3"
+                (label :text {current_workspace_name == '10' ? '0' : current_workspace_name}  :class "workspace")
+                (space)))
+
+
+(defwidget volume_circle []
+           (box :class "bat_module" :vexpand "false" :hexpand "false"
+                (circular-progress :value volume_percent
+                                   :class "circle_bar volume_bar"
+                                   :thickness 3
+                                   (button
+                                     :class "iconbat"
+                                     :limit-width 2
+                                     :tooltip "Volume on ${volume_percent}%"
+                                     :show_truncated false
+                                     :wrap false
+                                     " "))))
+
+(defwidget notification []
+           (revealer
+             :transition "crossfade"
+             :reveal notification_reveal
+             :duration "500ms"
+             (label
+               :class "box notification"
+               :text notification_text
+               :limit-width 50
+               )))
+
+(defwidget monitors []
+           (box :orientation "h"
+                :space-evenly false
+                :halign "end"
+                :class "box"
+                (volume_circle)
+                (space)
+                (battery)
+                ))
+
+(defwidget left_alerts []
+           (box :orientation "h"
+                :space-evenly false
+                :halign "end"
+                :class "alerts"
+                (workspace)
+                (mpv_player)))
+
+(defwidget left []
+           (box
+             :orientation "h"
+             :space-evenly false
+             :halign "start"
+             (clock_module)
+             (left_alerts)))
+
+
+(defwidget center []
+           (box
+             :orientation "h"
+             :space-evenly false
+             :halign "center"
+             (notification)))
+
+(defwidget right_alerts []
+           (box :orientation "h"
+                :space-evenly false
+                :halign "end"
+                :class "alerts"
+                (layout_alert)
+                (cpu_temp_alert)
+                (ram_alert)))
+
+(defwidget right []
+           (box :orientation "h"
+                :space-evenly false
+                :halign "end"
+                (right_alerts)
+                (monitors)))
+
+(defwidget bar []
+           (box :class "bar"
+                :orientation "h"
+                (left)
+                (center)
+                (right)))
+
+(defwindow bar
+           :geometry (geometry
+                       :width "100%"
+                       :anchor "top center")
+           :monitor 0
+           :stacking "bottom"
+           :exclusive true
+            :namespace eww
+           (bar))
+
+
+(defwindow powermenu
+           :monitor 0
+           :stacking "fg"
+           :geometry (geometry :width "100%" :height "100%")
+           (powermenu_layout))
+
+(defwidget _buttons [shutdown shutdown_icon reboot
+                              reboot_icon logout logout_icon]
+           (box :class "btns-box" :spacing 5
+                :vexpand true :hexpand true
+                :valign "end" :halign "end"
+                :space-evenly false
+                (button :onclick shutdown shutdown_icon)
+                (button :onclick reboot reboot_icon)
+                (button :onclick logout logout_icon)))
+
+(defwidget _network [strength offline excellent good okay slow]
+           (box :class "net-box"
+                :space-evenly false
+                (label :text {strength == "" ? offline :
+                       strength < 26 ? slow :
+                       strength < 51 ? okay :
+                       strength < 76 ? good : excellent})
+
+                (label :text {wireguard_vpn == 'active' ? '󰖂 ' : ''})))
+
+(defwidget powermenu_layout []
+           (box :class "layout-box" :space-evenly false :orientation "vertical"
+                (box :valign "start" :space-evenly false :spacing 25
+                     (_network :strength net :offline "󰣽 " :excellent "󰣺 " :good "󰣸 "
+                               :okay "󰣶 " :slow "󰣴 ")
+                     )
+                (box :space-evenly false :hexpand true :vexpand true
+                     (_buttons :shutdown "poweroff" :reboot "reboot"
+                               :logout "loginctl kill-session self"
+                               :shutdown_icon "󰐥" :reboot_icon "" :logout_icon "󰍃"))))

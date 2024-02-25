@@ -1,0 +1,676 @@
+(add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
+(require 'elpaca-setup)
+;; (require 'no-littering)
+
+(require 'pyright-write)
+(require 'suzu-buffer)
+
+(use-package async :ensure t)
+(require 'ob-async-sql)
+
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-keybinding nil)
+  (setq evil-want-window-right t)
+  (setq evil-want-C-w-delete t)
+  (setq evil-want-window-below t)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-undo-system 'undo-redo)
+  :config
+  (evil-mode 1))
+
+(use-package undo-tree :ensure t)
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+
+;; (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
+;; (elpaca nil (message "deferred"))
+
+;; Using RETURN to follow links in Org/Evil
+;; Unmap keys in 'evil-maps if not done, (setq org-return-follows-link t) will not work
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "SPC") nil)
+  (define-key evil-motion-state-map (kbd "RET") nil)
+  ;; (define-key evil-motion-state-map (kbd "TAB") nil)
+  (define-key evil-outer-text-objects-map "w" 'evil-a-symbol)
+  (define-key evil-inner-text-objects-map "w" 'evil-inner-symbol)
+  (define-key evil-outer-text-objects-map "o" 'evil-a-word)
+  (define-key evil-inner-text-objects-map "o" 'evil-inner-word)
+  (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
+  (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward)
+  )
+;; Setting RETURN key in org-mode to follow links
+(setq org-return-follows-link  t)
+
+
+
+
+
+(defalias 'forward-evil-word 'forward-evil-symbol)
+
+(use-package better-jumper
+  :ensure t
+  :diminish
+  :config
+  (better-jumper-mode +1)
+  )
+
+(use-package general
+  :ensure t
+  :config
+  (general-evil-setup)
+
+  (general-define-key
+   :states 'normal
+   :prefix "g"
+   "n" '(suzu/buffer-next :wk "Next buffer")
+   "p" '(suzu/buffer-prev :wk "Previous buffer"))
+
+  (general-define-key
+   :states '(normal visual)
+   "<f2>" '(vterm-toggle-forward :wk "Toggle vterm forward")
+   "<f3>" '(vterm-toggle :wk "Toggle vterm")
+   "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward")
+   "[ g" '(git-gutter:previous-hunk :wk "Prev git hunk")
+   "] g" '(git-gutter:next-hunk :wk "Next git hunk"))
+
+  (general-create-definer suzu/leader-keys
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC"
+    :global-prefix "M-SPC")
+
+  (suzu/leader-keys
+    "." '(find-file :wk "Find file")
+    ";" '(counsel-M-x :wk "Counsel M-x")
+    "r" '(counsel-projectile-rg :wk "Ripgrep project symbols")
+    "i" '(counsel-imenu :wk "Open imenu")
+    "P" '(projectile-persp-switch-project :wk "Open project in new perspective")
+    "S" '(perspective-map :wk "Perspective")
+    "f" '(projectile-find-file :wk "Find file"))
+
+  (suzu/leader-keys
+    "s" '(:ignore t :wk "Session")
+    "s l" '(persp-switch-last :wk "Switch last perspective")
+    "s p" '(persp-prev :wk "Prev session")
+    "s b" '(bufler-switch-buffer :wk "Switch buffer")
+    "s n" '(persp-next :wk "Next session"))
+
+  (suzu/leader-keys
+    "b" '(:ignore t :wk "buffer || bookmark")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b s" '(counsel-buffer-or-recentf :wk "Search buffer")
+    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b r" '(revert-buffer :wk "Reload buffer")
+    "b m" '(bookmark-set :wk "Bookmark")
+    "b l" '(list-bookmarks :wk "Bookmarks list"))
+
+  (suzu/leader-keys
+    "e" '(:ignore t :wk "Evaluate")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
+
+  (suzu/leader-keys
+    "g" '(:ginore t :wk "Git")
+    "g p" '((lambda () (interactive) (git-gutter:popup-hunk) (other-window 1)) :wk "Preview hunk diff")
+    "g r" '(git-gutter:revert-hunk :wk "Preview hunk diff")
+    "g w" '(magit-worktree :wk "Git worktree")
+    "g s" '(git-gutter:stage-hunk :wk "Preview hunk diff"))
+
+  (suzu/leader-keys
+    "o" '(:ignore t :wk "Open")
+    "o r" '(counsel-recentf :wk "Open recent files")
+    "o D" '(dired-jump :wk "Dired jump to current")
+    "o p d" '(peep-dired :wk "Peep-dired")
+    "o r" '(counsel-recentf :wk "Open recent files")
+    "o e" '(eshell :wk "Open eshell")
+    "o g" '(magit :wk "Open magit")
+    "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (other-window 1)) :wk "Open diagnostics")
+    "o t" '(multi-vterm :wk "Open Vterm")
+    "o C" '((lambda () (interactive) (find-file "~/dotfiles/.emacs.d/config.org")) :wk "Edit emacs config"))
+
+  (suzu/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h f" '(describe-function :wk "Describe function")
+    "h v" '(describe-variable :wk "Describe variable")
+    "h m" '(info-display-manual :wk "Manual")
+    "h r r" '((lambda ()
+                (interactive)
+                (load-file "~/dotfiles/.emacs.d/init.el")
+                (ignore (elpaca-process-queues))) :wk "Reload emacs config"))
+
+  (suzu/leader-keys
+    "m" '(:ignore t :wk "Org")
+    "m a" '(org-agenda :wk "Org agenda")
+    "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
+    "m i" '(org-toggle-item :wk "Org toggle item")
+    "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
+    "m t" '(org-todo :wk "Org todo")
+    "m f" '(counsel-org-goto :wk "Find heading")
+    "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m T" '(org-todo-list :wk "Org todo list"))
+
+  (suzu/leader-keys
+    "m b" '(:ignore t :wk "Tables")
+    "m b -" '(org-table-insert-hline :wk "Insert hline in table"))
+
+  (suzu/leader-keys
+    "m d" '(:ignore t :wk "Date/deadline")
+    "m d t" '(org-time-stamp :wk "Org time stamp"))
+
+  ;; (suzu/leader-keys
+  ;;   "p" '(projectile-command-map :wk "Projectile"))
+
+  (suzu/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t i" '(eglot-inlay-hints-mode :wk "Toggle inlay hints")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+
+  )
+
+(use-package catppuccin-theme
+  :ensure t
+  :init
+  (load-theme 'catppuccin :no-confirm)
+  (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
+  (catppuccin-reload))
+(use-package doom-themes
+  :ensure t)
+
+(use-package magit
+  :ensure t
+  :config
+  (setq magit-status-buffer-switch-function 'switch-to-buffer)
+  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+
+
+
+(use-package git-gutter
+  :ensure t
+  :config
+  (global-git-gutter-mode +1))
+
+(use-package doom-modeline
+  :ensure t
+  :init
+  (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-height 15
+        doom-modeline-buffer nil
+        doom-modeline-buffer-name nil
+        doom-modeline-bar-width 6
+        doom-modeline-lsp t
+        doom-modeline-github nil
+        doom-modeline-mu4e nil
+        doom-modeline-irc t
+        doom-modeline-minor-modes nil
+        doom-modeline-persp-name nil
+        doom-modeline-display-default-persp-name nil
+        doom-modeline-persp-icon nil
+        doom-modeline-major-mode-icon nil))
+;; (setq-default mode-line-format nil)
+
+(defun suzu/simple-header-line-render (left right)
+  "Return a string of `window-width' length containing LEFT, and RIGHT
+ aligned respectively."
+  (let* ((available-width (- (window-width) (length left) 1)))
+    (format (format " %%s %%%ds " available-width) left right)))
+
+(defun suzu/current-perspective ()
+  (format " %s" (persp-current-name))
+  )
+
+(setq-default header-line-format
+	      '((:eval (suzu/simple-header-line-render
+			(suzu/current-perspective)
+			(format-mode-line (if buffer-file-name "%f " "%b "))
+			))))
+
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
+(use-package all-the-icons-dired
+  :ensure t
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+
+(setq make-backup-files nil)
+
+(use-package corfu
+  :ensure t
+  ;; Optional customizations
+  :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-auto-delay 0.3)
+  (corfu-auto-prefix 1)
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+  ;; be used globally (M-/).  See also the customization variable
+  ;; `global-corfu-modes' to exclude certain modes.
+  :init
+  (global-corfu-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  ;; (setq tab-always-indent 'complete)
+  )
+
+(use-package diminish
+  :ensure t)
+
+(use-package dired-open
+  :ensure t
+  :config
+  (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+  (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
+  (setq dired-open-extensions '(("gif" . "feh")
+                                ("jpg" . "feh")
+                                ("jpeg" . "feh")
+                                ("png" . "feh")
+                                ("mkv" . "mpv")
+                                ("mp4" . "mpv"))))
+
+(use-package peep-dired
+  :after dired
+  :ensure t
+  :hook (evil-normalize-keymaps . peep-dired-hook)
+  )
+
+(setf dired-kill-when-opening-new-dired-buffer t)
+(setq-default dired-listing-switches "-aBhl  --group-directories-first")
+
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"
+        elfeed-feeds (quote
+                      (("https://www.reddit.com/r/linux.rss" reddit linux)
+                       ("https://www.reddit.com/r/commandline.rss" reddit commandline)
+                       ("https://www.reddit.com/r/distrotube.rss" reddit distrotube)
+                       ("https://www.reddit.com/r/emacs.rss" reddit emacs)
+                       ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
+                       ("https://hackaday.com/blog/feed/" hackaday linux)
+                       ("https://opensource.com/feed" opensource linux)
+                       ("https://linux.softpedia.com/backend.xml" softpedia linux)
+                       ("https://itsfoss.com/feed/" itsfoss linux)
+                       ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
+                       ("https://www.phoronix.com/rss.php" phoronix linux)
+                       ("http://feeds.feedburner.com/d0od" omgubuntu linux)
+                       ("https://www.computerworld.com/index.rss" computerworld linux)
+                       ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
+                       ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
+                       ("https://betanews.com/feed" betanews linux)
+                       ("http://lxer.com/module/newswire/headlines.rss" lxer linux)
+                       ("https://distrowatch.com/news/dwd.xml" distrowatch linux)))))
+
+
+(use-package elfeed-goodies
+  :ensure t
+  :init
+  (elfeed-goodies/setup)
+  :config
+  (setq elfeed-goodies/entry-pane-size 0.5))
+
+(use-package dashboard
+  :ensure t
+  :config
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook))
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+
+(set-face-attribute 'default nil
+                    :font "iosevka nf"
+                    :height 130
+                    :weight 'medium)
+(set-face-attribute 'variable-pitch nil
+                    :font "Iosevka Lyte Term"
+                    :height 130
+                    :weight 'medium)
+(set-face-attribute 'fixed-pitch nil
+                    :font "Iosevka NF"
+                    :height 130
+                    :weight 'medium)
+(set-face-attribute 'font-lock-comment-face nil
+                    :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil
+                    :slant 'italic)
+
+(add-to-list 'default-frame-alist '(font . "Iosevka NF 13"))
+(setq default-frame-alist '((font . "Iosevka NF 13")))
+
+(setq-default line-spacing 0.12)
+
+(use-package counsel
+  :ensure t
+  :diminish
+  :after ivy
+  :config
+  (use-package flx
+    :ensure t)
+  (counsel-mode)
+  (ivy-mode 1)
+  (setq ivy-re-builders-alist
+	'((t . ivy--regex-plus))))
+
+(use-package ivy
+  :ensure t
+  :diminish
+  :bind
+  ;; ivy-resume resumes the last Ivy-based completion.
+  (("C-c C-r" . ivy-resume)
+   ("C-x B" . ivy-switch-buffer-other-window))
+  :init
+  (setq ivy-initial-inputs-alist nil)
+  :custom
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+  :config
+  (ivy-mode))
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1))
+
+(use-package ivy-rich
+  :ensure t
+  :after ivy
+  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+  :custom
+  (ivy-virtual-abbreviate 'full
+                          ivy-rich-switch-buffer-align-virtual-buffer t
+                          ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer))
+
+(use-package toc-org
+  :ensure t
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
+
+(add-hook 'org-mode-hook 'org-indent-mode)
+(use-package org-bullets :ensure t)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(setq-default org-image-actual-width nil)
+
+(use-package org-appear
+  :ensure t
+  :hook (org-mode-hook . org-appear-mode)
+  :config
+  (setq org-appear-autoemphasis t
+        org-appear-autolinks t
+        org-appear-autosubmarkers t
+        org-appear-autoentities t
+        org-appear-trigger 'always))
+
+(electric-indent-mode t)
+(setq-default electric-indent-inhibit t)
+(setq create-lockfiles nil)
+(electric-pair-mode 1)
+(setq org-edit-src-content-indentetion 0)
+(add-hook 'org-mode-hook (lambda ()
+			   (setq-local electric-pair-inhibit-predicate
+				       `(lambda (c)
+					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
+(menu-bar-mode -1)           ;; Disable the menu bar
+(scroll-bar-mode -1)         ;; Disable the scroll bar
+(tool-bar-mode -1)           ;; Disable the tool bar
+(setq-default auto-save-default nil)
+(setq-default org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2
+(set-fringe-style 0)
+
+(setq-default truncate-lines t)
+(setq-default scroll-margin 7)
+(global-display-line-numbers-mode 1)
+(setq-default display-line-numbers-type 'relative)
+
+(setq help-window-select t)
+
+;; (setq select-enable-clipboard nil)
+
+(setq whitespace-style '(face tabs tab-mark trailing))
+(custom-set-faces
+ '(whitespace-tab ((t (:foreground "#636363")))))
+(setq whitespace-display-mappings
+      '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+(global-whitespace-mode) ; Enable whitespace mode everywhere
+
+(use-package emojify
+  :ensure t
+  :hook (after-init . global-emojify-mode))
+
+(require 'org-tempo)
+
+(setq org-confirm-babel-evaluate nil)
+
+(setq-default plantuml-exec-mode "plantuml")
+
+(org-babel-do-load-languages 'org-babel-load-languages
+			     '((shell . t)
+			       (python . t)
+			       (sqlite . t)
+			       (emacs-lisp . t)
+			       (plantuml . t)
+			       (sql . t)))
+
+(use-package perspective
+  :ensure t
+  :init
+  (setq persp-suppress-no-prefix-key-warning t)
+  (persp-mode)
+  :config
+  (persp-turn-off-modestring)
+  (setq persp-state-default-file "~/.config/emacs/sessions"
+        persp-show-modestring nil))
+
+(add-hook 'ibuffer-hook
+          (lambda ()
+            (persp-ibuffer-set-filter-groups)
+            (unless (eq ibuffer-sorting-mode 'alphabetic)
+              (ibuffer-do-sort-by-alphabetic))))
+
+(add-hook 'kill-emacs-hook #'persp-state-save)
+
+(use-package bufler
+  :ensure t)
+
+(use-package evil-nerd-commenter
+  :ensure t
+  :config
+  (general-define-key
+   :states 'normal
+   :prefix "g"
+   "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
+
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode 1)
+  (setq projectile-project-search-path '(("~/code" . 4)))
+  )
+
+
+(use-package persp-projectile
+  :ensure t
+  :after perspective)
+
+(use-package counsel-projectile
+  :ensure t)
+
+(use-package rainbow-mode
+  :ensure t
+  :diminish
+  :hook
+  ((org-mode prog-mode) . rainbow-mode))
+
+(use-package eshell-syntax-highlighting
+  :ensure t
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
+
+;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
+;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
+;; eshell-aliases-file -- sets an aliases file for the eshell.
+
+(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
+      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+      eshell-history-size 5000
+      eshell-buffer-maximum-lines 5000
+      eshell-hist-ignoredups t
+      eshell-scroll-to-bottom-on-input t
+      eshell-destroy-buffer-when-process-dies t
+      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+
+(use-package vterm
+  :ensure t
+  :config
+  (setq shell-file-name "/bin/sh"
+        vterm-max-scrollback 5000))
+
+(use-package vterm-toggle
+  :ensure t
+  :after vterm
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                   (let ((buffer (get-buffer buffer-or-name)))
+                     (with-current-buffer buffer
+                       (or (equal major-mode 'vterm-mode)
+                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                 (display-buffer-reuse-window display-buffer-at-bottom)
+                 ;;(display-buffer-reuse-window display-buffer-in-direction)
+                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                 ;;(direction . bottom)
+                 ;;(dedicated . t) ;dedicated is supported in emacs27
+                 (reusable-frames . visible)
+                 (window-height . 0.3))))
+
+(use-package multi-vterm
+  :ensure t
+  :config
+  (add-hook 'vterm-mode-hook
+            (lambda ()
+              (setq-local evil-insert-state-cursor 'box)
+              (evil-insert-state)))
+  (define-key vterm-mode-map [return]                      #'vterm-send-return))
+
+(use-package sudo-edit
+  :ensure t
+  :config
+  (suzu/leader-keys
+    "o w s" '(sudo-edit :wk "Sudo edit file")))
+
+(use-package tldr :ensure t)
+
+(add-to-list 'default-frame-alist '(alpha-background . 100))
+
+(use-package which-key
+  :ensure t
+  :diminish
+  :init
+  (which-key-mode)
+  :config
+  (setq which-key-popup-type 'side-window
+        which-key-side-window-max-height 0.50))
+
+(use-package eldoc-box
+  :ensure t
+  :config
+  (setq max-mini-window-height 1))
+
+(use-package eglot
+  :after rust-mode
+  :config
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
+  (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
+  (general-define-key
+   :states '(normal visual motion)
+   :keymaps 'override
+   "K" '(eldoc-box-help-at-point :wk "Show doc"))
+  :hook
+  (python-mode . eglot-ensure)
+  (python-mode . whitespace-cleanup)
+  (rust-mode . eglot-ensure)
+  (rust-mode . whitespace-cleanup))
+
+(use-package rust-mode :ensure t)
+
+(use-package python
+  :ensure t)
+
+(use-package python-black
+  :ensure t
+  :demand t
+  :after python
+  :hook (python-ts-mode . python-black-on-save-mode-enable-dwim))
+
+(use-package python-mode
+  :ensure t
+  :hook
+  (python-ts-mode . display-fill-column-indicator-mode))
+
+(setq treesit-language-source-alist
+      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+	(cmake "https://github.com/uyha/tree-sitter-cmake")
+	(css "https://github.com/tree-sitter/tree-sitter-css")
+	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
+	(go "https://github.com/tree-sitter/tree-sitter-go")
+	(html "https://github.com/tree-sitter/tree-sitter-html")
+	(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+	(json "https://github.com/tree-sitter/tree-sitter-json")
+	(make "https://github.com/alemuller/tree-sitter-make")
+	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
+	(python "https://github.com/tree-sitter/tree-sitter-python")
+	(toml "https://github.com/tree-sitter/tree-sitter-toml")
+	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(setq treesit-font-lock-level 4)
+
+(setq major-mode-remap-alist
+      '((python-mode . python-ts-mode)))
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))

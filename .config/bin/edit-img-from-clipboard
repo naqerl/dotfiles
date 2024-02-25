@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -e
+
+EDITOR="${1:-rnote}"
+IMG_PATH="$HOME/Pictures/clipboard.png"
+
+
+if type wl-paste; then
+	wl-paste > "$IMG_PATH"
+else
+	xclip -selection clipboard -t image/png -o > "$IMG_PATH"
+fi
+
+image_type=$(file "$IMG_PATH" | awk '{print $2}')
+
+if [ "$image_type" != PNG ]; then
+	notify-send "Failed to save $image_type as PNG"
+	rm "$IMG_PATH"
+	exit 1
+fi
+
+notify-send "Opening image in $EDITOR"
+$EDITOR "$IMG_PATH"
+
+rm "$IMG_PATH"

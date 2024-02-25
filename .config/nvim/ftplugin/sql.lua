@@ -1,0 +1,3 @@
+-- vim.cmd [[
+--   autocmd BufWritePre,FileWritePre * %!pg_format --inplace --function-case 0 --comma-break -
+-- ]]

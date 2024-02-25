@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+echo "Name:       $(git config user.name)"
+echo "Email:      $(git config user.email)"
+echo "GPG sign:   $(git config commit.gpgsign)"
+echo "Origin url: $(git config remote.origin.url)"

@@ -1,0 +1,447 @@
+$surface-darkgrey: #232634;
+$surface-fg: #C6D0F5;
+$surface-lightgrey: #949CBC;
+$surface-grey: #303446;
+$surface-red: #CBA6F7;
+$surface-green: #A6D189;
+
+* {
+    all: unset;
+    font-family: Iosevka Nerd Font;
+    color: $surface-fg;
+}
+
+/** General **/
+.bar {
+    font-size: 14px;
+    padding: 3px 5px 3px 5px;
+    background-color: #303446;
+}
+
+.box {
+    background-color: $surface-darkgrey;
+    border-radius: 5px;
+    padding: 1px 5px; 
+}
+
+.workspace {
+    background-color: $surface-darkgrey;
+    border-radius: 50%;
+    padding: 1px 7px; 
+}
+
+.alerts {
+    border-radius: 5px;
+    margin: 0 5px; 
+} 
+
+.circle_bar {
+    background-color: #38384d;
+    border-radius: 10px;
+}
+
+.bat_bar {
+    color: $surface-green;
+}
+
+.battery_charging {
+    background-color: rgba($surface-green, 0.37);
+}
+
+.volume_bar {
+    color: $surface-red;
+}
+
+.notification {
+    background-color: #A6D189;
+    color: $surface-grey;
+    padding: 0 5px;
+    border-radius: 5px;
+}
+
+
+.iconbat, .iconmem {
+    margin: 7px;
+}
+
+.space {
+    margin: 0 2px;
+}
+
+scale trough {
+    all: unset;
+    background-color: #22242b;
+    box-shadow: 0 2px 3px 2px #06060b;
+    border-radius: 16px;
+    min-height: 10px;
+    min-width: 70px;
+    margin: 0px 10px 0px 0px;
+}
+
+.0 , .01, .02, .03, .04, .05, .06,
+.011, .022, .033, .044, .055, .066{
+    margin: 0px 10px 0px 0px;
+}
+
+/* Unoccupied */
+.0 {
+    color: #3e424f;
+}
+
+/* Occupied */
+.01, .02, .03, .04, .05, .06 {
+    color: $surface-fg;
+}
+
+/* Focused */
+.011, .022, .033, .044, .055, .066 {
+    color: #81C8BE;
+}
+
+
+.song_cover_art {
+    background-size: cover;	
+    background-position: center;
+    min-height: 24px;
+    min-width: 24px;
+    margin: 10px;
+    border-radius: 100px;
+}
+
+.song {
+    color: #81C8BE;
+    font-weight : bold;
+    margin : 3px 5px 0px 0px;
+}
+
+.song_btn_play {
+    color: #81C8BE;
+    margin : 3px 0px 0px 5px;
+
+}
+
+
+.song_btn_prev, .song_btn_next {
+    color: $surface-fg;
+    margin : 3px 0px 0px 5px;
+
+}
+// Calendar
+.cal {
+    background-color: $surface-grey;
+    font-family: JetBrainsMono Nerd Font;
+    font-weight: normal;
+
+    .cal-in {
+	padding: 0px 10px 0px 10px;
+	color: $surface-fg;
+
+	.cal {
+	    &.highlight {
+		padding: 20px;
+	    }
+
+	    padding: 5px 5px 5px 5px;
+	    margin-left: 10px;
+	}
+    }
+}
+
+calender {
+    color: $surface-fg;
+}
+calendar:selected {
+    color: #81C8BE;
+}
+
+calendar.header {
+    color: #81C8BE;
+    font-weight: bold;
+}
+
+calendar.button {
+    color: #A6D189;
+}
+
+calendar.highlight {
+    color: #81C8BE;
+    font-weight: bold;
+}
+
+calendar:indeterminate {
+    color: $surface-fg;
+}
+
+
+
+
+
+
+
+.sys_sep {
+    color: #38384d;
+    margin: 0px 10px 0px 10px;
+}
+.sys_text_bat_sub, .sys_text_mem_sub {
+    color: #bbc5d7;
+    margin: 5px 0px 0px 25px;
+}
+.sys_text_bat, .sys_text_mem {
+    font-weight: bold;
+    margin: 14px 0px 0px 25px;
+}
+.sys_icon_bat, .sys_icon_mem {
+    margin: 30px;
+}
+.sys_win {
+    background-color: $surface-grey;
+}
+.sys_bat {
+    color: #A6D189;
+    background-color: #38384d;
+    border-radius: 10px;
+}
+.sys_mem {
+    color: #E5C890;
+    background-color: #38384d;
+    border-radius: 10px;
+}
+.sys_icon_bat, .sys_text_bat {
+    color: #A6D189;
+}
+.sys_icon_mem, .sys_text_mem {
+    color: #E5C890;
+}
+.sys_bat_box {
+    border-radius: 16px;
+    margin: 15px 10px 10px 20px;
+}
+.sys_mem_box {
+    border-radius: 16px;
+    margin: 10px 10px 15px 20px;
+}
+
+
+
+
+
+
+
+.music_pop {
+    background-color: $surface-darkgrey;
+    border-radius: 16px;
+}
+.music_cover_art {
+    background-size: cover;
+    background-position: center;
+    min-height: 100px;
+    box-shadow: 5px 5px 5px 5px #06060b;
+    min-width: 170px;
+    margin: 20px;
+    border-radius: 20px;
+}
+
+.music {
+    color: #81C8BE;
+    font-weight : bold;
+    margin : 20px 0px 0px -15px;
+}
+
+.music_artist {
+    color: #bbc5d7;
+    font-weight : normal;
+    margin : 0px 0px 0px 0px;
+}
+
+.music_btn_prev, .music_btn_play, .music_btn_next {
+    font-family: Iosevka Nerd Font;
+}
+.music_btn_prev {
+    color: #bbc5d7;
+    font-weight : normal;
+    margin: 0px 0px 0px 0px;
+}
+.music_btn_play {
+    color: #81C8BE;
+    font-weight : normal;
+    margin: 0px 0px 0px 0px;
+}
+.music_btn_next {
+    color: #bbc5d7;
+    font-weight : normal;
+    margin: 0px 0px 0px 0px;
+}
+
+.music_bar scale trough highlight {
+    all: unset;
+    background-image: linear-gradient(to right, #afcee0 30%, #81C8BE 50%, #77a5bf 100% *50);
+    border-radius: 24px;
+}
+.music_bar scale trough {
+    all: unset;
+    background-color: #232232;
+    box-shadow: 0 6px 5px 2px #06060b;
+    border-radius: 24px;
+    min-height: 13px;
+    min-width: 190px;
+    margin : -10px 10px 20px 0px;
+}
+
+.audio-box {
+    background-color: $surface-grey;
+    border-radius: 16px;
+}
+.speaker_icon {
+    background-size: cover;
+    background-image: url('images/speaker.png');
+    background-position: center;
+    min-height: 70px;
+    min-width: 75px;
+    margin: 10px 20px 5px 20px;
+    border-radius: 12px;
+}
+
+.speaker_text {
+    color: #81C8BE;
+    font-weight : bold;
+    margin: 20px 0px 0px 0px;
+}
+
+.speaker_bar scale trough highlight {
+    all: unset;
+    background-image: linear-gradient(to right, #afcee0 30%, #81C8BE 50%, #77a5bf 100% *50);
+    border-radius: 24px;
+}
+.speaker_bar scale trough {
+    all: unset;
+    background-color: #232232;
+    box-shadow: 0 6px 5px 2px #06060b;
+    border-radius: 24px;
+    min-height: 13px;
+    min-width: 120px;
+    margin : 0px 0px 5px 0px;
+}
+
+
+
+
+.mic_icon {
+    background-size: cover;
+    background-image: url('images/mic.png');
+    background-position: center;
+    min-height: 70px;
+    min-width: 75px;
+    margin: 5px 20px 20px 20px;
+    border-radius: 12px;
+}
+
+.mic_text {
+    color: #81C8BE;
+    font-weight : bold;
+    margin: 0px 0px 0px 0px;
+}
+
+.mic_bar scale trough highlight {
+    all: unset;
+    background-image: linear-gradient(to right, #afcee0 30%, #81C8BE 50%, #77a5bf 100% *50);
+    border-radius: 24px;
+}
+.mic_bar scale trough {
+    all: unset;
+    box-shadow: 0 6px 5px 2px #06060b;
+    background-color: #232232;
+    border-radius: 24px;
+    min-height: 13px;
+    min-width: 120px;
+    margin : 0px 0px 20px 0px;
+}
+
+.audio_sep {
+    color: #38384d;
+    margin : 0px 0px 0px 0px;
+}
+
+.system_icon {
+    color: #8CAAEE;
+}
+
+.layout_alert {
+    background-color: #E5C890;
+    border-radius: 5px;
+    padding: 0 5px;
+    color: $surface-grey;
+}
+
+.mpv_player {
+    font-size: 12px;
+    border-radius: 5px;
+    background-color: $surface-darkgrey;
+    padding: 0 5px;
+}
+
+.layout-box {
+    background-color: rgba($surface-darkgrey, 0.2);
+    color: rgba($surface-fg, 0.8);
+}
+
+.net-box,
+.bat-box,
+.tm-box {
+    background-color: $surface-grey;
+    border-radius: 0.5em;
+    padding: 0.4em 0.5em 0.4em 0.7em;
+    label {
+	font-size: 2em;
+    }
+}
+
+.close-btn {
+    font-size: 2em;
+    &:hover {
+	color: $surface-red;
+    }
+}
+
+.btns-box {
+    font-size: 2.5em;
+    padding: 0.3em;
+    border-radius: 0.5em;
+
+    button {
+	border-radius: 0.3em;
+	padding: 0.1em 0.8em 0.1em 0.5em;
+	background-color: $surface-grey;
+
+	&:hover {
+	    transition: 200ms linear background-color, border-radius;
+	    background-color: rgba($surface-lightgrey, 0.6);
+	}
+
+	&:first-child {
+	    color: rgba($surface-red, 0.8);
+	}
+    }
+}
+
+.sep {
+    font-size: 1.5em;
+    padding-top: 0.15em;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    color: $surface-lightgrey;
+}
+
+.sundial-lbl {
+    font-size: 1.5em;
+    font-weight: bold;
+    border-radius: 0.2em;
+    padding: 0.4em;
+    padding-bottom: 0.5em;
+}
+
+.cpu_temp_alert {
+    background-color: #E5C890;
+    border-radius: 5px;
+    padding: 0 5px;
+    color: $surface-grey;
+}

@@ -1,0 +1,183 @@
+#+title: My dotfiles config
+#+author: Suzu
+#+description: Dotfiles setup description
+#+property: header-args :tangle ./build.sh
+
+* Dotfiles
+
+It's my system configuration. You shouldn't run all instructions manually.
+All of them saved to the =build.sh= file
+
+** Screenshots
+
+#+ATTR_ORG: :width 700
+[[./img/demo.png]]
+
+** Setup
+
+*** Package manager
+
+I use arch btw and prefer [[https://github.com/Morganamilo/paru][paru]] as my main package manager
+
+#+begin_src shell
+sudo pacman -S --needed base-devel
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si
+cd .. && rm -r paru
+#+end_src
+
+*** System apps
+
+The following apps needed for the minimal working system stup
+
+| Package                     | Description                                       | Link                                                  |
+|-----------------------------+---------------------------------------------------+-------------------------------------------------------|
+| Hyprland                    | displays windows                                  | https://github.com/hyprwm/Hyprland                    |
+| Hyprpaper                   | displays wallpaper                                | https://github.com/hyprwm/hyprpaper                   |
+| Hyprpicker                  | helps to pick colors from the screen              | https://github.com/hyprwm/hyprpicker                  |
+| xdg-desktop-portal-hyprland | XDG Desktop portal backend                        | https://github.com/hyprwm/xdg-desktop-portal-hyprland |
+| Eww                         | My widgets (status bar primary)                   | https://github.com/elkowar/eww                        |
+| Fish                        | Shell of chose                                    | https://github.com/fish-shell/fish-shell              |
+| Starship                    | Cross shell prompt                                | https://starship.rs/                                  |
+| Tiramisu                    | Notification daemon (used with my Eww status bar) | https://github.com/Tiramisu-Compiler/tiramisu         |
+| Ripgrep                     | Faster grep                                       | https://github.com/BurntSushi/ripgrep                 |
+| fd                          | Faster alternative for fd                         | https://github.com/sharkdp/fd                         |
+| jq                          | JSON processing utility                           | https://github.com/jqlang/jq                          |
+| xq                          | XML & HTML processing utility                     | https://github.com/sibprogrammer/xq                   |
+| Wl-clipboard                | Clipboard manager                                 | https://github.com/bugaevc/wl-clipboard               |
+| Libnotify                   | Send notifications from the shell                 | https://github.com/GNOME/libnotify                    |
+| PipeWire                    | Enable sound                                      | https://github.com/PipeWire/pipewire                  |
+| Feh                         | Image viewer                                      | https://github.com/derf/feh                           |
+| Grim                        | Grabs images from Wayland (required by [[./bin/hyprshot)][hyprshot]])  | https://sr.ht/~emersion/grim                          |
+| Slurp                       | Selects region in Wayland (required by [[./bin/hyprshot)][hyprshot]])  | https://github.com/emersion/slurp                     |
+| Imagemagick                 | Utils to deal with images (required by [[./bin/hyprshot)][hyprshot]])  | https://github.com/ImageMagick/ImageMagick            |
+| Socat                       | Socket communications                             | https://github.com/3ndG4me/socat                      |
+| Pass                        | Passowrd manager                                  | https://www.passwordstore.org                         |
+| Stow                        | Creates symlinks for the entire config            | https://www.gnu.org/software/stow/                    |
+
+#+begin_src bash
+paru -S hyprland \
+        hyprpaper \
+        hyprpicker \
+        xdg-desktop-portal-hyprland \
+        eww-wayland \
+        fish \
+        starship \
+        tiramisu \
+        ripgrep \
+        fd \
+        jq xq \
+        git \
+        wl-clipboard \
+        libnotify \
+        pipewire pipewire-alsa pipewire-pulse pipewire-jack pipewire-audio \
+        feh \
+        gim \
+        slurp \
+        socat \
+        pass \
+        stow \
+        --noconfirm
+#+end_src
+
+*** Essential apps
+
+| Package        | Description                                                                              | Link                                           |
+|----------------+------------------------------------------------------------------------------------------+------------------------------------------------|
+| Kitty          | terminal of chose                                                                        | https://github.com/kovidgoyal/kitty            |
+| Qutebrowser    | browser of chose                                                                         | https://github.com/qutebrowser/qutebrowser     |
+| mpv            | media player of chose (`mpv-mpris` required for currently playing status in Eww)         | https://github.com/mpv-player/mpv              |
+| Telegram       | messenger of chose                                                                       | https://github.com/telegramdesktop/tdesktop    |
+| Neovim         | editor of chose                                                                          | https://github.com/neovim/neovim               |
+| Tmux           | terminal multiplexer of chose                                                            | https://github.com/tmux/tmux                   |
+| Thunar         | GUI file manager of chose                                                                | https://wiki.archlinux.org/title/Thunar        |
+| Udisks         | Mount your flash drivers automatically (required by [[./tmux/layouts/music.sh)][tmux music layout]])                   | https://wiki.archlinux.org/title/Udisks        |
+| Batsignal      | Notifies when battery is low                                                             | https://github.com/electrickite/batsignal      |
+| Fuzzel         | Application launcher for wlroots based Wayland compositors, similar to rofi's drun mode. | https://codeberg.org/dnkl/fuzzel               |
+| Btop           | Processes monitor                                                                        | https://github.com/aristocratos/btop           |
+| Pavucontrole   | GTK audio control                                                                        | https://github.com/pulseaudio/pavucontrol      |
+| NETworkManager | Manage networks with TUI                                                                 | https://github.com/BornToBeRoot/NETworkManager |
+| Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman     |
+
+#+begin_src bash
+paru -S kitty \
+        qutebrowser \
+        mpv mpv-mpris \
+        telegram-desktop \
+        neovim \
+        tmux \
+        thunar thunar-archive-plugin \
+        udisks \
+        batsignal \
+        fuzzel \
+        btop \
+        pavucontrol \
+        networkmanager \
+        blueman \
+        --noconfirm
+#+end_src
+
+*** Fonts
+
+[[https://typeof.net/Iosevka/) is the main font. Others were required for some apps (which are probably no longer needed][Iosevka]].
+
+#+begin_src bash
+paru -S ttf-iosevka-nerd \
+        ttf-iosevka-lyte-nerd-font \
+        ttf-liberation \
+        ttf-opensans \
+        --noconfirm
+#+end_src
+
+*** Gtk
+
+[[https://github.com/catppuccin/catppuccin][Catppuccin]] is my favorite theme, so set up curosr and GTK apps
+
+#+begin_src bash
+paru -S catppuccin-gtk-theme-frappe \
+        catppuccin-cursors-frappe \
+        papirus-icon-theme \
+        --noconfirm
+#+end_src
+
+[[https://github.com/catppuccin/gtk][Theme source]]
+
+*** System postinsall
+Install plugin manager & Change default shell to `fish`
+#+begin_src bash
+curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+fisher update
+chsh -s `which fish`
+#+end_src
+Link tmux config & install plugin manager
+#+begin_src bash
+ln -s "$HOME/.config/tmux/tmux.conf" .tmux.conf
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+#+end_src
+`xdg-open` setup
+#+begin_src bash
+xdg-settings set default-web-browser org.qutebrowser.qutebrowser.desktop
+xdg-mime default org.pwmt.zathura.desktop application/pdf
+xdg-mime default feh.desktop image/jpeg
+xdg-mime default feh.desktop image/png
+#+end_src
+
+*** Dev setup
+**** Rust
+#+begin_src bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+#+end_src
+**** Docker
+#+begin_src bash
+paru -S docker \
+        docker-buildx \
+        docker-compose \
+        --noconfirm
+#+end_src
+
+** Make symlinks
+Should be executed if your just cloned that repo
+#+begin_src shell
+cd "$HOME/dotfiles" && stow .
+#+end_src
