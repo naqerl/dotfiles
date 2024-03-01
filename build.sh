@@ -62,6 +62,14 @@ sudo make install
 cd ..
 sudo rm -r spotify-adblock
 
+bash .config/bin/spicetify-install.sh
+export PATH="$PATH:$HOME/.spicetify"
+spicetify config current_theme catppuccin
+spicetify config color_scheme frappe
+spicetify config inject_css 1 inject_theme_js 1 replace_colors 1 overwrite_assets 1
+spicetify backup apply
+sudo rm -r ~/.spicetify install.log
+
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
 fisher update
 chsh -s `which fish`
