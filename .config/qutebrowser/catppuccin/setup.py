@@ -242,11 +242,11 @@ def setup(c, flavour, samecolorrows = False):
 
     # statusbar {{{
     ## Background color of the statusbar.
-    c.colors.statusbar.normal.bg = palette["base"]
+    c.colors.statusbar.normal.bg = palette["crust"]
     ## Background color of the statusbar in insert mode.
-    c.colors.statusbar.insert.bg = palette["crust"]
+    c.colors.statusbar.insert.bg = palette["green"]
     ## Background color of the statusbar in command mode.
-    c.colors.statusbar.command.bg = palette["base"]
+    c.colors.statusbar.command.bg = palette["crust"]
     ## Background color of the statusbar in caret mode.
     c.colors.statusbar.caret.bg = palette["base"]
     ## Background color of the statusbar in caret mode with a selection.
@@ -260,7 +260,7 @@ def setup(c, flavour, samecolorrows = False):
     ## Foreground color of the statusbar.
     c.colors.statusbar.normal.fg = palette["text"]
     ## Foreground color of the statusbar in insert mode.
-    c.colors.statusbar.insert.fg = palette["rosewater"]
+    c.colors.statusbar.insert.fg = palette["crust"]
     ## Foreground color of the statusbar in command mode.
     c.colors.statusbar.command.fg = palette["text"]
     ## Foreground color of the statusbar in passthrough mode.
