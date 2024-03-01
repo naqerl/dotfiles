@@ -2,8 +2,10 @@ $surface-darkgrey: #232634;
 $surface-fg: #C6D0F5;
 $surface-lightgrey: #949CBC;
 $surface-grey: #303446;
-$surface-red: #CBA6F7;
+$surface-red: #e78284;
+$surface-flamingo: #eebebe;
 $surface-green: #A6D189;
+$surface-yellow: #E5C890;
 
 * {
     all: unset;
@@ -15,17 +17,17 @@ $surface-green: #A6D189;
 .bar {
     font-size: 14px;
     padding: 3px 5px 3px 5px;
-    background-color: #303446;
+    background-color: $surface-darkgrey;
 }
 
 .box {
-    background-color: $surface-darkgrey;
+    background-color: $surface-grey;
     border-radius: 5px;
     padding: 1px 5px; 
 }
 
 .workspace {
-    background-color: $surface-darkgrey;
+    background-color: $surface-grey;
     border-radius: 50%;
     padding: 1px 7px; 
 }
@@ -36,11 +38,12 @@ $surface-green: #A6D189;
 } 
 
 .circle_bar {
-    background-color: #38384d;
+    background-color: $surface-darkgrey;
     border-radius: 10px;
 }
 
 .bat_bar {
+    background-color: rgba($surface-yellow, 0.2);
     color: $surface-green;
 }
 
@@ -49,7 +52,8 @@ $surface-green: #A6D189;
 }
 
 .volume_bar {
-    color: $surface-red;
+    color: $surface-flamingo;
+    background-color: rgba($surface-flamingo, 0.25);
 }
 
 .notification {
@@ -375,7 +379,7 @@ calendar:indeterminate {
 .mpv_player {
     font-size: 12px;
     border-radius: 5px;
-    background-color: $surface-darkgrey;
+    background-color: $surface-grey;
     padding: 0 5px;
 }
 

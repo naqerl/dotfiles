@@ -1,4 +1,5 @@
 (add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
+(add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'elpaca-setup)
 ;; (require 'no-littering)
 
@@ -28,37 +29,28 @@
   :config
   (evil-collection-init))
 
-;; (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
-;; (elpaca nil (message "deferred"))
-
-;; Using RETURN to follow links in Org/Evil
-;; Unmap keys in 'evil-maps if not done, (setq org-return-follows-link t) will not work
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "SPC") nil)
-  (define-key evil-motion-state-map (kbd "RET") nil)
-  ;; (define-key evil-motion-state-map (kbd "TAB") nil)
+  (define-key evil-motion-state-map (kbd "RET") nil))
+(setq org-return-follows-link  t)
+
+(defalias 'forward-evil-word 'forward-evil-symbol)
+
+(with-eval-after-load 'evil-maps
   (define-key evil-outer-text-objects-map "w" 'evil-a-symbol)
   (define-key evil-inner-text-objects-map "w" 'evil-inner-symbol)
   (define-key evil-outer-text-objects-map "o" 'evil-a-word)
-  (define-key evil-inner-text-objects-map "o" 'evil-inner-word)
-  (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
-  (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward)
-  )
-;; Setting RETURN key in org-mode to follow links
-(setq org-return-follows-link  t)
-
-
-
-
-
-(defalias 'forward-evil-word 'forward-evil-symbol)
+  (define-key evil-inner-text-objects-map "o" 'evil-inner-word))
 
 (use-package better-jumper
   :ensure t
   :diminish
   :config
-  (better-jumper-mode +1)
-  )
+  (better-jumper-mode +1))
+
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
+  (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
 (use-package general
   :ensure t
@@ -77,7 +69,9 @@
    "<f3>" '(vterm-toggle :wk "Toggle vterm")
    "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward")
    "[ g" '(git-gutter:previous-hunk :wk "Prev git hunk")
-   "] g" '(git-gutter:next-hunk :wk "Next git hunk"))
+   "] g" '(git-gutter:next-hunk :wk "Next git hunk")
+   "[ d" '(flymake-goto-prev-error :wk "Prev diagnostic")
+   "] d" '(flymake-goto-next-error :wk "Next diagnostic"))
 
   (general-create-definer suzu/leader-keys
     :states '(normal insert visual emacs)
@@ -88,17 +82,18 @@
   (suzu/leader-keys
     "." '(find-file :wk "Find file")
     ";" '(counsel-M-x :wk "Counsel M-x")
-    "r" '(counsel-projectile-rg :wk "Ripgrep project symbols")
+    "'" '(counsel-projectile-rg :wk "Ripgrep project symbols")
     "i" '(counsel-imenu :wk "Open imenu")
     "P" '(projectile-persp-switch-project :wk "Open project in new perspective")
-    "S" '(perspective-map :wk "Perspective")
+    "S" '(persp-switch :wk "Switch perspective")
+    "l" '(persp-switch-last :wk "Switch last perspective")
     "f" '(projectile-find-file :wk "Find file"))
 
   (suzu/leader-keys
     "s" '(:ignore t :wk "Session")
-    "s l" '(persp-switch-last :wk "Switch last perspective")
-    "s p" '(persp-prev :wk "Prev session")
     "s b" '(bufler-switch-buffer :wk "Switch buffer")
+    "s k" '(persp-kill :wk "Kill perspective")
+    "s p" '(persp-prev :wk "Prev session")
     "s n" '(persp-next :wk "Next session"))
 
   (suzu/leader-keys
@@ -128,12 +123,14 @@
   (suzu/leader-keys
     "o" '(:ignore t :wk "Open")
     "o r" '(counsel-recentf :wk "Open recent files")
-    "o D" '(dired-jump :wk "Dired jump to current")
+    "o E" '(dired-jump :wk "Dired jump to current")
+    "o e" '(projectile-dired :wk "Project root dired")
     "o p d" '(peep-dired :wk "Peep-dired")
     "o r" '(counsel-recentf :wk "Open recent files")
-    "o e" '(eshell :wk "Open eshell")
+    "o s" '(eshell :wk "Open eshell")
     "o g" '(magit :wk "Open magit")
-    "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (other-window 1)) :wk "Open diagnostics")
+    "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (message "Buffer diagnostics") (other-window 1)) :wk "Open buffer diagnostics")
+    "o D" '((lambda () (interactive) (flymake-show-project-diagnostics) (message "Project diagnostics") (other-window 1)) :wk "Open project diagnostics")
     "o t" '(multi-vterm :wk "Open Vterm")
     "o C" '((lambda () (interactive) (find-file "~/dotfiles/.emacs.d/config.org")) :wk "Edit emacs config"))
 
@@ -166,6 +163,10 @@
     "m d" '(:ignore t :wk "Date/deadline")
     "m d t" '(org-time-stamp :wk "Org time stamp"))
 
+    (suzu/leader-keys
+    "c a" '(eglot-code-actions :wk "Code actions")
+    "r n" '(eglot-rename :wk "Rename"))
+
   ;; (suzu/leader-keys
   ;;   "p" '(projectile-command-map :wk "Projectile"))
 
@@ -173,18 +174,15 @@
     "t" '(:ignore t :wk "Toggle")
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t i" '(eglot-inlay-hints-mode :wk "Toggle inlay hints")
+    "t c" '(suzu/center-buffer :wk "Center buffer")
     "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
   )
 
-(use-package catppuccin-theme
-  :ensure t
-  :init
-  (load-theme 'catppuccin :no-confirm)
-  (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
-  (catppuccin-reload))
-(use-package doom-themes
-  :ensure t)
+(require 'catppuccin-theme)
+(load-theme 'catppuccin :no-confirm)
+(setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
+(catppuccin-reload)
 
 (use-package magit
   :ensure t
@@ -229,15 +227,18 @@
   (format " %s" (persp-current-name))
   )
 
+(defun suzu/current-file-or-buffer ()
+  (format " %s" (format-mode-line "%b"))
+)
+
 (setq-default header-line-format
-	      '((:eval (suzu/simple-header-line-render
+	      '((:eval (format " %s %s"
 			(suzu/current-perspective)
-			(format-mode-line (if buffer-file-name "%f " "%b "))
+			(suzu/current-file-or-buffer)
 			))))
 
 (use-package all-the-icons
-  :ensure t
-  :if (display-graphic-p))
+  :ensure t)
 (use-package all-the-icons-dired
   :ensure t
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
@@ -343,14 +344,6 @@
   :config
   (setq elfeed-goodies/entry-pane-size 0.5))
 
-(use-package dashboard
-  :ensure t
-  :config
-  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
-  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
-  (dashboard-setup-startup-hook))
-(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-
 (set-face-attribute 'default nil
                     :font "iosevka nf"
                     :height 130
@@ -372,6 +365,141 @@
 (setq default-frame-alist '((font . "Iosevka NF 13")))
 
 (setq-default line-spacing 0.12)
+
+(setq ediff-split-window-function 'split-window-horizontally
+      ediff-window-setup-function 'ediff-setup-window-plain)
+
+(defun suzu/ediff-hook ()
+(ediff-setup-keymap)
+(define-key ediff-mode-map "j" 'ediff-next-difference)
+(define-key ediff-mode-map "k" 'ediff-previous-difference))
+
+(add-hook 'ediff-mode-hook 'suzu/ediff-hook)
+
+(use-package evil-nerd-commenter
+  :ensure t
+  :config
+  (general-define-key
+   :states 'normal
+   :prefix "g"
+   "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
+
+(use-package dashboard
+  :ensure t
+  :config
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (setq dashboard-display-icons-p t)
+  (setq dashboard-path-max-length 10)
+  :custom
+  (dashboard-startup-banner "/home/suzu/.emacs.d/images/salmon-dragon.png")
+  (dashboard-center-content t)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+)
+
+(use-package eldoc-box
+  :ensure t
+  :config
+  (setq max-mini-window-height 1))
+
+(use-package eglot
+  :after rust-mode
+  :config
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
+  (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
+  (general-define-key
+   :states '(normal visual motion)
+   :keymaps 'override
+   "K" '(eldoc-box-help-at-point :wk "Show doc"))
+  :hook
+  (python-mode . eglot-ensure)
+  (python-mode . whitespace-cleanup)
+  (rust-mode . eglot-ensure)
+  (rust-mode . whitespace-cleanup))
+
+(use-package rust-mode :ensure t)
+
+;; (use-package python
+;;   :ensure t)
+
+(use-package python-black
+  :ensure t
+  :demand t
+  :after python
+  :hook (python-ts-mode . python-black-on-save-mode-enable-dwim))
+
+(use-package python-mode
+  :ensure t
+  :hook
+  (python-ts-mode . display-fill-column-indicator-mode))
+
+(use-package sqlformat
+:ensure t
+:config
+(setq sqlformat-command 'pgformatter)
+(setq sqlformat-args '("-s2" "-g"))
+:hook
+(sql-mode-hook . sqlformat-on-save-mode))
+
+(electric-indent-mode t)
+(setq-default electric-indent-inhibit t)
+(setq create-lockfiles nil)
+(electric-pair-mode 1)
+(setq org-edit-src-content-indentetion 0)
+(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
+(menu-bar-mode -1)           ;; Disable the menu bar
+(scroll-bar-mode -1)         ;; Disable the scroll bar
+(tool-bar-mode -1)           ;; Disable the tool bar
+(setq-default auto-save-default nil)
+(setq-default org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2
+(set-fringe-style 0)
+
+(setq-default truncate-lines t)
+(setq-default scroll-margin 7)
+(global-display-line-numbers-mode 1)
+(setq-default display-line-numbers-type 'relative)
+
+(setq help-window-select t)
+
+(use-package emojify
+  :ensure t
+  :hook (after-init . global-emojify-mode))
+
+(require 'org-tempo)
+(add-hook 'org-mode-hook (lambda ()
+			   (setq-local electric-pair-inhibit-predicate
+				       `(lambda (c)
+					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+
+(setq org-confirm-babel-evaluate nil)
+
+(setq-default plantuml-exec-mode "plantuml")
+
+(org-babel-do-load-languages 'org-babel-load-languages
+			     '((shell . t)
+			       (python . t)
+			       (sqlite . t)
+			       (emacs-lisp . t)
+			       (plantuml . t)
+			       (sql . t)))
+
+(defun suzu/visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :ensure t
+  :hook
+(org-mode . suzu/visual-fill)
+(python-mode . suzu/visual-fill)
+(python-ts-mode . suzu/visual-fill)
+(rust-ts-mode . suzu/visual-fill)
+(html-mode . suzu/visual-fill)
+(dired-mode . suzu/visual-fill))
 
 (use-package counsel
   :ensure t
@@ -438,85 +566,10 @@
         org-appear-autoentities t
         org-appear-trigger 'always))
 
-(electric-indent-mode t)
-(setq-default electric-indent-inhibit t)
-(setq create-lockfiles nil)
-(electric-pair-mode 1)
-(setq org-edit-src-content-indentetion 0)
-(add-hook 'org-mode-hook (lambda ()
-			   (setq-local electric-pair-inhibit-predicate
-				       `(lambda (c)
-					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
-(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
-(menu-bar-mode -1)           ;; Disable the menu bar
-(scroll-bar-mode -1)         ;; Disable the scroll bar
-(tool-bar-mode -1)           ;; Disable the tool bar
-(setq-default auto-save-default nil)
-(setq-default org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2
-(set-fringe-style 0)
-
-(setq-default truncate-lines t)
-(setq-default scroll-margin 7)
-(global-display-line-numbers-mode 1)
-(setq-default display-line-numbers-type 'relative)
-
-(setq help-window-select t)
-
-;; (setq select-enable-clipboard nil)
-
-(setq whitespace-style '(face tabs tab-mark trailing))
-(custom-set-faces
- '(whitespace-tab ((t (:foreground "#636363")))))
-(setq whitespace-display-mappings
-      '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
-(global-whitespace-mode) ; Enable whitespace mode everywhere
-
-(use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode))
-
-(require 'org-tempo)
-
-(setq org-confirm-babel-evaluate nil)
-
-(setq-default plantuml-exec-mode "plantuml")
-
-(org-babel-do-load-languages 'org-babel-load-languages
-			     '((shell . t)
-			       (python . t)
-			       (sqlite . t)
-			       (emacs-lisp . t)
-			       (plantuml . t)
-			       (sql . t)))
-
-(use-package perspective
-  :ensure t
-  :init
-  (setq persp-suppress-no-prefix-key-warning t)
-  (persp-mode)
-  :config
-  (persp-turn-off-modestring)
-  (setq persp-state-default-file "~/.config/emacs/sessions"
-        persp-show-modestring nil))
-
-(add-hook 'ibuffer-hook
-          (lambda ()
-            (persp-ibuffer-set-filter-groups)
-            (unless (eq ibuffer-sorting-mode 'alphabetic)
-              (ibuffer-do-sort-by-alphabetic))))
-
-(add-hook 'kill-emacs-hook #'persp-state-save)
-
-(use-package bufler
-  :ensure t)
-
-(use-package evil-nerd-commenter
+(use-package pdf-tools
   :ensure t
   :config
-  (general-define-key
-   :states 'normal
-   :prefix "g"
-   "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
+  (pdf-tools-install))
 
 (use-package projectile
   :ensure t
@@ -561,7 +614,8 @@
 (use-package vterm
   :ensure t
   :config
-  (setq shell-file-name "/bin/sh"
+  (setq vterm-shell "/usr/bin/bash"
+        vterm-buffer-name-string "vterm %s"
         vterm-max-scrollback 5000))
 
 (use-package vterm-toggle
@@ -603,6 +657,35 @@
 
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+;; (setq treesit-language-source-alist
+;;       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+;; 	(cmake "https://github.com/uyha/tree-sitter-cmake")
+;; 	(css "https://github.com/tree-sitter/tree-sitter-css")
+;; 	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
+;; 	(go "https://github.com/tree-sitter/tree-sitter-go")
+;; 	(html "https://github.com/tree-sitter/tree-sitter-html")
+;; 	(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+;; 	(json "https://github.com/tree-sitter/tree-sitter-json")
+;; 	(make "https://github.com/alemuller/tree-sitter-make")
+;; 	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
+;; 	(python "https://github.com/tree-sitter/tree-sitter-python")
+;; 	(toml "https://github.com/tree-sitter/tree-sitter-toml")
+;; 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+;; 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+;; 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(setq treesit-font-lock-level 4)
+
+;; (setq major-mode-remap-alist
+;;       '((python-mode . python-ts-mode)))
+
 (use-package which-key
   :ensure t
   :diminish
@@ -612,65 +695,23 @@
   (setq which-key-popup-type 'side-window
         which-key-side-window-max-height 0.50))
 
-(use-package eldoc-box
+(use-package perspective
   :ensure t
+  :init
+  (setq persp-suppress-no-prefix-key-warning t)
+  (persp-mode)
   :config
-  (setq max-mini-window-height 1))
+  (persp-turn-off-modestring)
+  (setq persp-state-default-file "~/.config/emacs/sessions"
+        persp-show-modestring nil))
 
-(use-package eglot
-  :after rust-mode
-  :config
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
-  (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
-  (general-define-key
-   :states '(normal visual motion)
-   :keymaps 'override
-   "K" '(eldoc-box-help-at-point :wk "Show doc"))
-  :hook
-  (python-mode . eglot-ensure)
-  (python-mode . whitespace-cleanup)
-  (rust-mode . eglot-ensure)
-  (rust-mode . whitespace-cleanup))
+(add-hook 'ibuffer-hook
+          (lambda ()
+            (persp-ibuffer-set-filter-groups)
+            (unless (eq ibuffer-sorting-mode 'alphabetic)
+              (ibuffer-do-sort-by-alphabetic))))
 
-(use-package rust-mode :ensure t)
+(add-hook 'kill-emacs-hook #'persp-state-save)
 
-(use-package python
+(use-package bufler
   :ensure t)
-
-(use-package python-black
-  :ensure t
-  :demand t
-  :after python
-  :hook (python-ts-mode . python-black-on-save-mode-enable-dwim))
-
-(use-package python-mode
-  :ensure t
-  :hook
-  (python-ts-mode . display-fill-column-indicator-mode))
-
-(setq treesit-language-source-alist
-      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-	(cmake "https://github.com/uyha/tree-sitter-cmake")
-	(css "https://github.com/tree-sitter/tree-sitter-css")
-	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
-	(go "https://github.com/tree-sitter/tree-sitter-go")
-	(html "https://github.com/tree-sitter/tree-sitter-html")
-	(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-	(json "https://github.com/tree-sitter/tree-sitter-json")
-	(make "https://github.com/alemuller/tree-sitter-make")
-	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
-	(python "https://github.com/tree-sitter/tree-sitter-python")
-	(toml "https://github.com/tree-sitter/tree-sitter-toml")
-	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
-(setq treesit-font-lock-level 4)
-
-(setq major-mode-remap-alist
-      '((python-mode . python-ts-mode)))
-
-(use-package pdf-tools
-  :ensure t
-  :config
-  (pdf-tools-install))
