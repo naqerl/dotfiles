@@ -27,9 +27,11 @@ git pull origin main
 
 *** Rust
 #+begin_src shell
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source "$HOME/.cargo/env"
-rustup default stable
+if [[ -z $(command -v rustup) ]]; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source "$HOME/.cargo/env"
+    rustup default stable
+fi
 #+end_src
 
 *** Package manager
@@ -203,9 +205,8 @@ fi
 Install plugin manager & Change default shell to `fish`
 
 #+begin_src bash
-curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
-fisher update
-chsh -s `which fish`
+paru -S fisher
+chsh -s $(which fish)
 #+end_src
 
 Link tmux config & install plugin manager
