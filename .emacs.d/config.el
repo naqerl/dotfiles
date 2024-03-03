@@ -3,6 +3,11 @@
 (require 'elpaca-setup)
 ;; (require 'no-littering)
 
+(use-package gcmh
+  :ensure t
+  :init
+  (gcmh-mode 1))
+
 (require 'pyright-write)
 (require 'suzu-buffer)
 
@@ -265,17 +270,17 @@
   :ensure t
   ;; Optional customizations
   :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
-  (corfu-auto-delay 0.3)
+  (corfu-auto-delay 0.1)
   (corfu-auto-prefix 1)
   ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-preselect 'prompt)      ;; Preselect the prompt
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (corfu-scroll-margin 5)        ;; Use scroll margin
 
   ;; Enable Corfu only for certain modes.
   ;; :hook ((prog-mode . corfu-mode)
@@ -422,36 +427,27 @@
   :config
   (setq max-mini-window-height 1))
 
+(use-package rust-mode
+  :ensure t)
+
+(use-package python-black
+  :ensure t)
+
+(setq read-process-output-max (* 1024 1024))
+
 (use-package eglot
-  :after rust-mode
   :config
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright")))
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (general-define-key
    :states '(normal visual motion)
    :keymaps 'override
    "K" '(eldoc-box-help-at-point :wk "Show doc"))
   :hook
-  (python-mode . eglot-ensure)
-  (python-mode . whitespace-cleanup)
+  (python-ts-mode . eglot-ensure)
   (rust-mode . eglot-ensure)
-  (rust-mode . whitespace-cleanup))
-
-(use-package rust-mode :ensure t)
-
-;; (use-package python
-;;   :ensure t)
-
-(use-package python-black
-  :ensure t
-  :demand t
-  :after python
-  :hook (python-ts-mode . python-black-on-save-mode-enable-dwim))
-
-(use-package python-mode
-  :ensure t
-  :hook
-  (python-ts-mode . display-fill-column-indicator-mode))
+  (after-save . eglot-format-buffer)
+)
 
 (use-package sqlformat
 :ensure t
@@ -461,6 +457,7 @@
 :hook
 (sql-mode-hook . sqlformat-on-save-mode))
 
+(setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
 (setq create-lockfiles nil)
@@ -511,12 +508,11 @@
 (use-package visual-fill-column
   :ensure t
   :hook
-(org-mode . suzu/visual-fill)
-(python-mode . suzu/visual-fill)
-(python-ts-mode . suzu/visual-fill)
-(rust-ts-mode . suzu/visual-fill)
-(html-mode . suzu/visual-fill)
-(dired-mode . suzu/visual-fill))
+  (org-mode . suzu/visual-fill)
+  (python-mode . suzu/visual-fill)
+  (rust-mode . suzu/visual-fill)
+  (html-mode . suzu/visual-fill)
+  (dired-mode . suzu/visual-fill))
 
 (use-package counsel
   :ensure t
@@ -593,7 +589,7 @@
     (add-hook 'after-save-hook (lambda () (org-babel-ref-resolve "run-after-save")))
 )
 
-(add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
+;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
 
 (use-package pdf-tools
   :ensure t
@@ -686,34 +682,11 @@
 
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-;; (setq treesit-language-source-alist
-;;       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-;; 	(cmake "https://github.com/uyha/tree-sitter-cmake")
-;; 	(css "https://github.com/tree-sitter/tree-sitter-css")
-;; 	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
-;; 	(go "https://github.com/tree-sitter/tree-sitter-go")
-;; 	(html "https://github.com/tree-sitter/tree-sitter-html")
-;; 	(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-;; 	(json "https://github.com/tree-sitter/tree-sitter-json")
-;; 	(make "https://github.com/alemuller/tree-sitter-make")
-;; 	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
-;; 	(python "https://github.com/tree-sitter/tree-sitter-python")
-;; 	(toml "https://github.com/tree-sitter/tree-sitter-toml")
-;; 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-;; 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-;; 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+(setq treesit-language-source-alist
+      '((rust "https://github.com/tree-sitter/tree-sitter-rust")
+        (python "https://github.com/tree-sitter/tree-sitter-python")))
 
 (setq treesit-font-lock-level 4)
-
-;; (setq major-mode-remap-alist
-;;       '((python-mode . python-ts-mode)))
 
 (use-package which-key
   :ensure t
