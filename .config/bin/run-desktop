@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e 
+
+data=$(grep '^Exec' "$1" \
+	   | sed 's/^Exec=//' \
+	   | sed 's/^env \(.*\)\=\"\(.*\)\"\s\(.*\)/export \1="\2"\n\3/')
+
+readarray -t lines <<< "$data"
+vars=${lines[0]}
+cmd=${lines[1]}
+
+echo "[$vars]"
+echo "[$cmd]"
+
+$vars
+$cmd
