@@ -62,7 +62,9 @@ paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme
 
-git clone https://github.com/abba23/spotify-adblock
+if [[ ! -d spotify-adblock ]]; then
+    git clone https://github.com/abba23/spotify-adblock
+fi
 cd spotify-adblock
 make
 sudo make install
