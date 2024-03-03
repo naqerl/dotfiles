@@ -20,6 +20,11 @@ All of them saved to the =build.sh= file
 set -e
 #+end_src
 
+*** Update
+#+begin_src shell
+git clone origin main
+#+end_src
+
 *** Package manager
 
 I use arch btw and prefer [[https://github.com/Morganamilo/paru][paru]] as my main package manager
