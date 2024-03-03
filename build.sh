@@ -8,7 +8,7 @@ if [[ -z $(command -v paru) ]]; then
     cd .. && rm -r paru
 fi
 
-paru -S hyprland \
+paru -Si hyprland \
         hyprpaper \
         hyprpicker \
         xdg-desktop-portal-hyprland \
@@ -31,7 +31,7 @@ paru -S hyprland \
         stow \
         --noconfirm
 
-paru -S kitty \
+paru -Si kitty \
         qutebrowser \
         mpv mpv-mpris \
         telegram-desktop \
@@ -49,13 +49,13 @@ paru -S kitty \
         vesktop-bin \ 
         --noconfirm
 
-paru -S ttf-iosevka-nerd \
+paru -Si ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
         ttf-opensans \
         --noconfirm
 
-paru -S catppuccin-gtk-theme-frappe \
+paru -Si catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme \
         --noconfirm
@@ -83,7 +83,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 cd "$HOME/dotfiles" && stow .
 
-paru -S python-pipx \
+paru -Si python-pipx \
      python-poetry \
      --noconfirm
 
@@ -94,7 +94,7 @@ source "$HOME/.cargo/env"
 
 rustup component add rust-analyzer
 
-paru -S docker \
+paru -Si docker \
         docker-buildx \
         docker-compose \
         --noconfirm

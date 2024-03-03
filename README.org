@@ -64,7 +64,7 @@ The following apps needed for the minimal working system stup
 | Stow                        | Creates symlinks for the entire config            | https://www.gnu.org/software/stow/                    |
 
 #+begin_src bash
-paru -S hyprland \
+paru -Si hyprland \
         hyprpaper \
         hyprpicker \
         xdg-desktop-portal-hyprland \
@@ -113,7 +113,7 @@ My personal preffered apps
 | Vesktop        | Discord client                                                                           | https://github.com/Vencord/Vesktop             |
 
 #+begin_src bash
-paru -S kitty \
+paru -Si kitty \
         qutebrowser \
         mpv mpv-mpris \
         telegram-desktop \
@@ -137,7 +137,7 @@ paru -S kitty \
 [[https://typeof.net/Iosevka/) is the main font. Others were required for some apps (which are probably no longer needed][Iosevka]].
 
 #+begin_src bash
-paru -S ttf-iosevka-nerd \
+paru -Si ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
         ttf-opensans \
@@ -149,7 +149,7 @@ paru -S ttf-iosevka-nerd \
 [[https://github.com/catppuccin/catppuccin][Catppuccin]] is my favorite theme, so set up curosr and GTK apps
 
 #+begin_src bash
-paru -S catppuccin-gtk-theme-frappe \
+paru -Si catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme \
         --noconfirm
@@ -211,7 +211,7 @@ cd "$HOME/dotfiles" && stow .
 Install package managers
 
 #+begin_src bash
-paru -S python-pipx \
+paru -Si python-pipx \
      python-poetry \
      --noconfirm
 #+end_src
@@ -240,7 +240,7 @@ rustup component add rust-analyzer
 **** Docker
 
 #+begin_src bash
-paru -S docker \
+paru -Si docker \
         docker-buildx \
         docker-compose \
         --noconfirm
