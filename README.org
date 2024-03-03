@@ -121,7 +121,7 @@ paru -S kitty \
         neovim \
         tmux \
         thunar thunar-archive-plugin \
-        udisks \
+        udisks2 \
         batsignal \
         fuzzel \
         btop \
