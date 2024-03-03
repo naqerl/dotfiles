@@ -1,6 +1,6 @@
 set -e
 
-git clone origin main
+git pull origin main
 
 if [[ -z $(command -v paru) ]]; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
