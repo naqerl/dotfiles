@@ -94,7 +94,7 @@ chsh -s $(which fish)
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-cd "$HOME/dotfiles" && stow .
+cd "$HOME/dotfiles" && stow . --adopt
 
 paru -S python-pipx \
      python-poetry \
