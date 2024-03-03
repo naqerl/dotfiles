@@ -1,4 +1,4 @@
-set -e
+set -ex
 
 git pull origin main
 
@@ -65,13 +65,16 @@ paru -S catppuccin-gtk-theme-frappe \
 if [[ ! -d spotify-adblock ]]; then
     git clone https://github.com/abba23/spotify-adblock
 fi
-cd spotify-adblock
-make
-sudo make install
-cd ..
-sudo rm -r spotify-adblock
 
-bash .config/bin/spicetify-install.sh
+if [[ ! -f /usr/local/lib/spotify-adblock.so ]]; then
+    cd spotify-adblock
+    make
+    sudo make install
+    cd ..
+    sudo rm -r spotify-adblock
+fi
+
+bash .config/spicetify/spicetify-install.sh
 export PATH="$PATH:$HOME/.spicetify"
 spicetify config current_theme catppuccin
 spicetify config color_scheme frappe
