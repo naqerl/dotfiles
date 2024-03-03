@@ -1,7 +1,8 @@
 #+title: My dotfiles config
 #+author: Suzu
 #+description: Dotfiles setup description
-#+property: header-args :tangle ./build.sh
+#+property: header-args :tangle build.sh
+#+auto_tangle: t
 
 * Dotfiles
 
@@ -103,6 +104,7 @@ My personal preffered apps
 | Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman     |
 | Emacs          | An emacs priest now                                                                      | https://www.gnu.org/software/emacs/            |
 | Spotify        | Audio streaming of chose                                                                 | https://www.spotify.com                        |
+| Vesktop        | Discord client                                                                           | https://github.com/Vencord/Vesktop             |
 
 #+begin_src bash
 paru -S kitty \
@@ -120,6 +122,7 @@ paru -S kitty \
         networkmanager \
         blueman \
         spotify-wayland \
+        vesktop-bin \ 
         --noconfirm
 #+end_src
 

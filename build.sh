@@ -42,6 +42,7 @@ paru -S kitty \
         networkmanager \
         blueman \
         spotify-wayland \
+        vesktop-bin \ 
         --noconfirm
 
 paru -S ttf-iosevka-nerd \
