@@ -210,7 +210,9 @@ chsh -s $(which fish)
 Link tmux config & install plugin manager
 
 #+begin_src bash
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+if [[ ! -d "$HOME/.tmux/plugins/tmp" ]]; then
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+done
 #+end_src
 
 Should be executed if your just cloned that repo
