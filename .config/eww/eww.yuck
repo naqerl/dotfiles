@@ -13,12 +13,9 @@
 
 (deflisten playing_reveal "while true; do if [[ $(playerctl status) == 'Playing' ]]; then echo t; else echo f; fi; sleep 1; done")
 (deflisten playing_title "while true; do playerctl metadata title; sleep 1; done")
-; (deflisten playing_art "while true; do playerctl metadata mpris:artUrl | sed \'s/file:\/\///; s/$/.png/\'; sleep 1; done")
-(defvar mpv_player_reveal false)
-(defvar mpv_thumbnail_path "")
-(defvar mpv_title "")
+(defvar playing_reveal_manual "t")
+
 (defvar layout_alert_reveal false)
-(defvar mpv_state "")
 
 (defpoll net :interval "10s"
          :initial `0`
@@ -32,10 +29,41 @@
          :initial "0"
          `$HOME/.config/eww/scripts/temp`)
 
+(defvar timer69 "")
+
+(defpoll mic_state :interval "0.5s" :initial "" `$HOME/.config/bin/mic-state`)
+
+(defwidget timer69 []
+(revealer
+             :transition "slideleft"
+             :reveal {timer69 == '' ? false : true}
+             :duration "500ms"
+             (box :class "timer69 box" :orientation "h" :space-evenly false :hexpand true :width "20px"
+                  (space)
+                  (label
+		    :class "timer69"
+                    :text {timer69}
+                    :limit-width 35)
+                  (space)))
+)
+
+(defwidget mic []
+(revealer
+             :reveal {mic_state == 'muted' ? false : true}
+             :duration "200ms"
+             (box :class "mic" :orientation "h" :space-evenly false :hexpand true :width "20px"
+                  (space)
+                  (label
+		    :class "mic"
+                    :text " "
+                    :limit-width 35)
+                  (space)))
+)
+
 (defwidget mpv_player []
            (revealer
              :transition "slideleft"
-             :reveal {playing_reveal == 't' ? true : false}
+             :reveal {playing_reveal == 't' && playing_reveal_manual == 't' ? true : false}
              :duration "500ms"
              (box :class "mpv_player" :orientation "h" :space-evenly false :hexpand true :width "20px"
                   ; (image :path playing_art :image-height 15)
@@ -178,6 +206,8 @@
                 :space-evenly false
                 :halign "end"
                 :class "alerts"
+		(mic)
+		(timer69)
                 (layout_alert)
                 (cpu_temp_alert)
                 (ram_alert)))

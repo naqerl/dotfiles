@@ -6,6 +6,7 @@ $surface-red: #e78284;
 $surface-flamingo: #eebebe;
 $surface-green: #A6D189;
 $surface-yellow: #E5C890;
+$peach: #ef9f76;
 
 * {
     all: unset;
@@ -448,4 +449,13 @@ calendar:indeterminate {
     border-radius: 5px;
     padding: 0 5px;
     color: $surface-grey;
+}
+
+.timer69 {
+    background-color: $surface-grey;
+    color: $surface-red;
+}
+
+.mic {
+    color: $peach;
 }
