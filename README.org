@@ -26,6 +26,8 @@ I use arch btw and prefer [[https://github.com/Morganamilo/paru][paru]] as my ma
 
 #+begin_src shell
 if [[ -z $(command -v paru) ]]; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source "$HOME/.cargo/env"
     sudo pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
     cd paru
@@ -218,13 +220,6 @@ pipx install pyright
 #+end_src
 
 **** Rust
-
-Install rust
-
-#+begin_src bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source "$HOME/.cargo/env"
-#+end_src
 
 Install LSP rust-analyzer
 
