@@ -15,6 +15,10 @@ All of them saved to the =build.sh= file
 [[./img/demo.png]]
 
 ** Setup
+*** Fail fast
+#+begin_src shell
+set -e
+#+end_src
 
 *** Package manager
 
@@ -222,6 +226,7 @@ Install rust
 
 #+begin_src bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
 #+end_src
 
 Install LSP rust-analyzer

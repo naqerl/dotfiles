@@ -1,3 +1,5 @@
+set -e
+
 sudo pacman -S --needed base-devel
 git clone https://aur.archlinux.org/paru.git
 cd paru
@@ -86,6 +88,7 @@ paru -S python-pipx \
 pipx install pyright
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
 
 rustup component add rust-analyzer
 
