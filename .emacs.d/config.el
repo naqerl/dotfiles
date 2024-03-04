@@ -428,7 +428,9 @@
   (setq max-mini-window-height 1))
 
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (after-save . eglot-format-buffer))
 
 (use-package python-black
   :ensure t)
@@ -446,7 +448,6 @@
   :hook
   (python-ts-mode . eglot-ensure)
   (rust-mode . eglot-ensure)
-  (after-save . eglot-format-buffer)
 )
 
 (use-package sqlformat
