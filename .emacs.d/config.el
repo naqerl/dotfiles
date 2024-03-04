@@ -427,10 +427,13 @@
   :config
   (setq max-mini-window-height 1))
 
+(defun suzu/rust-mode()
+(add-hook 'after-save-hook 'rust-format-buffer))
+
 (use-package rust-mode
   :ensure t
   :hook
-  (after-save . eglot-format-buffer))
+  (rust-mode . suzu/rust-mode))
 
 (use-package python-black
   :ensure t)
