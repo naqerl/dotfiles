@@ -88,7 +88,7 @@ exec-once = eww daemon && eww open bar
 
 ** Notifications
 #+begin_src conf
-exec-once = $HOME/.config/bin/notifications
+exec-once = $HOME/.config/bin/notification-daemon
 exec-once = batsignal # Notifies when battery is low
 #+end_src
 
@@ -183,9 +183,8 @@ general {
     gaps_in = 5
     gaps_out = 5
     border_size = 2
-    col.active_border = rgba(292c3d00)
+    col.active_border = rgb(A6D189)
     col.inactive_border = rgb(292c3d)
-
     layout = dwindle
 }
 #+end_src
