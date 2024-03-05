@@ -55,7 +55,8 @@ The following apps needed for the minimal working system stup
 | xdg-desktop-portal-hyprland | XDG Desktop portal backend                        | https://github.com/hyprwm/xdg-desktop-portal-hyprland |
 | Eww                         | My widgets (status bar primary)                   | https://github.com/elkowar/eww                        |
 | Fish                        | Shell of chose                                    | https://github.com/fish-shell/fish-shell              |
-| Direnv                      | Automatically activates envs                      | https://man.archlinux.org/man/direnv.1.en                                                      |
+| Zsh                         | Another one shell                                 | https://wiki.archlinux.org/title/Zsh                  |
+| Direnv                      | Automatically activates envs                      | https://man.archlinux.org/man/direnv.1.en             |
 | Starship                    | Cross shell prompt                                | https://starship.rs/                                  |
 | Tiramisu                    | Notification daemon (used with my Eww status bar) | https://github.com/Tiramisu-Compiler/tiramisu         |
 | Ripgrep                     | Faster grep                                       | https://github.com/BurntSushi/ripgrep                 |
@@ -80,6 +81,7 @@ paru -S hyprland \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
         fish fisher \
+        zsh \
         direnv \
         starship \
         tiramisu-git \
