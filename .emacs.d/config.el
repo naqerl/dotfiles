@@ -8,6 +8,8 @@
   :init
   (gcmh-mode 1))
 
+(setq-default debug-on-error t)
+
 (require 'pyright-write)
 (require 'suzu-buffer)
 
@@ -159,7 +161,8 @@
     "h" '(:ignore t :wk "Help")
     "h f" '(describe-function :wk "Describe function")
     "h v" '(describe-variable :wk "Describe variable")
-    "h m" '(info-display-manual :wk "Manual")
+    "h M" '(info-display-manual :wk "Manual")
+    "h m" '(describe-mode :wk "Describe mode")
     "h r r" '((lambda ()
                 (interactive)
                 (load-file "~/dotfiles/.emacs.d/init.el")
@@ -174,6 +177,7 @@
     "m t" '(org-todo :wk "Org todo")
     "m f" '(counsel-org-goto :wk "Find heading")
     "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m l" '(org-insert-link :wk "Org insert link")
     "m T" '(org-todo-list :wk "Org todo list"))
 
   (suzu/leader-keys
@@ -435,6 +439,16 @@
   :hook
   (rust-mode . suzu/rust-mode))
 
+(defun suzu/python-mode()
+  (add-hook 'after-save-hook 'python-black-buffer)
+  (add-hook 'after-save-hook 'python-sort-imports)
+  (eglot-ensure)
+  (python-ts-mode))
+
+(use-package python
+  :hook
+  (python-mode . suzu/python-mode))
+
 (use-package python-black
   :ensure t)
 
@@ -442,14 +456,13 @@
 
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright")))
+  ;; (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright")))
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (general-define-key
    :states '(normal visual motion)
    :keymaps 'override
    "K" '(eldoc-box-help-at-point :wk "Show doc"))
   :hook
-  (python-ts-mode . eglot-ensure)
   (rust-mode . eglot-ensure)
 )
 
@@ -514,6 +527,7 @@
   :hook
   (org-mode . suzu/visual-fill)
   (python-mode . suzu/visual-fill)
+  (python-ts-mode . suzu/visual-fill)
   (rust-mode . suzu/visual-fill)
   (html-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill))
