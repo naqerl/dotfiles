@@ -55,7 +55,6 @@ The following apps needed for the minimal working system stup
 | xdg-desktop-portal-hyprland | XDG Desktop portal backend                        | https://github.com/hyprwm/xdg-desktop-portal-hyprland |
 | Eww                         | My widgets (status bar primary)                   | https://github.com/elkowar/eww                        |
 | Fish                        | Shell of chose                                    | https://github.com/fish-shell/fish-shell              |
-| Zsh                         | Another one shell                                 | https://wiki.archlinux.org/title/Zsh                  |
 | Direnv                      | Automatically activates envs                      | https://man.archlinux.org/man/direnv.1.en             |
 | Starship                    | Cross shell prompt                                | https://starship.rs/                                  |
 | Tiramisu                    | Notification daemon (used with my Eww status bar) | https://github.com/Tiramisu-Compiler/tiramisu         |
@@ -81,7 +80,6 @@ paru -S hyprland \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
         fish fisher \
-        zsh \
         direnv \
         starship \
         tiramisu-git \
@@ -105,25 +103,27 @@ paru -S hyprland \
 
 My personal preffered apps
 
-| Package        | Description                                                                              | Link                                           |
-|----------------+------------------------------------------------------------------------------------------+------------------------------------------------|
-| Kitty          | terminal of chose                                                                        | https://github.com/kovidgoyal/kitty            |
-| Qutebrowser    | browser of chose                                                                         | https://github.com/qutebrowser/qutebrowser     |
-| mpv            | media player of chose (`mpv-mpris` required for currently playing status in Eww)         | https://github.com/mpv-player/mpv              |
-| Telegram       | messenger of chose                                                                       | https://github.com/telegramdesktop/tdesktop    |
-| Neovim         | editor of chose                                                                          | https://github.com/neovim/neovim               |
-| Tmux           | terminal multiplexer of chose                                                            | https://github.com/tmux/tmux                   |
-| Thunar         | GUI file manager of chose                                                                | https://wiki.archlinux.org/title/Thunar        |
-| Udisks         | Mount your flash drivers automatically (required by [[./tmux/layouts/music.sh)][tmux music layout]])                   | https://wiki.archlinux.org/title/Udisks        |
-| Batsignal      | Notifies when battery is low                                                             | https://github.com/electrickite/batsignal      |
-| Fuzzel         | Application launcher for wlroots based Wayland compositors, similar to rofi's drun mode. | https://codeberg.org/dnkl/fuzzel               |
-| Btop           | Processes monitor                                                                        | https://github.com/aristocratos/btop           |
-| Pavucontrole   | GTK audio control                                                                        | https://github.com/pulseaudio/pavucontrol      |
-| NETworkManager | Manage networks with TUI                                                                 | https://github.com/BornToBeRoot/NETworkManager |
-| Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman     |
-| Emacs          | An emacs priest now                                                                      | https://www.gnu.org/software/emacs/            |
-| Spotify        | Audio streaming of chose                                                                 | https://www.spotify.com                        |
-| Vesktop        | Discord client                                                                           | https://github.com/Vencord/Vesktop             |
+| Package        | Description                                                                              | Link                                                                        |
+|----------------+------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------|
+| Kitty          | terminal of chose                                                                        | https://github.com/kovidgoyal/kitty                                         |
+| Qutebrowser    | browser of chose                                                                         | https://github.com/qutebrowser/qutebrowser                                  |
+| mpv            | media player of chose (`mpv-mpris` required for currently playing status in Eww)         | https://github.com/mpv-player/mpv                                           |
+| Telegram       | messenger of chose                                                                       | https://github.com/telegramdesktop/tdesktop                                 |
+| Neovim         | editor of chose                                                                          | https://github.com/neovim/neovim                                            |
+| Tmux           | terminal multiplexer of chose                                                            | https://github.com/tmux/tmux                                                |
+| Thunar         | GUI file manager of chose                                                                | https://wiki.archlinux.org/title/Thunar                                     |
+| Udisks         | Mount your flash drivers automatically (required by [[./tmux/layouts/music.sh)][tmux music layout]])                   | https://wiki.archlinux.org/title/Udisks                                     |
+| Batsignal      | Notifies when battery is low                                                             | https://github.com/electrickite/batsignal                                   |
+| Fuzzel         | Application launcher for wlroots based Wayland compositors, similar to rofi's drun mode. | https://codeberg.org/dnkl/fuzzel                                            |
+| Btop           | Processes monitor                                                                        | https://github.com/aristocratos/btop                                        |
+| Pavucontrole   | GTK audio control                                                                        | https://github.com/pulseaudio/pavucontrol                                   |
+| NETworkManager | Manage networks with TUI                                                                 | https://github.com/BornToBeRoot/NETworkManager                              |
+| Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman                                  |
+| Emacs          | An emacs priest now                                                                      | https://www.gnu.org/software/emacs/                                         |
+| Spotify        | Audio streaming of chose                                                                 | https://www.spotify.com                                                     |
+| Vesktop        | Discord client                                                                           | https://github.com/Vencord/Vesktop                                          |
+| Pacwall        | Generates wallpaper from pacman deps graph                                               | https://github.com/Kharacternyk/pacwall?tab=readme-ov-file#list-of-settings |
+| Swaybg         | Manage desktop wallpaper (required by pacwall)                                           | https://man.archlinux.org/man/swaybg.1.en                                   |
 
 #+begin_src bash
 paru -S kitty \
@@ -142,6 +142,8 @@ paru -S kitty \
         blueman \
         spotify-wayland \
         vesktop-bin \
+        pacwall-git \
+        swaybg \
         --needed
 #+end_src
 

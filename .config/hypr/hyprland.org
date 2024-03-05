@@ -78,7 +78,7 @@ exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'Catppuccin-F
 
 *** Wallpaper
 #+begin_src conf
-exec-once = hyprpaper
+exec-once = pacwall
 #+end_src
 
 *** Statusbar
