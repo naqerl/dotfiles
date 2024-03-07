@@ -108,6 +108,7 @@
     "'" '(counsel-projectile-rg :wk "Ripgrep project symbols")
     "i" '(counsel-imenu :wk "Open imenu")
     "P" '(projectile-persp-switch-project :wk "Open project in new perspective")
+    "B" '(persp-counsel-switch-buffer :wk "Switch buffer in perspective")
     "S" '(persp-switch :wk "Switch perspective")
     "l" '(persp-switch-last :wk "Switch last perspective")
     "f" '(projectile-find-file :wk "Find file"))
@@ -121,7 +122,8 @@
 
   (suzu/leader-keys
     "b" '(:ignore t :wk "buffer || bookmark")
-    "b i" '(ibuffer :wk "Ibuffer")
+    "b I" '(ibuffer :wk "Ibuffer")
+    "b i" '(persp-ibuffer :wk "Perspective ibuffer")
     "b s" '(counsel-buffer-or-recentf :wk "Search buffer")
     "b k" '(kill-this-buffer :wk "Kill this buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
@@ -215,8 +217,6 @@
   (setq magit-status-buffer-switch-function 'switch-to-buffer)
   (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 
-
-
 (use-package git-gutter
   :ensure t
   :config
@@ -272,17 +272,18 @@
 
 (use-package corfu
   :ensure t
-  ;; Optional customizations
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
-  (corfu-auto-delay 0.1)
-  (corfu-auto-prefix 1)
+  (corfu-auto-delay 0.0)
+  (corfu-auto-prefix 2)
+  (corfu-quit-at-boundy 'separator)
+  (corfu-echo-documentation 0.25)
   ;; (corfu-separator ?\s)          ;; Orderless field separator
   (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
   (corfu-preview-current nil)    ;; Disable current candidate preview
-  (corfu-preselect 'prompt)      ;; Preselect the prompt
+  (corfu-preselect 'first)      ;; Preselect the prompt
   (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   (corfu-scroll-margin 5)        ;; Use scroll margin
 
@@ -294,7 +295,17 @@
   ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
   ;; be used globally (M-/).  See also the customization variable
   ;; `global-corfu-modes' to exclude certain modes.
+  :bind (:map corfu-map
+        ("M-SPC" . corfu-insert-separator)
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous)
+        ("S-<return>" . corfu-insert))
+  ;; (define-key corfu-map (kbd "M-j") #'corfu-doc-scroll-down)
+  ;; (define-key corfu-map (kbd "M-k") #'corfu-doc-scroll-up)
   :init
+  ;; (add-hook 'corfu-mode-hook #'corfu-popupinfo-mode)
   (global-corfu-mode))
 
 ;; A few more useful configurations...
@@ -312,6 +323,28 @@
   ;; `completion-at-point' is often bound to M-TAB.
   ;; (setq tab-always-indent 'complete)
   )
+
+(use-package dabbrev
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  :config
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+  ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode))
+
+(use-package orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package nerd-icons-corfu
+:ensure t
+:config
+(add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package diminish
   :ensure t)
@@ -429,7 +462,41 @@
 (use-package eldoc-box
   :ensure t
   :config
-  (setq max-mini-window-height 1))
+  (defun suzu/eldoc-box-scroll-up ()
+    "Scroll up in `eldoc-box--frame'"
+    (interactive)
+    (with-current-buffer eldoc-box--buffer
+      (with-selected-frame eldoc-box--frame
+        (scroll-down 3))))
+  (defun suzu/eldoc-box-scroll-down ()
+    "Scroll down in `eldoc-box--frame'"
+    (interactive)
+    (with-current-buffer eldoc-box--buffer
+      (with-selected-frame eldoc-box--frame
+        (scroll-up 3))))
+  (setq max-mini-window-height 0)
+  (setq eldoc-idle-delay 0)
+  (general-define-key
+   :states '(normal visual motion)
+   :keymaps 'override
+   "K" '(eldoc-box-help-at-point :wk "Show doc")
+   "C-k" '(suzu/eldoc-box-scroll-up)
+   "C-j" '(suzu/eldoc-box-scroll-down)
+   )
+  ;; :general
+  ;; (:keymaps 'eglot-mode-map
+  ;;           "C-k" 'rex/eldoc-box-scroll-up
+  ;;           "C-j" 'rex/eldoc-box-scroll-down
+  ;;           "K" 'eldoc-box-eglot-help-at-point)
+  )
+
+;; (use-package eldoc-box
+;;   :ensure t
+;;   :config
+;;   (general-define-key
+;;    :states '(normal visual motion)
+;;    :keymaps 'override
+;;    "K" '(eldoc-box-help-at-point :wk "Show doc")))
 
 (defun suzu/rust-mode()
 (add-hook 'after-save-hook 'rust-format-buffer))
@@ -440,10 +507,8 @@
   (rust-mode . suzu/rust-mode))
 
 (defun suzu/python-mode()
-  (add-hook 'after-save-hook 'python-black-buffer)
-  (add-hook 'after-save-hook 'python-sort-imports)
-  (eglot-ensure)
-  (python-ts-mode))
+  (add-hook 'before-save-hook 'python-black-buffer)
+  (add-hook 'before-save-hook 'python-sort-imports))
 
 (use-package python
   :hook
@@ -456,15 +521,11 @@
 
 (use-package eglot
   :config
-  ;; (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright")))
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
-  (general-define-key
-   :states '(normal visual motion)
-   :keymaps 'override
-   "K" '(eldoc-box-help-at-point :wk "Show doc"))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
   :hook
   (rust-mode . eglot-ensure)
-)
+  (python-mode . eglot-ensure))
 
 (use-package sqlformat
 :ensure t
@@ -473,6 +534,9 @@
 (setq sqlformat-args '("-s2" "-g"))
 :hook
 (sql-mode-hook . sqlformat-on-save-mode))
+
+(use-package markdown-mode
+  :ensure t)
 
 (setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
@@ -573,8 +637,9 @@
                           ivy-rich-switch-buffer-align-virtual-buffer t
                           ivy-rich-path-style 'abbrev)
   :config
-  (ivy-set-display-transformer 'ivy-switch-buffer
-                               'ivy-rich-switch-buffer-transformer))
+  ;; (ivy-set-display-transformer 'ivy-switch-buffer
+  ;;                              'ivy-rich-switch-buffer-transformer)
+)
 
 (use-package toc-org
   :ensure t
@@ -614,17 +679,22 @@
   :config
   (pdf-tools-install))
 
+(defun suzu/get-last-two-elements (dir)
+  "Get the last two elements of a path."
+  (let* ((dir-components (split-string dir "\/" t))
+         (last-two (last dir-components 2))
+         (result (if (string-match-p "\\(~\\|suzu\\).*" (car last-two)) (last last-two 1) (mapconcat 'identity last-two "/"))))
+    result))
+
+(defun suzu/projectile-project-name-function (project-root)
+  (suzu/get-last-two-elements project-root))
+
 (use-package projectile
   :ensure t
   :config
   (projectile-mode 1)
-  (setq projectile-project-search-path '(("~/code" . 4)))
-  )
-
-
-(use-package persp-projectile
-  :ensure t
-  :after perspective)
+  (setq projectile-project-name-function 'suzu/projectile-project-name-function)
+  (setq projectile-project-search-path '(("~/code" . 4))))
 
 (use-package counsel-projectile
   :ensure t)
@@ -634,6 +704,8 @@
   :diminish
   :hook
   ((org-mode prog-mode) . rainbow-mode))
+
+(setq comint-input-ignoredups t)
 
 (use-package eshell-syntax-highlighting
   :ensure t
@@ -688,10 +760,11 @@
              (dir (file-truename (format "/proc/%d/cwd/" pid))))
         (setq default-directory dir))))
 
-  :general
-  (:states 'insert
-           :keymaps 'vterm-mode-map
-           "<tab>" 'vterm-completion))
+  ;; :general
+  ;; (:states 'insert
+  ;;          :keymaps 'vterm-mode-map
+  ;;          "<tab>" 'vterm-completion)
+)
 
 (use-package vterm-toggle
   :ensure t
@@ -737,6 +810,9 @@
         (python "https://github.com/tree-sitter/tree-sitter-python")))
 
 (setq treesit-font-lock-level 4)
+(setq major-mode-remap-alist
+      '((python-mode . python-ts-mode)
+        ))
 
 (use-package which-key
   :ensure t
@@ -761,7 +837,11 @@
             (unless (eq ibuffer-sorting-mode 'alphabetic)
               (ibuffer-do-sort-by-alphabetic))))
 
-(add-hook 'kill-emacs-hook #'persp-state-save)
+;; (add-hook 'kill-emacs-hook #'persp-state-save)
 
 (use-package bufler
   :ensure t)
+
+(use-package persp-projectile
+  :ensure t
+  :after perspective)
