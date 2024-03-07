@@ -12,6 +12,7 @@
 
 (require 'pyright-write)
 (require 'suzu-buffer)
+(require 'suzu-project)
 
 (use-package async :ensure t)
 (require 'ob-async-sql)
@@ -104,14 +105,15 @@
 
   (suzu/leader-keys
     "." '(find-file :wk "Find file")
-    ";" '(counsel-M-x :wk "Counsel M-x")
-    "'" '(counsel-projectile-rg :wk "Ripgrep project symbols")
-    "i" '(counsel-imenu :wk "Open imenu")
-    "P" '(projectile-persp-switch-project :wk "Open project in new perspective")
-    "B" '(persp-counsel-switch-buffer :wk "Switch buffer in perspective")
+    ";" '(execute-extended-command :wk "M-x")
+    "'" '(consult-ripgrep :wk "Ripgrep project symbols")
+    "i" '(consult-imenu :wk "Open imenu")
+    "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
+    "B" '(persp-switch-to-buffer :wk "Switch buffer in perspective")
     "S" '(persp-switch :wk "Switch perspective")
     "l" '(persp-switch-last :wk "Switch last perspective")
-    "f" '(projectile-find-file :wk "Find file"))
+    "/" '(consult-line :wk "Search in buffer")
+    "f" '(project-find-file :wk "Find file"))
 
   (suzu/leader-keys
     "s" '(:ignore t :wk "Session")
@@ -124,7 +126,7 @@
     "b" '(:ignore t :wk "buffer || bookmark")
     "b I" '(ibuffer :wk "Ibuffer")
     "b i" '(persp-ibuffer :wk "Perspective ibuffer")
-    "b s" '(counsel-buffer-or-recentf :wk "Search buffer")
+    "b s" '(consult-buffer :wk "Search buffer")
     "b k" '(kill-this-buffer :wk "Kill this buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
     "b m" '(bookmark-set :wk "Bookmark")
@@ -147,11 +149,10 @@
 
   (suzu/leader-keys
     "o" '(:ignore t :wk "Open")
-    "o r" '(counsel-recentf :wk "Open recent files")
+    "o r" '(consult-recent-file :wk "Open recent files")
     "o E" '(dired-jump :wk "Dired jump to current")
-    "o e" '(projectile-dired :wk "Project root dired")
+    "o e" '(project-dired :wk "Project root dired")
     "o p d" '(peep-dired :wk "Peep-dired")
-    "o r" '(counsel-recentf :wk "Open recent files")
     "o s" '(eshell :wk "Open eshell")
     "o g" '(magit :wk "Open magit")
     "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (message "Buffer diagnostics") (other-window 1)) :wk "Open buffer diagnostics")
@@ -177,7 +178,6 @@
     "m i" '(org-toggle-item :wk "Org toggle item")
     "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
     "m t" '(org-todo :wk "Org todo")
-    "m f" '(counsel-org-goto :wk "Find heading")
     "m B" '(org-babel-tangle :wk "Org babel tangle")
     "m l" '(org-insert-link :wk "Org insert link")
     "m T" '(org-todo-list :wk "Org todo list"))
@@ -275,7 +275,7 @@
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
-  (corfu-auto-delay 0.0)
+  (corfu-auto-delay 1)
   (corfu-auto-prefix 2)
   (corfu-quit-at-boundy 'separator)
   (corfu-echo-documentation 0.25)
@@ -596,51 +596,6 @@
   (html-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill))
 
-(use-package counsel
-  :ensure t
-  :diminish
-  :after ivy
-  :config
-  (use-package flx
-    :ensure t)
-  (counsel-mode)
-  (ivy-mode 1)
-  (setq ivy-re-builders-alist
-	'((t . ivy--regex-plus))))
-
-(use-package ivy
-  :ensure t
-  :diminish
-  :bind
-  ;; ivy-resume resumes the last Ivy-based completion.
-  (("C-c C-r" . ivy-resume)
-   ("C-x B" . ivy-switch-buffer-other-window))
-  :init
-  (setq ivy-initial-inputs-alist nil)
-  :custom
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
-  :config
-  (ivy-mode))
-
-(use-package all-the-icons-ivy-rich
-  :ensure t
-  :init (all-the-icons-ivy-rich-mode 1))
-
-(use-package ivy-rich
-  :ensure t
-  :after ivy
-  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-  :custom
-  (ivy-virtual-abbreviate 'full
-                          ivy-rich-switch-buffer-align-virtual-buffer t
-                          ivy-rich-path-style 'abbrev)
-  :config
-  ;; (ivy-set-display-transformer 'ivy-switch-buffer
-  ;;                              'ivy-rich-switch-buffer-transformer)
-)
-
 (use-package toc-org
   :ensure t
   :commands toc-org-enable
@@ -679,25 +634,109 @@
   :config
   (pdf-tools-install))
 
-(defun suzu/get-last-two-elements (dir)
-  "Get the last two elements of a path."
-  (let* ((dir-components (split-string dir "\/" t))
-         (last-two (last dir-components 2))
-         (result (if (string-match-p "\\(~\\|suzu\\).*" (car last-two)) (last last-two 1) (mapconcat 'identity last-two "/"))))
-    result))
+;; (use-package counsel
+;;   :ensure t
+;;   :diminish
+;;   :after ivy
+;;   :config
+;;   (use-package flx
+;;     :ensure t)
+;;   (counsel-mode)
+;;   (ivy-mode 1)
+;;   (setq ivy-re-builders-alist
+;; 	'((t . ivy--regex-plus))))
 
-(defun suzu/projectile-project-name-function (project-root)
-  (suzu/get-last-two-elements project-root))
+;; (use-package ivy
+;;   :ensure t
+;;   :diminish
+;;   :bind
+;;   ;; ivy-resume resumes the last Ivy-based completion.
+;;   (("C-c C-r" . ivy-resume)
+;;    ("C-x B" . ivy-switch-buffer-other-window))
+;;   :init
+;;   (setq ivy-initial-inputs-alist nil)
+;;   :custom
+;;   (setq ivy-use-virtual-buffers t)
+;;   (setq ivy-count-format "(%d/%d) ")
+;;   (setq enable-recursive-minibuffers t)
+;;   :config
+;;   (ivy-mode))
 
-(use-package projectile
+;; (use-package all-the-icons-ivy-rich
+;;   :ensure t
+;;   :init (all-the-icons-ivy-rich-mode 1))
+
+;; (use-package ivy-rich
+;;   :ensure t
+;;   :after ivy
+;;   :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+;;   :custom
+;;   (ivy-virtual-abbreviate 'full
+;;                           ivy-rich-switch-buffer-align-virtual-buffer t
+;;                           ivy-rich-path-style 'abbrev)
+;;   :config
+;;   ;; (ivy-set-display-transformer 'ivy-switch-buffer
+;;   ;;                              'ivy-rich-switch-buffer-transformer)
+;; )
+
+(use-package marginalia
+  :ensure t
+  ;; :after projectile
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'left)
+  :init
+  ;; (setq marginalia-command-categories
+  ;;       (append '((projectile-find-file . project-file)
+  ;;                 (projectile-find-dir . project-file)
+  ;;                 (projectile-switch-project . file))
+  ;;               marginalia-command-categories))
+  (marginalia-mode))
+
+(use-package all-the-icons-completion
+  :ensure t
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
+
+(use-package vertico
+  :ensure t
+  ;; Special recipe to load extensions conveniently
+  ;; :straight (vertico :files (:defaults "extensions/*")
+  ;;                    :includes (vertico-indexed
+  ;;                               vertico-flat
+  ;;                               vertico-grid
+  ;;                               vertico-mouse
+  ;;                               vertico-quick
+  ;;                               vertico-buffer
+  ;;                               vertico-repeat
+  ;;                               vertico-reverse
+  ;;                               vertico-directory
+  ;;                               vertico-multiform
+  ;;                               vertico-unobtrusive
+  ;;                               ))
+  :custom
+  (vertico-count 13)                    ; Number of candidates to display
+  (vertico-resize nil)
+  (vertico-cycle nil) ; Go from last to first candidate and first to last (cycle)?
+  :config
+  (vertico-mode))
+
+(use-package consult
   :ensure t
   :config
-  (projectile-mode 1)
-  (setq projectile-project-name-function 'suzu/projectile-project-name-function)
-  (setq projectile-project-search-path '(("~/code" . 4))))
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+)
 
-(use-package counsel-projectile
-  :ensure t)
+;; (use-package projectile
+;;   :ensure t
+;;   :config
+;;   (projectile-mode 1)
+;;   (setq projectile-project-name-function 'suzu/projectile-project-name-function)
+;;   (setq projectile-project-search-path '(("~/code" . 4))))
 
 (use-package rainbow-mode
   :ensure t
@@ -842,6 +881,6 @@
 (use-package bufler
   :ensure t)
 
-(use-package persp-projectile
-  :ensure t
-  :after perspective)
+;; (use-package persp-projectile
+;;   :ensure t
+;;   :after perspective)

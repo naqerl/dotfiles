@@ -39,9 +39,6 @@
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
   - [[#babel][Babel]]
   - [[#visual-fill-column-center-buffer][Visual fill column (center buffer)]]
-- [[#completion-1][Completion]]
-  - [[#ivy][Ivy]]
-  - [[#vertico][Vertico]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-contents][Enable table of contents]]
   - [[#enable-org-bullets][Enable Org bullets]]
@@ -50,7 +47,8 @@
   - [[#auto-babel-tangle][Auto babel tangle]]
   - [[#run-source-block-hook][Run source block hook]]
 - [[#pdf-tools][PDF tools]]
-- [[#projectile][Projectile]]
+- [[#completion-1][Completion]]
+  - [[#vertico][Vertico]]
 - [[#rainbow-mode][Rainbow mode]]
 - [[#shells-and-terminals][Shells and terminals]]
   - [[#shell][Shell]]
@@ -68,7 +66,6 @@
   - [[#group-buffers-in-ibuffer-by-perspective][Group buffers in ibuffer by perspective]]
   - [[#automatically-save-perspective-states-to-file-when-emacs-exits][Automatically save perspective states to file when Emacs exits]]
   - [[#trying-bufler][Trying bufler]]
-  - [[#create-workspace-from-project][Create workspace from project]]
 
 * Important programs to load first
 ** Loading scripts
@@ -96,6 +93,7 @@
 #+Begin_src emacs-lisp
 (require 'pyright-write)
 (require 'suzu-buffer)
+(require 'suzu-project)
 
 (use-package async :ensure t)
 (require 'ob-async-sql)
@@ -209,14 +207,15 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 
   (suzu/leader-keys
     "." '(find-file :wk "Find file")
-    ";" '(counsel-M-x :wk "Counsel M-x")
-    "'" '(counsel-projectile-rg :wk "Ripgrep project symbols")
-    "i" '(counsel-imenu :wk "Open imenu")
-    "P" '(projectile-persp-switch-project :wk "Open project in new perspective")
-    "B" '(persp-counsel-switch-buffer :wk "Switch buffer in perspective")
+    ";" '(execute-extended-command :wk "M-x")
+    "'" '(consult-ripgrep :wk "Ripgrep project symbols")
+    "i" '(consult-imenu :wk "Open imenu")
+    "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
+    "B" '(persp-switch-to-buffer :wk "Switch buffer in perspective")
     "S" '(persp-switch :wk "Switch perspective")
     "l" '(persp-switch-last :wk "Switch last perspective")
-    "f" '(projectile-find-file :wk "Find file"))
+    "/" '(consult-line :wk "Search in buffer")
+    "f" '(project-find-file :wk "Find file"))
 
   (suzu/leader-keys
     "s" '(:ignore t :wk "Session")
@@ -229,7 +228,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     "b" '(:ignore t :wk "buffer || bookmark")
     "b I" '(ibuffer :wk "Ibuffer")
     "b i" '(persp-ibuffer :wk "Perspective ibuffer")
-    "b s" '(counsel-buffer-or-recentf :wk "Search buffer")
+    "b s" '(consult-buffer :wk "Search buffer")
     "b k" '(kill-this-buffer :wk "Kill this buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
     "b m" '(bookmark-set :wk "Bookmark")
@@ -252,11 +251,10 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 
   (suzu/leader-keys
     "o" '(:ignore t :wk "Open")
-    "o r" '(counsel-recentf :wk "Open recent files")
+    "o r" '(consult-recent-file :wk "Open recent files")
     "o E" '(dired-jump :wk "Dired jump to current")
-    "o e" '(projectile-dired :wk "Project root dired")
+    "o e" '(project-dired :wk "Project root dired")
     "o p d" '(peep-dired :wk "Peep-dired")
-    "o r" '(counsel-recentf :wk "Open recent files")
     "o s" '(eshell :wk "Open eshell")
     "o g" '(magit :wk "Open magit")
     "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (message "Buffer diagnostics") (other-window 1)) :wk "Open buffer diagnostics")
@@ -282,7 +280,6 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     "m i" '(org-toggle-item :wk "Org toggle item")
     "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
     "m t" '(org-todo :wk "Org todo")
-    "m f" '(counsel-org-goto :wk "Find heading")
     "m B" '(org-babel-tangle :wk "Org babel tangle")
     "m l" '(org-insert-link :wk "Org insert link")
     "m T" '(org-todo-list :wk "Org todo list"))
@@ -298,9 +295,6 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     (suzu/leader-keys
     "c a" '(eglot-code-actions :wk "Code actions")
     "r n" '(eglot-rename :wk "Rename"))
-
-  ;; (suzu/leader-keys
-  ;;   "p" '(projectile-command-map :wk "Projectile"))
 
   (suzu/leader-keys
     "t" '(:ignore t :wk "Toggle")
@@ -408,7 +402,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
-  (corfu-auto-delay 0.0)
+  (corfu-auto-delay 1)
   (corfu-auto-prefix 2)
   (corfu-quit-at-boundy 'separator)
   (corfu-echo-documentation 0.25)
@@ -804,58 +798,6 @@ Required for better LSP docs rendering
   (dired-mode . suzu/visual-fill))
 #+end_src
 
-* Completion
-** Ivy
-#+begin_src emacs-lisp
-(use-package counsel
-  :ensure t
-  :diminish
-  :after ivy
-  :config
-  (use-package flx
-    :ensure t)
-  (counsel-mode)
-  (ivy-mode 1)
-  (setq ivy-re-builders-alist
-	'((t . ivy--regex-plus))))
-
-(use-package ivy
-  :ensure t
-  :diminish
-  :bind
-  ;; ivy-resume resumes the last Ivy-based completion.
-  (("C-c C-r" . ivy-resume)
-   ("C-x B" . ivy-switch-buffer-other-window))
-  :init
-  (setq ivy-initial-inputs-alist nil)
-  :custom
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
-  :config
-  (ivy-mode))
-
-(use-package all-the-icons-ivy-rich
-  :ensure t
-  :init (all-the-icons-ivy-rich-mode 1))
-
-(use-package ivy-rich
-  :ensure t
-  :after ivy
-  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-  :custom
-  (ivy-virtual-abbreviate 'full
-                          ivy-rich-switch-buffer-align-virtual-buffer t
-                          ivy-rich-path-style 'abbrev)
-  :config
-  ;; (ivy-set-display-transformer 'ivy-switch-buffer
-  ;;                              'ivy-rich-switch-buffer-transformer)
-)
-#+end_src
-
-** Vertico
-https://kristofferbalintona.me/posts/202202211546/
-
 * Org mode
 ** Enable table of contents
 #+begin_src emacs-lisp
@@ -919,27 +861,46 @@ So it'll be nice to run them automatically
   (pdf-tools-install))
 #+end_src
 
-* Projectile
-#+begin_src emacs-lisp
-(defun suzu/get-last-two-elements (dir)
-  "Get the last two elements of a path."
-  (let* ((dir-components (split-string dir "\/" t))
-         (last-two (last dir-components 2))
-         (result (if (string-match-p "\\(~\\|suzu\\).*" (car last-two)) (last last-two 1) (mapconcat 'identity last-two "/"))))
-    result))
+* Completion
+** Vertico
 
-(defun suzu/projectile-project-name-function (project-root)
-  (suzu/get-last-two-elements project-root))
+#+begin_src elisp
+(use-package marginalia
+  :ensure t
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'left)
+  :init
+  (marginalia-mode))
+#+end_src
 
-(use-package projectile
+#+begin_src elisp
+(use-package all-the-icons-completion
+  :ensure t
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
+#+end_src
+
+#+begin_src elisp
+(use-package vertico
+  :ensure t
+  :custom
+  (vertico-count 13)                    ; Number of candidates to display
+  (vertico-resize nil)
+  (vertico-cycle nil) ; Go from last to first candidate and first to last (cycle)?
+  :config
+  (vertico-mode))
+#+end_src
+
+#+begin_src elisp
+(use-package consult
   :ensure t
   :config
-  (projectile-mode 1)
-  (setq projectile-project-name-function 'suzu/projectile-project-name-function)
-  (setq projectile-project-search-path '(("~/code" . 4))))
+)
 
-(use-package counsel-projectile
-  :ensure t)
 #+end_src
 
 * Rainbow mode
@@ -1130,11 +1091,4 @@ So it'll be nice to run them automatically
 #+begin_src emacs-lisp
 (use-package bufler
   :ensure t)
-#+end_src
-
-** Create workspace from project
-#+begin_src elisp
-(use-package persp-projectile
-  :ensure t
-  :after perspective)
 #+end_src
