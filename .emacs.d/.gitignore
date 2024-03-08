@@ -4,12 +4,9 @@ bookmark-default.el
 elfeed/
 eln-cache/
 elpaca/
-esheel/
 eww/
 gnus/
 org/
-projectile/
-projectile-bookmarks.eld
 project-list.el
 recentf
 recentf-save.el
@@ -19,8 +16,7 @@ transient/
 url/
 tree-sitter/
 eshell/history
-projectile.cache
+eshell/lastdir
 projects
 emojis/
-eshell/
 .org-id-locations
