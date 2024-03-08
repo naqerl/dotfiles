@@ -68,7 +68,7 @@
 
 * Important programs to load first
 ** Loading scripts
-#+begin_src emacs-lisp
+#+begin_src elisp
 (add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'elpaca-setup)
@@ -89,7 +89,7 @@
 #+end_src
 
 ** Continue loading scripts
-#+Begin_src emacs-lisp
+#+begin_src elisp
 (require 'pyright-write)
 (require 'suzu-buffer)
 (require 'suzu-project)
@@ -100,7 +100,7 @@
 
 ** Load evil mode
 *** Install
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package evil
   :ensure t
   :init
@@ -132,7 +132,7 @@
 #+end_src
 
 *** Skip whole words with e and b (like in vim)
-#+begin_src emacs-lisp
+#+begin_src elisp
 (defalias 'forward-evil-word 'forward-evil-symbol)
 #+end_src
 
@@ -148,7 +148,7 @@
 *** Better jumps
 Mostly needed to fix clearing of the jump list after switching perspectives
 
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package better-jumper
   :ensure t
   :diminish
@@ -161,7 +161,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** General keybindings
-#+begin_src emacs-lisp
+#+begin_src elisp
 (defun suzu/split-window-vertical()
   (interactive)
   (split-window-right)
@@ -311,7 +311,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 
 ** Theme
 *** Custom catppuccin theme
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;; (require 'catppuccin-theme)
 ;; (load-theme 'catppuccin :no-confirm)
 ;; (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
@@ -338,7 +338,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 
 ** Git
 *** Magit
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package magit
   :ensure t
   :config
@@ -347,7 +347,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 *** Gutter
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package git-gutter
   :ensure t
   :custom
@@ -359,7 +359,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** Modeline
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package doom-modeline
   :ensure t
   :init
@@ -382,7 +382,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** Header line
-#+begin_src emacs-lisp
+#+begin_src elisp
 (defun suzu/simple-header-line-render (left right)
   "Return a string of `window-width' length containing LEFT, and RIGHT
  aligned respectively."
@@ -406,7 +406,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** All the icons
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package all-the-icons
   :ensure t)
 (use-package all-the-icons-dired
@@ -415,12 +415,12 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** No backups (or `~` files)
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq make-backup-files nil)
 #+end_src
 
 ** Corfu
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package corfu
   :ensure t
   :custom
@@ -508,13 +508,13 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** Diminish
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package diminish
   :ensure t)
 #+end_src
 
 ** Dired
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package dired-open
   :ensure t
   :config
@@ -538,7 +538,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** Elfeed
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package elfeed
   :ensure t
   :config
@@ -573,7 +573,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** Fonts
-#+begin_src emacs-lisp
+#+begin_src elisp
 (set-face-attribute 'default nil
                     :font "iosevka nf"
                     :height 130
@@ -611,7 +611,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 * Commenting lines
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package evil-nerd-commenter
   :ensure t
   :config
@@ -622,7 +622,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 * Dashboard
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package dashboard
   :ensure t
   :config
@@ -643,7 +643,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 
 * Dev
 ** Common
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package eldoc-box
   :ensure t
   :config
@@ -697,7 +697,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+end_src
 
 ** Python
-#+begin_src emacs-lisp
+#+begin_src elisp
 (defun suzu/python-mode()
   (add-hook 'before-save-hook 'python-black-buffer)
   (add-hook 'before-save-hook 'python-sort-imports)
@@ -718,7 +718,7 @@ Inscrease amount of data which emacs reads from the process
 #+end_src
 
 Setup lsp client
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package eglot
   :config
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
@@ -748,7 +748,7 @@ Required for better LSP docs rendering
 #+end_src
 
 * Essential tweaks
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
@@ -772,18 +772,18 @@ Required for better LSP docs rendering
 #+end_src
 
 ** Automatically select help frame
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq help-window-select t)
 #+end_src
 
 ** Emoji
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package emojify
   :ensure t)
 #+end_src
 
 ** Source code block tag expansion
-#+begin_src emacs-lisp
+#+begin_src elisp
 (require 'org-tempo)
 (add-hook 'org-mode-hook
           (lambda ()
@@ -793,7 +793,7 @@ Required for better LSP docs rendering
 #+end_src
 
 ** Babel
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq org-confirm-babel-evaluate nil)
 
 (setq-default plantuml-exec-mode "plantuml")
@@ -830,7 +830,7 @@ Required for better LSP docs rendering
 
 * Org mode
 ** Enable table of contents
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package toc-org
   :ensure t
   :commands toc-org-enable
@@ -838,7 +838,7 @@ Required for better LSP docs rendering
 #+end_src
 
 ** Enable Org bullets
-#+begin_src emacs-lisp
+#+begin_src elisp
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets
  :ensure t
@@ -847,12 +847,12 @@ Required for better LSP docs rendering
 #+end_src
 
 ** Turn off images actual width
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq-default org-image-actual-width nil)
 #+end_src
 
 ** Show hidden elements on curosr hover
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package org-appear
   :ensure t
   :hook (org-mode-hook . org-appear-mode)
@@ -900,28 +900,28 @@ So it'll be nice to run them automatically
 				  ("[-]" . "")
 				  ("#+begin_src" . "")
 				  ("#+end_src" . "")
-				  (":PROPERTIES:" . "")
-				  (":END:" . "―")
-				  ("#+STARTUP:" . "")
-				  ("#+TITLE: " . "")
-				  ("#+RESULTS:" . "")
-				  ("#+NAME:" . "")
-				  ("#+ROAM_TAGS:" . "")
-				  ("#+FILETAGS:" . "")
-				  ("#+HTML_HEAD:" . "")
-				  ("#+SUBTITLE:" . "")
-				  ("#+AUTHOR:" . "")
-				  ("#+DESCRIPTION:" . "󰦨")
-				  (":Effort:" . "")
-				  ("SCHEDULED:" . "")
-				  ("DEADLINE:" . "")))
+				  (":properties:" . "")
+				  (":end:" . "―")
+				  ("#+startup:" . "")
+				  ("#+title: " . "")
+				  ("#+results:" . "")
+				  ("#+name:" . "")
+				  ("#+roam_tags:" . "")
+				  ("#+filetags:" . "")
+				  ("#+html_head:" . "")
+				  ("#+subtitle:" . "")
+				  ("#+author:" . "")
+				  ("#+description:" . "󰦨")
+				  (":effort:" . "")
+				  ("scheduled:" . "")
+				  ("deadline:" . "")))
    (prettify-symbols-mode))
 (add-hook 'org-mode-hook 'suzu/org-icons)
 #+end_src
 
 
 * PDF tools
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package pdf-tools
   :ensure t
   :config
@@ -972,7 +972,7 @@ Add icons
 #+end_src
 
 * Rainbow mode
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package rainbow-mode
   :ensure t
   :diminish
@@ -988,7 +988,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Eshell
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package eshell-syntax-highlighting
   :ensure t
   :after esh-mode
@@ -1015,7 +1015,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Vterm
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package vterm
   :ensure t
   :config
@@ -1058,7 +1058,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Vterm-toggle
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package vterm-toggle
   :ensure t
   :after vterm
@@ -1081,7 +1081,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Multi vterm
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package multi-vterm
   :ensure t
   :config
@@ -1093,7 +1093,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 * Sudo edit
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package sudo-edit
   :ensure t
   :config
@@ -1102,17 +1102,17 @@ Turn off duplicating lines on execution
 #+end_src
 
 * TLDR
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package tldr :ensure t)
 #+end_src
 
 * Transparency
-#+begin_src emacs-lisp
+#+begin_src elisp
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 #+end_src
 
 * Treesitter
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
         (python "https://github.com/tree-sitter/tree-sitter-python")))
@@ -1124,7 +1124,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 * Which-key
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package which-key
   :ensure t
   :diminish
@@ -1137,7 +1137,7 @@ Turn off duplicating lines on execution
 
 * Workspaces
 ** Install perspective
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package perspective
   :ensure t
   :init
@@ -1148,7 +1148,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Group buffers in ibuffer by perspective
-#+begin_src emacs-lisp
+#+begin_src elisp
 (add-hook 'ibuffer-hook
           (lambda ()
             (persp-ibuffer-set-filter-groups)
@@ -1157,12 +1157,12 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Automatically save perspective states to file when Emacs exits
-#+begin_src emacs-lisp
+#+begin_src elisp
 ;; (add-hook 'kill-emacs-hook #'persp-state-save)
 #+end_src
 
 ** Trying bufler
-#+begin_src emacs-lisp
+#+begin_src elisp
 (use-package bufler
   :ensure t)
 #+end_src
