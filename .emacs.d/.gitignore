@@ -21,3 +21,6 @@ tree-sitter/
 eshell/history
 projectile.cache
 projects
+emojis/
+eshell/
+.org-id-locations
