@@ -40,7 +40,6 @@
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "SPC") nil)
   (define-key evil-motion-state-map (kbd "RET") nil))
-  ;; (define-key evil-insert-state-map (kbd "<tab>") 'tab-to-tab-stop))
 (setq org-return-follows-link t)
 
 (defalias 'forward-evil-word 'forward-evil-symbol)
@@ -510,13 +509,15 @@
 ;;    "K" '(eldoc-box-help-at-point :wk "Show doc")))
 
 (defun suzu/rust-mode()
-  (add-hook 'after-save-hook 'rust-format-buffer)
+  ;; (add-hook 'after-save-hook 'rust-format-buffer)
   (eglot-ensure))
 
 (use-package rust-mode
   :ensure t
-  :hook
-  (rust-ts-mode . suzu/rust-mode))
+  :init
+  (setq rust-mode-treesitter-derive t)
+  (setq rust-format-on-save t))
+(add-hook 'rust-mode-hook 'suzu/rust-mode)
 
 (defun suzu/python-mode()
   (add-hook 'before-save-hook 'python-black-buffer)
@@ -537,11 +538,8 @@
 
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
-  :hook
-  (rust-mode . eglot-ensure)
-  (python-mode . eglot-ensure))
+  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright"))))
 
 (use-package sqlformat
 :ensure t
@@ -582,10 +580,10 @@
 
 (require 'org-tempo)
 (add-hook 'org-mode-hook
-          (lambda ()
-            (setq-local electric-pair-inhibit-predicate
-                        `(lambda (c)
-                           (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+  (lambda ()
+    (setq-local electric-pair-inhibit-predicate
+      `(lambda (c)
+        (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -680,6 +678,11 @@
    (prettify-symbols-mode))
 (add-hook 'org-mode-hook 'suzu/org-icons)
 
+(defun suzu/unset-org-mode-binds ()
+  (global-unset-key (kbd "C-j"))
+  (global-unset-key (kbd "C-k")))
+(add-hook 'org-mode-hook 'suzu/unset-org-mode-binds)
+
 (use-package pdf-tools
   :ensure t
   :config
@@ -729,9 +732,22 @@
   :config
   (eshell-syntax-highlighting-global-mode +1))
 
-;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
-;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
-;; eshell-aliases-file -- sets an aliases file for the eshell.
+(defun suzu/configure-eshell ()
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
+  (evil-normalize-keymaps)
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt
+  :ensure t)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . suzu/configure-eshell)
+  :config
+  (eshell-git-prompt-use-theme 'powerline))
 
 (setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
       eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
@@ -831,7 +847,7 @@
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        (rust-mode . rust-ts-mode)))
+        (rust-ts-mode . rust-mode)))
 
 (use-package which-key
   :ensure t
@@ -870,12 +886,30 @@
 (add-hook 'persp-switch-hook 'suzu/current-perspective)
 
 (defun suzu/current-window ()
+  (suzu/update-eww-var "emacs_window_icon" (nerd-icons-icon-for-buffer))
   (suzu/update-eww-var "emacs_window" (buffer-name)))
 
 (add-hook 'window-state-change-hook 'suzu/current-window)
+
+(defun suzu/current-buffer-saved ()
+  (if (buffer-modified-p)
+      (suzu/update-eww-var "emacs_buffer_modifier" " ")
+      (suzu/update-eww-var "emacs_buffer_modifier" "")))
+
+;; (add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
+;; (add-hook 'after-save-hook 'suzu/current-buffer-saved)
 
 (defun suzu/current-vcs-branch ()
   (suzu/update-eww-var "git_branch" (magit-get-current-branch)))
 
 ;; (add-hook 'find-file-hook 'suzu/current-vcs-branch)
 ;; (add-hook 'after-save-hook 'suzu/current-vcs-branch)
+
+(defun suzu/lsp-status ()
+  (if (eglot-current-server)
+    (suzu/update-eww-var "emacs_lsp" " ")
+    (suzu/update-eww-var "emacs_lsp" "")))
+
+(add-hook 'eglot-managed-mode-hook 'suzu/lsp-status)
+(add-hook 'find-file-hook 'suzu/lsp-status)
+(add-hook 'persp-switch-hook 'suzu/lsp-status)
