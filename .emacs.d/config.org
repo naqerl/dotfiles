@@ -1,6 +1,6 @@
-#+TITLE: Suzu's GNU Emacs Config
-#+AUTHOR: Suzu
-#+DESCRIPTION: My personal Emacs config
+#+title: Suzu's GNU Emacs Config
+#+author: Suzu
+#+description: My personal Emacs config
 
 * Table of contents :toc:
 - [[#important-programs-to-load-first][Important programs to load first]]
@@ -13,7 +13,6 @@
   - [[#theme][Theme]]
   - [[#git][Git]]
   - [[#modeline][Modeline]]
-  - [[#header-line][Header line]]
   - [[#all-the-icons][All the icons]]
   - [[#no-backups-or--files][No backups (or `~` files)]]
   - [[#corfu][Corfu]]
@@ -28,6 +27,7 @@
   - [[#common][Common]]
   - [[#rust][Rust]]
   - [[#python][Python]]
+  - [[#yuck][Yuck]]
   - [[#lsp-client][Lsp client]]
   - [[#sql][SQL]]
   - [[#markdown][Markdown]]
@@ -65,6 +65,10 @@
   - [[#group-buffers-in-ibuffer-by-perspective][Group buffers in ibuffer by perspective]]
   - [[#automatically-save-perspective-states-to-file-when-emacs-exits][Automatically save perspective states to file when Emacs exits]]
   - [[#trying-bufler][Trying bufler]]
+- [[#eww-integration][Eww integration]]
+  - [[#common-1][Common]]
+  - [[#current-perspective][Current perspective]]
+  - [[#current-buffer][Current buffer]]
 
 * Important programs to load first
 ** Loading scripts
@@ -158,6 +162,20 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
   (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
+#+end_src
+
+*** Better window navigation
+#+begin_src elisp
+(with-eval-after-load 'evil-maps
+  ;; (global-set-key (kbd "C-h") nil)
+  ;; (global-set-key (kbd "C-k") nil)
+  (global-unset-key (kbd "C-j"))
+  (global-unset-key (kbd "C-l"))
+  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+)
 #+end_src
 
 ** General keybindings
@@ -379,30 +397,6 @@ Mostly needed to fix clearing of the jump list after switching perspectives
         doom-modeline-persp-icon nil
         doom-modeline-major-mode-icon nil))
 ;; (setq-default mode-line-format nil)
-#+end_src
-
-** Header line
-#+begin_src elisp
-(defun suzu/simple-header-line-render (left right)
-  "Return a string of `window-width' length containing LEFT, and RIGHT
- aligned respectively."
-  (let* ((available-width (- (window-width) (length left) 1)))
-    (format (format " %%s %%%ds " available-width) left right)))
-
-(defun suzu/current-perspective ()
-  (format " %s" (persp-current-name))
-  )
-
-(defun suzu/current-file-or-buffer ()
-  (format " %s" (format-mode-line "%b"))
-)
-
-(setq-default header-line-format
-	      '((:eval (format " %s %s"
-			(suzu/current-perspective)
-			(suzu/current-file-or-buffer)
-			))))
-
 #+end_src
 
 ** All the icons
@@ -665,8 +659,8 @@ Mostly needed to fix clearing of the jump list after switching perspectives
    :states '(normal visual motion)
    :keymaps 'override
    "K" '(eldoc-box-help-at-point :wk "Show doc")
-   "C-k" '(suzu/eldoc-box-scroll-up)
-   "C-j" '(suzu/eldoc-box-scroll-down)
+   ;; "C-k" '(suzu/eldoc-box-scroll-up)
+   ;; "C-j" '(suzu/eldoc-box-scroll-down)
    )
   ;; :general
   ;; (:keymaps 'eglot-mode-map
@@ -708,6 +702,12 @@ Mostly needed to fix clearing of the jump list after switching perspectives
   (python-ts-mode . suzu/python-mode))
 
 (use-package python-black
+  :ensure t)
+#+end_src
+
+** Yuck
+#+begin_src elisp
+(use-package yuck-mode
   :ensure t)
 #+end_src
 
@@ -820,12 +820,9 @@ Required for better LSP docs rendering
   :config
   :hook
   (org-mode . suzu/visual-fill)
-  (python-ts-mode . suzu/visual-fill)
-  (rust-ts-mode . suzu/visual-fill)
-  (html-ts-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill)
-  (text-mode . suzu/visual-fill)
-)
+  (prog-mode . suzu/visual-fill)
+  (text-mode . suzu/visual-fill))
 #+end_src
 
 * Org mode
@@ -1166,3 +1163,27 @@ Turn off duplicating lines on execution
 (use-package bufler
   :ensure t)
 #+end_src
+
+* Eww integration
+** Common
+#+begin_src elisp
+(defun suzu/update-eww-var (var value)
+  (call-process "eww" nil nil nil "update" (format "%s=%s" var value)))
+#+end_src
+
+** Current perspective
+#+begin_src elisp
+(defun suzu/current-perspective ()
+  (suzu/update-eww-var "emacs_session" (persp-current-name)))
+
+(add-hook 'persp-switch-hook 'suzu/current-perspective)
+#+end_src
+
+** Current buffer
+#+begin_src elisp
+(defun suzu/current-window ()
+  (suzu/update-eww-var "emacs_window" (buffer-name)))
+
+(add-hook 'window-state-change-hook 'suzu/current-window)
+#+end_src
+

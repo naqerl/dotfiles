@@ -33,6 +33,43 @@
 
 (defpoll mic_state :interval "0.5s" :initial "" `$HOME/.config/bin/mic-state`)
 
+(defvar emacs_session "")
+(defvar emacs_focused "f")
+(defvar emacs_window "")
+
+(defwidget emacs_session []
+(revealer
+             :transition "fade"
+             :reveal {emacs_focused == "t"}
+             :duration "300ms"
+             (box :class "box" :orientation "h" :space-evenly false :hexpand true :width "20px"
+                  (space)
+                  (label
+                    :class "purple-fg"
+                    :text {"  "}
+                    :limit-width 3)
+                  (label
+                    :text emacs_session
+                    :limit-width 50)
+                  (space)))
+)
+
+(defwidget emacs_window []
+(revealer
+             :transition "fade"
+             :reveal {emacs_focused == "t"}
+             :duration "300ms"
+             (box :class "box" :orientation "h" :space-evenly false :hexpand true :width "20px"
+                  (space)
+                  (label
+                    :text {"  "}
+                    :limit-width 3)
+                  (label
+                    :text emacs_window
+                    :limit-width 50)
+                  (space)))
+)
+
 (defwidget timer69 []
 (revealer
              :transition "slideleft"
@@ -182,7 +219,8 @@
                 :halign "end"
                 :class "alerts"
                 (workspace)
-                (mpv_player)))
+                (mpv_player)
+                (notification)))
 
 (defwidget left []
            (box
@@ -198,7 +236,10 @@
              :orientation "h"
              :space-evenly false
              :halign "center"
-             (notification)))
+                (emacs_session)
+                (space)
+                (emacs_window)
+             ))
 
 (defwidget right_alerts []
            (box :orientation "h"

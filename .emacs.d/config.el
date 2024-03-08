@@ -61,6 +61,17 @@
   (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
   (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
+(with-eval-after-load 'evil-maps
+  ;; (global-set-key (kbd "C-h") nil)
+  ;; (global-set-key (kbd "C-j") nil)
+  ;; (global-set-key (kbd "C-k") nil)
+  ;; (global-set-key (kbd "C-l") nil)
+  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+)
+
 (defun suzu/split-window-vertical()
   (interactive)
   (split-window-right)
@@ -261,26 +272,6 @@
         doom-modeline-persp-icon nil
         doom-modeline-major-mode-icon nil))
 ;; (setq-default mode-line-format nil)
-
-(defun suzu/simple-header-line-render (left right)
-  "Return a string of `window-width' length containing LEFT, and RIGHT
- aligned respectively."
-  (let* ((available-width (- (window-width) (length left) 1)))
-    (format (format " %%s %%%ds " available-width) left right)))
-
-(defun suzu/current-perspective ()
-  (format " %s" (persp-current-name))
-  )
-
-(defun suzu/current-file-or-buffer ()
-  (format " %s" (format-mode-line "%b"))
-)
-
-(setq-default header-line-format
-	      '((:eval (format " %s %s"
-			(suzu/current-perspective)
-			(suzu/current-file-or-buffer)
-			))))
 
 (use-package all-the-icons
   :ensure t)
@@ -500,8 +491,8 @@
    :states '(normal visual motion)
    :keymaps 'override
    "K" '(eldoc-box-help-at-point :wk "Show doc")
-   "C-k" '(suzu/eldoc-box-scroll-up)
-   "C-j" '(suzu/eldoc-box-scroll-down)
+   ;; "C-k" '(suzu/eldoc-box-scroll-up)
+   ;; "C-j" '(suzu/eldoc-box-scroll-down)
    )
   ;; :general
   ;; (:keymaps 'eglot-mode-map
@@ -537,6 +528,9 @@
   (python-ts-mode . suzu/python-mode))
 
 (use-package python-black
+  :ensure t)
+
+(use-package yuck-mode
   :ensure t)
 
 (setq read-process-output-max (* 1024 1024))
@@ -615,12 +609,9 @@
   :config
   :hook
   (org-mode . suzu/visual-fill)
-  (python-ts-mode . suzu/visual-fill)
-  (rust-ts-mode . suzu/visual-fill)
-  (html-ts-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill)
-  (text-mode . suzu/visual-fill)
-)
+  (prog-mode . suzu/visual-fill)
+  (text-mode . suzu/visual-fill))
 
 (use-package toc-org
   :ensure t
@@ -868,3 +859,16 @@
 
 (use-package bufler
   :ensure t)
+
+(defun suzu/update-eww-var (var value)
+  (call-process "eww" nil nil nil "update" (format "%s=%s" var value)))
+
+(defun suzu/current-perspective ()
+  (suzu/update-eww-var "emacs_session" (persp-current-name)))
+
+(add-hook 'persp-switch-hook 'suzu/current-perspective)
+
+(defun suzu/current-window ()
+  (suzu/update-eww-var "emacs_window" (buffer-name)))
+
+(add-hook 'window-state-change-hook 'suzu/current-window)
