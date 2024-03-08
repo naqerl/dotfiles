@@ -40,7 +40,8 @@
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "SPC") nil)
   (define-key evil-motion-state-map (kbd "RET") nil))
-(setq org-return-follows-link  t)
+  ;; (define-key evil-insert-state-map (kbd "<tab>") 'tab-to-tab-stop))
+(setq org-return-follows-link t)
 
 (defalias 'forward-evil-word 'forward-evil-symbol)
 
@@ -61,14 +62,14 @@
   (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
 (defun suzu/split-window-vertical()
-(interactive)
-(split-window-right)
-(other-window 1))
+  (interactive)
+  (split-window-right)
+  (other-window 1))
 
 (defun suzu/split-window-horizontal()
-(interactive)
-(split-window-below)
-(other-window 1))
+  (interactive)
+  (split-window-below)
+  (other-window 1))
 
 (use-package general
   :ensure t
@@ -88,10 +89,13 @@
    "s" '(suzu/split-window-horizontal :wk "Horizontal split"))
 
   (general-define-key
-   :states '(normal visual)
+   :states '(normal visual insert)
    "<f2>" '(vterm-toggle-forward :wk "Toggle vterm forward")
-   "<f3>" '(vterm-toggle :wk "Toggle vterm")
-   "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward")
+   "<f3>" '(eshell-toggle :wk "Toggle eshell")
+   "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward"))
+
+  (general-define-key
+   :states '(normal visual)
    "[ g" '(git-gutter:previous-hunk :wk "Prev git hunk")
    "] g" '(git-gutter:next-hunk :wk "Next git hunk")
    "[ d" '(flymake-goto-prev-error :wk "Prev diagnostic")
@@ -190,12 +194,9 @@
     "m d" '(:ignore t :wk "Date/deadline")
     "m d t" '(org-time-stamp :wk "Org time stamp"))
 
-    (suzu/leader-keys
+  (suzu/leader-keys
     "c a" '(eglot-code-actions :wk "Code actions")
     "r n" '(eglot-rename :wk "Rename"))
-
-  ;; (suzu/leader-keys
-  ;;   "p" '(projectile-command-map :wk "Projectile"))
 
   (suzu/leader-keys
     "t" '(:ignore t :wk "Toggle")
@@ -206,10 +207,25 @@
 
   )
 
-(require 'catppuccin-theme)
-(load-theme 'catppuccin :no-confirm)
-(setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
-(catppuccin-reload)
+;; (require 'catppuccin-theme)
+;; (load-theme 'catppuccin :no-confirm)
+;; (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
+;; (catppuccin-reload)
+
+(setq modus-themes-mode-line '(borderless 3d)
+      modus-themes-region '(bg-only)
+      modus-themes-org-blocks 'gray-background
+      modus-themes-completions '((selection intense) (popup intense))
+      modus-themes-bold-constructs t
+      modus-themes-italic-constructs t
+      modus-themes-paren-match '(bold)
+      modus-themes-syntax '(green-strings yellow-comments)
+      modus-themes-headings
+      '((1 . (rainbow 1.5))
+        (2 . (rainbow 1.3))
+        (3 . (rainbow bold 1.2))
+        (t . (semilight 1.1 ))))
+(load-theme 'modus-vivendi :no-confirm)
 
 (use-package magit
   :ensure t
@@ -219,6 +235,10 @@
 
 (use-package git-gutter
   :ensure t
+  :custom
+  (git-gutter:modified-sign " ") ;; two space
+  (git-gutter:added-sign " ")    ;; multiple character is OK
+  (git-gutter:deleted-sign " ")
   :config
   (global-git-gutter-mode +1))
 
@@ -322,7 +342,7 @@
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
   ;; (setq tab-always-indent 'complete)
-  )
+)
 
 (use-package dabbrev
   ;; Swap M-/ and C-M-/
@@ -499,20 +519,22 @@
 ;;    "K" '(eldoc-box-help-at-point :wk "Show doc")))
 
 (defun suzu/rust-mode()
-(add-hook 'after-save-hook 'rust-format-buffer))
+  (add-hook 'after-save-hook 'rust-format-buffer)
+  (eglot-ensure))
 
 (use-package rust-mode
   :ensure t
   :hook
-  (rust-mode . suzu/rust-mode))
+  (rust-ts-mode . suzu/rust-mode))
 
 (defun suzu/python-mode()
   (add-hook 'before-save-hook 'python-black-buffer)
-  (add-hook 'before-save-hook 'python-sort-imports))
+  (add-hook 'before-save-hook 'python-sort-imports)
+  (eglot-ensure))
 
 (use-package python
   :hook
-  (python-mode . suzu/python-mode))
+  (python-ts-mode . suzu/python-mode))
 
 (use-package python-black
   :ensure t)
@@ -541,6 +563,8 @@
 (setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
+(setq backward-delete-char-untabify-method 'hungry)
+
 (setq create-lockfiles nil)
 (electric-pair-mode 1)
 (setq org-edit-src-content-indentetion 0)
@@ -560,14 +584,14 @@
 (setq help-window-select t)
 
 (use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode))
+  :ensure t)
 
 (require 'org-tempo)
-(add-hook 'org-mode-hook (lambda ()
-			   (setq-local electric-pair-inhibit-predicate
-				       `(lambda (c)
-					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+(add-hook 'org-mode-hook
+          (lambda ()
+            (setq-local electric-pair-inhibit-predicate
+                        `(lambda (c)
+                           (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -588,13 +612,15 @@
 
 (use-package visual-fill-column
   :ensure t
+  :config
   :hook
   (org-mode . suzu/visual-fill)
-  (python-mode . suzu/visual-fill)
   (python-ts-mode . suzu/visual-fill)
-  (rust-mode . suzu/visual-fill)
-  (html-mode . suzu/visual-fill)
-  (dired-mode . suzu/visual-fill))
+  (rust-ts-mode . suzu/visual-fill)
+  (html-ts-mode . suzu/visual-fill)
+  (dired-mode . suzu/visual-fill)
+  (text-mode . suzu/visual-fill)
+)
 
 (use-package toc-org
   :ensure t
@@ -602,8 +628,10 @@
   :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets :ensure t)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(use-package org-bullets
+ :ensure t
+ :hook (org-mode . org-bullets-mode)
+ :custom (org-bullets-bullet-list '("◉" "○" "󰣏" "󱀝" "󰴈" "○" "●")))
 
 (setq-default org-image-actual-width nil)
 
@@ -622,75 +650,57 @@
   :defer t
   :hook (org-mode . org-auto-tangle-mode))
 
-(defun suzu/org-babel-run-after-save-hook ()
-    (message "Added org-babel-run-after-tangle hook")
-    (add-hook 'after-save-hook (lambda () (org-babel-ref-resolve "run-after-save")))
+(defun suzu/run-after-tangle-hook ()
+    (add-hook 'org-bable-tangle-finished-hook (lambda () (org-babel-ref-resolve "run-after-save")))
 )
 
 ;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
+
+(defun suzu/org-icons ()
+   "Beautify org mode keywords."
+   (setq prettify-symbols-alist '(("TODO" . "")
+	                          ("WAIT" . "")        
+   				  ("NOPE" . "")
+				  ("DONE" . "")
+				  ("[#A]" . "")
+				  ("[#B]" . "")
+ 				  ("[#C]" . "")
+				  ("[ ]" . "")
+				  ("[X]" . "")
+				  ("[-]" . "")
+				  ("#+BEGIN_SRC" . "")
+				  ("#+begin_src" . "")
+				  ("#+END_SRC" . "")
+				  ("#+end_src" . "")
+				  (":PROPERTIES:" . "")
+				  (":END:" . "―")
+				  ("#+STARTUP:" . "")
+				  ("#+TITLE: " . "")
+				  ("#+RESULTS:" . "")
+				  ("#+NAME:" . "")
+				  ("#+ROAM_TAGS:" . "")
+				  ("#+FILETAGS:" . "")
+				  ("#+HTML_HEAD:" . "")
+				  ("#+SUBTITLE:" . "")
+				  ("#+AUTHOR:" . "")
+				  ("#+DESCRIPTION:" . "󰦨")
+				  (":Effort:" . "")
+				  ("SCHEDULED:" . "")
+				  ("DEADLINE:" . "")))
+   (prettify-symbols-mode))
+(add-hook 'org-mode-hook 'suzu/org-icons)
 
 (use-package pdf-tools
   :ensure t
   :config
   (pdf-tools-install))
 
-;; (use-package counsel
-;;   :ensure t
-;;   :diminish
-;;   :after ivy
-;;   :config
-;;   (use-package flx
-;;     :ensure t)
-;;   (counsel-mode)
-;;   (ivy-mode 1)
-;;   (setq ivy-re-builders-alist
-;; 	'((t . ivy--regex-plus))))
-
-;; (use-package ivy
-;;   :ensure t
-;;   :diminish
-;;   :bind
-;;   ;; ivy-resume resumes the last Ivy-based completion.
-;;   (("C-c C-r" . ivy-resume)
-;;    ("C-x B" . ivy-switch-buffer-other-window))
-;;   :init
-;;   (setq ivy-initial-inputs-alist nil)
-;;   :custom
-;;   (setq ivy-use-virtual-buffers t)
-;;   (setq ivy-count-format "(%d/%d) ")
-;;   (setq enable-recursive-minibuffers t)
-;;   :config
-;;   (ivy-mode))
-
-;; (use-package all-the-icons-ivy-rich
-;;   :ensure t
-;;   :init (all-the-icons-ivy-rich-mode 1))
-
-;; (use-package ivy-rich
-;;   :ensure t
-;;   :after ivy
-;;   :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-;;   :custom
-;;   (ivy-virtual-abbreviate 'full
-;;                           ivy-rich-switch-buffer-align-virtual-buffer t
-;;                           ivy-rich-path-style 'abbrev)
-;;   :config
-;;   ;; (ivy-set-display-transformer 'ivy-switch-buffer
-;;   ;;                              'ivy-rich-switch-buffer-transformer)
-;; )
-
 (use-package marginalia
   :ensure t
-  ;; :after projectile
   :custom
   (marginalia-max-relative-age 0)
   (marginalia-align 'left)
   :init
-  ;; (setq marginalia-command-categories
-  ;;       (append '((projectile-find-file . project-file)
-  ;;                 (projectile-find-dir . project-file)
-  ;;                 (projectile-switch-project . file))
-  ;;               marginalia-command-categories))
   (marginalia-mode))
 
 (use-package all-the-icons-completion
@@ -703,40 +713,17 @@
 
 (use-package vertico
   :ensure t
-  ;; Special recipe to load extensions conveniently
-  ;; :straight (vertico :files (:defaults "extensions/*")
-  ;;                    :includes (vertico-indexed
-  ;;                               vertico-flat
-  ;;                               vertico-grid
-  ;;                               vertico-mouse
-  ;;                               vertico-quick
-  ;;                               vertico-buffer
-  ;;                               vertico-repeat
-  ;;                               vertico-reverse
-  ;;                               vertico-directory
-  ;;                               vertico-multiform
-  ;;                               vertico-unobtrusive
-  ;;                               ))
   :custom
-  (vertico-count 13)                    ; Number of candidates to display
+  (vertico-count 13)
   (vertico-resize nil)
-  (vertico-cycle nil) ; Go from last to first candidate and first to last (cycle)?
+  (vertico-cycle nil)
   :config
   (vertico-mode))
 
 (use-package consult
   :ensure t
   :config
-  ;; (autoload 'projectile-project-root "projectile")
-  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
 )
-
-;; (use-package projectile
-;;   :ensure t
-;;   :config
-;;   (projectile-mode 1)
-;;   (setq projectile-project-name-function 'suzu/projectile-project-name-function)
-;;   (setq projectile-project-search-path '(("~/code" . 4))))
 
 (use-package rainbow-mode
   :ensure t
@@ -764,6 +751,9 @@
       eshell-scroll-to-bottom-on-input t
       eshell-destroy-buffer-when-process-dies t
       eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+
+(use-package eshell-toggle
+  :ensure t)
 
 (use-package vterm
   :ensure t
@@ -851,7 +841,7 @@
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        ))
+        (rust-mode . rust-ts-mode)))
 
 (use-package which-key
   :ensure t
@@ -880,7 +870,3 @@
 
 (use-package bufler
   :ensure t)
-
-;; (use-package persp-projectile
-;;   :ensure t
-;;   :after perspective)
