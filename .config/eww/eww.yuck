@@ -122,7 +122,6 @@
                                      :tooltip "battery on ${EWW_BATTERY.BAT0.capacity }%"
                                      :show_truncated false
                                      :onclick "$HOME/.config/eww/scripts/pop system"
-                                     :wrap false
                                      " "))))
 
 (defwidget space []

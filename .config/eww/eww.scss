@@ -1,34 +1,44 @@
-$surface-darkgrey: #232634;
-$surface-fg: #C6D0F5;
-$surface-lightgrey: #949CBC;
-$surface-grey: #303446;
-$surface-red: #e78284;
-$surface-flamingo: #eebebe;
-$surface-green: #A6D189;
-$surface-yellow: #E5C890;
-$peach: #ef9f76;
+// $darkgrey: #232634;
+// $grey: #303446;
+// $fg: #C6D0F5;
+// $lightgrey: #949CBC;
+// $red: #e78284;
+// $flamingo: #eebebe;
+// $green: #A6D189;
+// $yellow: #E5C890;
+// $peach: #ef9f76;
+$lightgrey: #323232;
+$darkgrey: #212121;
+$grey: #100F10;
+$fg: #FDFDFD;
+$red: #FCABCF;
+$flamingo: #2CA3ED;
+$green: #6AE4B9;
+$yellow: #C5976A;
+$peach: #F07854;
+$purple: #B6A0FF;
 
 * {
     all: unset;
     font-family: Iosevka Nerd Font;
-    color: $surface-fg;
+    color: $fg;
 }
 
 /** General **/
 .bar {
     font-size: 14px;
     padding: 3px 5px 3px 5px;
-    background-color: $surface-darkgrey;
+    background-color: $darkgrey;
 }
 
 .box {
-    background-color: $surface-grey;
+    background-color: $grey;
     border-radius: 5px;
     padding: 1px 5px; 
 }
 
 .workspace {
-    background-color: $surface-grey;
+    background-color: $grey;
     border-radius: 50%;
     padding: 1px 7px; 
 }
@@ -39,27 +49,27 @@ $peach: #ef9f76;
 } 
 
 .circle_bar {
-    background-color: $surface-darkgrey;
+    background-color: $darkgrey;
     border-radius: 10px;
 }
 
 .bat_bar {
-    background-color: rgba($surface-yellow, 0.2);
-    color: $surface-green;
+    background-color: rgba($yellow, 0.2);
+    color: $green;
 }
 
 .battery_charging {
-    background-color: rgba($surface-green, 0.37);
+    background-color: rgba($green, 0.37);
 }
 
 .volume_bar {
-    color: $surface-flamingo;
-    background-color: rgba($surface-flamingo, 0.25);
+    color: $flamingo;
+    background-color: rgba($flamingo, 0.25);
 }
 
 .notification {
-    background-color: #A6D189;
-    color: $surface-grey;
+    background-color: $green;
+    color: $grey;
     padding: 0 5px;
     border-radius: 5px;
 }
@@ -95,92 +105,13 @@ scale trough {
 
 /* Occupied */
 .01, .02, .03, .04, .05, .06 {
-    color: $surface-fg;
+    color: $fg;
 }
 
 /* Focused */
 .011, .022, .033, .044, .055, .066 {
     color: #81C8BE;
 }
-
-
-.song_cover_art {
-    background-size: cover;	
-    background-position: center;
-    min-height: 24px;
-    min-width: 24px;
-    margin: 10px;
-    border-radius: 100px;
-}
-
-.song {
-    color: #81C8BE;
-    font-weight : bold;
-    margin : 3px 5px 0px 0px;
-}
-
-.song_btn_play {
-    color: #81C8BE;
-    margin : 3px 0px 0px 5px;
-
-}
-
-
-.song_btn_prev, .song_btn_next {
-    color: $surface-fg;
-    margin : 3px 0px 0px 5px;
-
-}
-// Calendar
-.cal {
-    background-color: $surface-grey;
-    font-family: JetBrainsMono Nerd Font;
-    font-weight: normal;
-
-    .cal-in {
-	padding: 0px 10px 0px 10px;
-	color: $surface-fg;
-
-	.cal {
-	    &.highlight {
-		padding: 20px;
-	    }
-
-	    padding: 5px 5px 5px 5px;
-	    margin-left: 10px;
-	}
-    }
-}
-
-calender {
-    color: $surface-fg;
-}
-calendar:selected {
-    color: #81C8BE;
-}
-
-calendar.header {
-    color: #81C8BE;
-    font-weight: bold;
-}
-
-calendar.button {
-    color: #A6D189;
-}
-
-calendar.highlight {
-    color: #81C8BE;
-    font-weight: bold;
-}
-
-calendar:indeterminate {
-    color: $surface-fg;
-}
-
-
-
-
-
 
 
 .sys_sep {
@@ -199,23 +130,23 @@ calendar:indeterminate {
     margin: 30px;
 }
 .sys_win {
-    background-color: $surface-grey;
+    background-color: $grey;
 }
 .sys_bat {
-    color: #A6D189;
+    color: $green;
     background-color: #38384d;
     border-radius: 10px;
 }
 .sys_mem {
-    color: #E5C890;
+    color: $yellow;
     background-color: #38384d;
     border-radius: 10px;
 }
 .sys_icon_bat, .sys_text_bat {
-    color: #A6D189;
+    color: $green;
 }
 .sys_icon_mem, .sys_text_mem {
-    color: #E5C890;
+    color: $yellow;
 }
 .sys_bat_box {
     border-radius: 16px;
@@ -233,7 +164,7 @@ calendar:indeterminate {
 
 
 .music_pop {
-    background-color: $surface-darkgrey;
+    background-color: $darkgrey;
     border-radius: 16px;
 }
 .music_cover_art {
@@ -293,7 +224,7 @@ calendar:indeterminate {
 }
 
 .audio-box {
-    background-color: $surface-grey;
+    background-color: $grey;
     border-radius: 16px;
 }
 .speaker_icon {
@@ -371,28 +302,28 @@ calendar:indeterminate {
 }
 
 .layout_alert {
-    background-color: #E5C890;
+    background-color: $yellow;
     border-radius: 5px;
     padding: 0 5px;
-    color: $surface-grey;
+    color: $grey;
 }
 
 .mpv_player {
     font-size: 12px;
     border-radius: 5px;
-    background-color: $surface-grey;
+    background-color: $grey;
     padding: 0 5px;
 }
 
 .layout-box {
-    background-color: rgba($surface-darkgrey, 0.2);
-    color: rgba($surface-fg, 0.8);
+    background-color: rgba($darkgrey, 0.2);
+    color: rgba($fg, 0.8);
 }
 
 .net-box,
 .bat-box,
 .tm-box {
-    background-color: $surface-grey;
+    background-color: $grey;
     border-radius: 0.5em;
     padding: 0.4em 0.5em 0.4em 0.7em;
     label {
@@ -403,7 +334,7 @@ calendar:indeterminate {
 .close-btn {
     font-size: 2em;
     &:hover {
-	color: $surface-red;
+	color: $red;
     }
 }
 
@@ -415,15 +346,15 @@ calendar:indeterminate {
     button {
 	border-radius: 0.3em;
 	padding: 0.1em 0.8em 0.1em 0.5em;
-	background-color: $surface-grey;
+	background-color: $grey;
 
 	&:hover {
 	    transition: 200ms linear background-color, border-radius;
-	    background-color: rgba($surface-lightgrey, 0.6);
+	    background-color: rgba($lightgrey, 0.6);
 	}
 
 	&:first-child {
-	    color: rgba($surface-red, 0.8);
+	    color: rgba($red, 0.8);
 	}
     }
 }
@@ -433,7 +364,7 @@ calendar:indeterminate {
     padding-top: 0.15em;
     padding-left: 0.2em;
     padding-right: 0.2em;
-    color: $surface-lightgrey;
+    color: $lightgrey;
 }
 
 .sundial-lbl {
@@ -445,15 +376,15 @@ calendar:indeterminate {
 }
 
 .cpu_temp_alert {
-    background-color: #E5C890;
+    background-color: $yellow;
     border-radius: 5px;
     padding: 0 5px;
-    color: $surface-grey;
+    color: $grey;
 }
 
 .timer69 {
-    background-color: $surface-grey;
-    color: $surface-red;
+    background-color: $grey;
+    color: $red;
 }
 
 .mic {
