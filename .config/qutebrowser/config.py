@@ -151,7 +151,7 @@ config.set(
 # set the flavor you'd like to use
 # valid options are 'mocha', 'macchiato', 'frappe', and 'latte'
 # last argument (optional, default is False): enable the plain look for the menu rows
-catppuccin.setup(c, "frappe", True)
+catppuccin.setup(c, "modus-vivendi", True)
 
 # config.bind("w", ":tab-next")
 # config.bind("b", ":tab-prev")
