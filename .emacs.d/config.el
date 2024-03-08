@@ -63,9 +63,9 @@
 
 (with-eval-after-load 'evil-maps
   ;; (global-set-key (kbd "C-h") nil)
-  ;; (global-set-key (kbd "C-j") nil)
   ;; (global-set-key (kbd "C-k") nil)
-  ;; (global-set-key (kbd "C-l") nil)
+  (global-unset-key (kbd "C-j"))
+  (global-unset-key (kbd "C-l"))
   (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
   (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
   (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
@@ -253,25 +253,25 @@
   :config
   (global-git-gutter-mode +1))
 
-(use-package doom-modeline
-  :ensure t
-  :init
-  (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 15
-        doom-modeline-buffer nil
-        doom-modeline-buffer-name nil
-        doom-modeline-bar-width 6
-        doom-modeline-lsp t
-        doom-modeline-github nil
-        doom-modeline-mu4e nil
-        doom-modeline-irc t
-        doom-modeline-minor-modes nil
-        doom-modeline-persp-name nil
-        doom-modeline-display-default-persp-name nil
-        doom-modeline-persp-icon nil
-        doom-modeline-major-mode-icon nil))
-;; (setq-default mode-line-format nil)
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init
+;;   (doom-modeline-mode nil)
+;;   :config
+;;   (setq doom-modeline-height 15
+;;         doom-modeline-buffer nil
+;;         doom-modeline-buffer-name nil
+;;         doom-modeline-bar-width 6
+;;         doom-modeline-lsp t
+;;         doom-modeline-github nil
+;;         doom-modeline-mu4e nil
+;;         doom-modeline-irc t
+;;         doom-modeline-minor-modes nil
+;;         doom-modeline-persp-name nil
+;;         doom-modeline-display-default-persp-name nil
+;;         doom-modeline-persp-icon nil
+;;         doom-modeline-major-mode-icon nil))
+(setq-default mode-line-format nil)
 
 (use-package all-the-icons
   :ensure t)
@@ -610,6 +610,7 @@
   :hook
   (org-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill)
+  (eshell-mode . suzu/visual-fill)
   (prog-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 
@@ -872,3 +873,9 @@
   (suzu/update-eww-var "emacs_window" (buffer-name)))
 
 (add-hook 'window-state-change-hook 'suzu/current-window)
+
+(defun suzu/current-vcs-branch ()
+  (suzu/update-eww-var "git_branch" (magit-get-current-branch)))
+
+;; (add-hook 'find-file-hook 'suzu/current-vcs-branch)
+;; (add-hook 'after-save-hook 'suzu/current-vcs-branch)

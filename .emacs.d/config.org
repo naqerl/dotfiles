@@ -45,6 +45,7 @@
   - [[#auto-babel-tangle][Auto babel tangle]]
   - [[#run-source-block-hook][Run source block hook]]
   - [[#prettify-symbols][Prettify symbols]]
+  - [[#disable-some-binds][Disable some binds]]
 - [[#pdf-tools][PDF tools]]
 - [[#completion][Completion]]
   - [[#vertico][Vertico]]
@@ -69,6 +70,7 @@
   - [[#common-1][Common]]
   - [[#current-perspective][Current perspective]]
   - [[#current-buffer][Current buffer]]
+  - [[#vcs-branch][VCS branch]]
 
 * Important programs to load first
 ** Loading scripts
@@ -378,25 +380,25 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 
 ** Modeline
 #+begin_src elisp
-(use-package doom-modeline
-  :ensure t
-  :init
-  (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 15
-        doom-modeline-buffer nil
-        doom-modeline-buffer-name nil
-        doom-modeline-bar-width 6
-        doom-modeline-lsp t
-        doom-modeline-github nil
-        doom-modeline-mu4e nil
-        doom-modeline-irc t
-        doom-modeline-minor-modes nil
-        doom-modeline-persp-name nil
-        doom-modeline-display-default-persp-name nil
-        doom-modeline-persp-icon nil
-        doom-modeline-major-mode-icon nil))
-;; (setq-default mode-line-format nil)
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init
+;;   (doom-modeline-mode nil)
+;;   :config
+;;   (setq doom-modeline-height 15
+;;         doom-modeline-buffer nil
+;;         doom-modeline-buffer-name nil
+;;         doom-modeline-bar-width 6
+;;         doom-modeline-lsp t
+;;         doom-modeline-github nil
+;;         doom-modeline-mu4e nil
+;;         doom-modeline-irc t
+;;         doom-modeline-minor-modes nil
+;;         doom-modeline-persp-name nil
+;;         doom-modeline-display-default-persp-name nil
+;;         doom-modeline-persp-icon nil
+;;         doom-modeline-major-mode-icon nil))
+(setq-default mode-line-format nil)
 #+end_src
 
 ** All the icons
@@ -821,6 +823,7 @@ Required for better LSP docs rendering
   :hook
   (org-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill)
+  (eshell-mode . suzu/visual-fill)
   (prog-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 #+end_src
@@ -914,6 +917,14 @@ So it'll be nice to run them automatically
 				  ("deadline:" . "")))
    (prettify-symbols-mode))
 (add-hook 'org-mode-hook 'suzu/org-icons)
+#+end_src
+
+** Disable some binds
+#+begin_src elisp
+(defun suzu/unset-org-mode-binds ()
+  (global-unset-key (kbd "C-j"))
+  (global-unset-key (kbd "C-k")))
+(add-hook 'org-mode-hook 'suzu/unset-org-mode-binds)
 #+end_src
 
 
@@ -1187,3 +1198,12 @@ Turn off duplicating lines on execution
 (add-hook 'window-state-change-hook 'suzu/current-window)
 #+end_src
 
+
+** VCS branch
+#+begin_src elisp
+(defun suzu/current-vcs-branch ()
+  (suzu/update-eww-var "git_branch" (magit-get-current-branch)))
+
+;; (add-hook 'find-file-hook 'suzu/current-vcs-branch)
+;; (add-hook 'after-save-hook 'suzu/current-vcs-branch)
+#+end_src
