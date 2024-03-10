@@ -71,7 +71,8 @@
         (label
         :text emacs_window
         :xalign 1
-        :limit-width 50))))
+        :limit-width 50)
+        (emacs_buffer_modifier))))
 
 (defwidget emacs_buffer_modifier []
     (revealer
