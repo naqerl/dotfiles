@@ -78,7 +78,7 @@ exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'Catppuccin-F
 
 *** Wallpaper
 #+begin_src conf
-exec-once = pacwall
+exec-once = hyprpaper
 #+end_src
 
 *** Statusbar
@@ -104,7 +104,7 @@ It's my personal app that adds essential features:
 - Each workspace has own state of choosed keybaord layout
 
 #+begin_src conf
-exec-once = $HOME/.config/bin/hyprsistant
+exec-once = hyprsistant
 #+end_src
 
 ** Start apps
@@ -318,9 +318,8 @@ bind = $mainMod, T, exec, kitty bash -c 'tmux new -s main || tmux a'
 bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 bind = $mainMod, B, exec, run-chrome-profile
 bind = $mainMod, Q, killactive,
-bind = $mainMod, S, exec, emacsclient --create-frame --alternate-editor=""
-bind = $mainMod, E, exec, hyprctl dispatch workspace $(hypr-first-empty-workspace)
-bind = $mainShiftMod, E, exec, hyprctl dispatch movetoworkspace $(hypr-first-empty-workspace)
+bind = $mainMod, C, exec, hyprctl dispatch workspace $(hypr-first-empty-workspace)
+bind = $mainShiftMod, C, exec, hyprctl dispatch movetoworkspace $(hypr-first-empty-workspace)
 bind = $mainMod, V, togglefloating,
 bind = $mainMod, SPACE, exec, fuzzel
 bind = $mainMod, P, pseudo, # dwindle
@@ -341,7 +340,21 @@ bind = $mainMod, U, exec, mpv-controller volume-up 1
 bind = $mainShiftMod, U, exec, mpv-controller volume-down 1
 # bind = $mainShiftMod, D, exec, hyprctl dispatch workspace $(hypr-first-emtpy-workspace) && edit-img-from-clipboard
 bind = $mainMode, O, exec, thunar
-bind = $mainShiftMod, R, exec, notify-send "Killing emacs" && pkill -9 emacs && $emacsDaemon && $emacsClient
+#+end_src
+
+*** Emacs
+#+begin_src conf
+bind = $mainMod, E, submap, emacs
+submap=emacs
+bind = ,E, exec, emacsclient --create-frame --alternate-editor=""
+bind = ,S, exec, emacsclient --create-frame --alternate-editor="" --eval '(eshell)' 
+bind = ,D, exec, emacsclient --create-frame --alternate-editor="" --eval '(dired nil)'
+bind = ,F, exec, emacsclient --create-frame --alternate-editor="" --eval '(elfeed)'
+bind = ,V, exec, emacsclient --create-frame --alternate-editor="" --eval '(+vterm/here nil)'
+bind = ,R, exec, notify-send "Killing emacs" && pkill -9 emacs && $emacsDaemon && $emacsClient
+bind=,escape,submap,reset 
+
+submap=reset
 #+end_src
 
 ** Workspaces
