@@ -292,7 +292,7 @@ misc {
 #+begin_src conf
 windowrule = workspace 10 silent, title:(.*is sharing your screen.)
 windowrule = float,^(pavucontrol)$
-windowrule = float, ^(.*chromium.*browser.*)$
+# windowrule = float, ^(.*chromium.*browser.*)$
 windowrule = float, title:^(emacs-run-launcher)$
 
 windowrule = float, title:(Picture in picture)
@@ -317,27 +317,12 @@ layerrule = ignorezero, gtk-layer-shell
 bind = $mainMod, T, exec, kitty bash -c 'tmux new -s main || tmux a'
 bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 bind = $mainMod, B, exec, run-chrome-profile
-bind = $mainMod, Q, killactive,
-bind = $mainMod, C, exec, hyprctl dispatch workspace $(hypr-first-empty-workspace)
-bind = $mainShiftMod, C, exec, hyprctl dispatch movetoworkspace $(hypr-first-empty-workspace)
-bind = $mainMod, V, togglefloating,
 bind = $mainMod, SPACE, exec, fuzzel
-bind = $mainMod, P, pseudo, # dwindle
 bind = $mainShiftMod, P, exec, open-pdf
-bind = $mainMod, D, togglesplit, # dwindle
-bind = $mainMod, F, fullscreen
-bind = $mainShiftMod, C, exec, hyprpicker -a
-bind = $mainMod, h, movefocus, l
-bind = $mainMod, j, movefocus, d
-bind = $mainMod, k, movefocus, u
-bind = $mainMod, l, movefocus, r
+bind = $mainMod, P, exec, hyprpicker -a
 bind = $mainMod, W, exec, change-wallpaper
 bind = $mainShiftMod, W, exec, bash -c 'notify-send "Running Win10 VM"; virsh --connect qemu:///system start win10; virt-manager --connect qemu:///system --show-domain-console win10'
 bind = $mainMod, TAB, exec, eww open --toggle powermenu
-bind = $mainShiftMod, Y, exec, bash -c 'workspace=$(hypr-first-emtpy-workspace); notify-send "Playing YT video on $workspace workspace" && hyprctl dispatch workspace $workspace && mpv $(wl-paste)'
-bind = $mainMod, Y, exec, music-player
-bind = $mainMod, U, exec, mpv-controller volume-up 1
-bind = $mainShiftMod, U, exec, mpv-controller volume-down 1
 # bind = $mainShiftMod, D, exec, hyprctl dispatch workspace $(hypr-first-emtpy-workspace) && edit-img-from-clipboard
 bind = $mainMode, O, exec, thunar
 #+end_src
@@ -390,10 +375,19 @@ bind = $mainShiftMod, 9, movetoworkspace, 9
 bind = $mainShiftMod, 0, movetoworkspace, 10
 #+end_src
 
+*** First empty workspace
+#+begin_src conf
+bind = $mainMod, C, exec, hyprctl dispatch workspace $(hypr-first-empty-workspace)
+bind = $mainShiftMod, C, exec, hyprctl dispatch movetoworkspace $(hypr-first-empty-workspace)
+#+end_src
+
 ** Windows
 *** Navigate
 #+begin_src conf
-
+bind = $mainMod, h, movefocus, l
+bind = $mainMod, j, movefocus, d
+bind = $mainMod, k, movefocus, u
+bind = $mainMod, l, movefocus, r
 #+end_src
 
 *** Move
@@ -414,6 +408,12 @@ bind = $mainMod ALT, h, resizeactive, -20 0
 bind = $mainMod ALT, j, resizeactive, 0 20
 bind = $mainMod ALT, k, resizeactive, 0 -20
 bind = $mainMod ALT, l, resizeactive, 20 0
+bind = $mainMod, F, fullscreen
+#+end_src
+
+*** Quit window
+#+begin_src conf
+bind = $mainMod, Q, killactive,
 #+end_src
 
 *** Mouse support
@@ -430,6 +430,13 @@ bind=ALT,T,togglegroup,
 bind=ALT,L,changegroupactive,f
 bind=ALT,H,changegroupactive,b
 bind=ALT,S,togglesplit,
+#+end_src
+
+*** Layout
+#+begin_src conf
+bind = $mainMod, V, togglefloating,
+bind = $mainMod, U, pseudo,
+bind = $mainMod, D, togglesplit,
 #+end_src
 
 ** Screenshot
@@ -468,7 +475,8 @@ bind = $mainShiftMod, D, exec, toggle-second-monitor
 
 ** Timer
 #+begin_src conf
-bind =, XF86Tools, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=52"'
-bind =, XF86Launch5, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=17"'
+bind =, XF86Tools, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=52&color=ff8059"'
+bind =, XF86Launch5, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=17&color=44bc44"'
 bind =, XF86Launch6, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/stop"'
 #+end_src
+
