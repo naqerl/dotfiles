@@ -1,0 +1,2 @@
+setq PAGER view-file
+eshell/clear-scrollback
