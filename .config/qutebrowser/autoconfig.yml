@@ -40,7 +40,7 @@ settings:
     global: never
   url.searchengines:
     global:
-      DEFAULT: https://duckduckgo.com/?q={}
+      DEFAULT: https://www.google.com/search?q={}
       aw: https://wiki.archlinux.org/?search={}
       re: https://www.reddit.com/r/{}
       ub: https://www.urbandictionary.com/define.pgp?term={}
