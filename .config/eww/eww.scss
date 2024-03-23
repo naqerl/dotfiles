@@ -14,14 +14,18 @@ $fg: #FDFDFD;
 $red: #FCABCF;
 $flamingo: #2CA3ED;
 $green: #6AE4B9;
+$cyan: #6AE4B9;
 $yellow: #C5976A;
 $peach: #F07854;
 $purple: #B6A0FF;
 
 * {
     all: unset;
+    padding: 0;
+    margin: 0;
     font-family: Iosevka Nerd Font;
     color: $fg;
+    font-size: 14px;
 }
 
 .fg-purple {
@@ -36,17 +40,42 @@ $purple: #B6A0FF;
     color: $flamingo;
 }
 
-/** General **/
-.bar {
-    font-size: 14px;
-    padding: 3px 7px 3px 7px;
+.fg-dark {
+    color: $darkgrey;
+}
+
+.fg-light {
+    color: $fg;
+}
+
+.bg-transparent {
+    background-color: rgba($darkgrey, 0.6);
+}
+
+.bg-dark {
     background-color: $darkgrey;
 }
 
+.bg-yellow {
+    background-color: $yellow;
+}
+
+.bg-cyan {
+    background-color: $cyan;
+}
+
+.icon {
+    padding: 0;
+    margin: 0;
+}
+
+.text {
+    padding: 0;
+    margin: 0;
+}
+
 .box {
-    background-color: $grey;
-    border-radius: 5px;
-    padding: 1px 5px; 
+    padding: 0px 5px; 
 }
 
 .workspace {
@@ -62,7 +91,6 @@ $purple: #B6A0FF;
 
 .circle_bar {
     background-color: $darkgrey;
-    border-radius: 10px;
 }
 
 .bat_bar {
