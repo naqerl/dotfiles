@@ -14,5 +14,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auth-source-save-behavior nil)
+ '(enwc-wired-device "wlan0")
+ '(enwc-wireless-device "wlan0")
  '(package-selected-packages
-   '(org-bullets helpful alert bufler perspective which-key tldr sudo-edit multi-vterm vterm-toggle vterm pcmpl-args eshell-toggle eshell-git-prompt eshell-syntax-highlighting rainbow-mode consult vertico all-the-icons-completion marginalia pdf-tools org-roam org-auto-tangle org-appear toc-org visual-fill-column emojify dap-mode csv-mode markdown-mode sqlformat yuck-mode python-black rust-mode eldoc-box dashboard evil-nerd-commenter elfeed-goodies elfeed peep-dired dired-open diminish nerd-icons-corfu orderless corfu all-the-icons-dired all-the-icons git-gutter magit zen-mode golden-ratio general undo-tree gcmh evil-collection better-jumper async)))
+   '(enwc emacs-nm org-bullets helpful alert bufler perspective which-key tldr sudo-edit multi-vterm vterm-toggle vterm pcmpl-args eshell-toggle eshell-git-prompt eshell-syntax-highlighting rainbow-mode consult vertico all-the-icons-completion marginalia pdf-tools org-roam org-auto-tangle org-appear toc-org visual-fill-column emojify dap-mode csv-mode markdown-mode sqlformat yuck-mode python-black rust-mode eldoc-box dashboard evil-nerd-commenter elfeed-goodies elfeed peep-dired dired-open diminish nerd-icons-corfu orderless corfu all-the-icons-dired all-the-icons git-gutter magit zen-mode golden-ratio general undo-tree gcmh evil-collection better-jumper async)))
