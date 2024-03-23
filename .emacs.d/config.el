@@ -3,7 +3,6 @@
 (require 'package-manager)
 
 (use-package gcmh
-  :ensure t
   :init
   (gcmh-mode 1))
 
@@ -17,7 +16,6 @@
 (require 'ob-async-sql)
 
 (use-package evil
-  :ensure t
   :init
   (setq evil-want-keybinding nil)
   (setq evil-want-window-right t)
@@ -32,7 +30,6 @@
 
 (use-package evil-collection
   :after evil
-  :ensure t
   :config
   (evil-collection-init))
 
@@ -50,7 +47,6 @@
   (define-key evil-inner-text-objects-map "o" 'evil-inner-word))
 
 (use-package better-jumper
-  :ensure t
   :diminish
   :config
   (better-jumper-mode +1))
@@ -96,7 +92,6 @@
   (other-window 1))
 
 (use-package general
-  :ensure t
   :config
   (general-evil-setup)
 
@@ -266,14 +261,12 @@
 
 (use-package auto-dim-other-buffers
   :disabled
-  :ensure t
   :custom
   (auto-dim-other-buffers-dim-on-switch-to-minibuffer nil)
   (auto-dim-other-buffers-affected-faces '((default . auto-dim-other-buffers-face)
                                            (org-hide . auto-dim-other-buffers-hide-face))))
 
 (use-package golden-ratio
-  :ensure t
   :init
   (golden-ratio-mode 1)
   :custom
@@ -288,13 +281,11 @@
   (setq auth-source-debug 'trivia))
 
 (use-package magit
-  :ensure t
   :config
   (setq magit-status-buffer-switch-function 'switch-to-buffer)
   (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package git-gutter
-  :ensure t
   :custom
   (git-gutter:modified-sign " ") ;; two space
   (git-gutter:added-sign " ")    ;; multiple character is OK
@@ -307,13 +298,11 @@
 (use-package all-the-icons
   :ensure t)
 (use-package all-the-icons-dired
-  :ensure t
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
 (setq make-backup-files nil)
 
 (use-package corfu
-  :ensure t
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
@@ -342,19 +331,16 @@
   (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode))
 
 (use-package orderless
-  :ensure t
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package nerd-icons-corfu
-:ensure t
 :config
 (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package dired-open
-  :ensure t
   :custom ((dired-listing-switches "-agho --group-directories-first"))
   :config
   (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
@@ -368,7 +354,6 @@
 
 (use-package peep-dired
   :after dired
-  :ensure t
   :hook (evil-normalize-keymaps . peep-dired-hook)
   )
 
@@ -376,7 +361,6 @@
 (setq-default dired-listing-switches "-aBhl  --group-directories-first")
 
 (use-package elfeed
-  :ensure t
   :config
   (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"
         elfeed-feeds (quote
@@ -403,7 +387,6 @@
 
 
 (use-package elfeed-goodies
-  :ensure t
   :init
   (elfeed-goodies/setup)
   :config
@@ -444,7 +427,6 @@
 (add-hook 'ediff-mode-hook 'suzu/ediff-hook)
 
 (use-package evil-nerd-commenter
-  :ensure t
   :config
   (general-define-key
    :states 'normal
@@ -452,7 +434,6 @@
    "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
 
 (use-package dashboard
-  :ensure t
   :config
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
@@ -467,7 +448,6 @@
 )
 
 (use-package eldoc-box
-  :ensure t
   :config
   (defun suzu/eldoc-box-scroll-up ()
     "Scroll up in `eldoc-box--frame'"
@@ -492,7 +472,6 @@
   (eglot-ensure))
 
 (use-package rust-mode
-  :ensure t
   :init
   (setq rust-mode-treesitter-derive t)
   (setq rust-format-on-save t))
@@ -513,7 +492,6 @@
   :ensure t)
 
 (use-package sqlformat
-:ensure t
 :config
 (setq sqlformat-command 'pgformatter)
 (setq sqlformat-args '("-s2" "-g"))
@@ -541,21 +519,19 @@
 (setq-default electric-indent-inhibit t)
 (setq backward-delete-char-untabify-method 'hungry)
 
-(setq create-lockfiles nil)
+(global-display-line-numbers-mode 1)
+(setq-default display-line-numbers-type 'relative)
+
 (electric-pair-mode 1)
-(setq org-edit-src-content-indentetion 0)
-(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
+
 (menu-bar-mode -1)           ;; Disable the menu bar
 (scroll-bar-mode -1)         ;; Disable the scroll bar
 (tool-bar-mode -1)           ;; Disable the tool bar
-(setq-default auto-save-default nil)
-(setq-default org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2
-(set-fringe-style 0)
 
-(setq-default truncate-lines t)
-(setq-default scroll-margin 7)
-(global-display-line-numbers-mode 1)
-(setq-default display-line-numbers-type 'relative)
+(setq create-lockfiles nil)
+(setq-default auto-save-default nil)
+
+(global-auto-revert-mode t)
 
 (setq help-window-select t)
 
@@ -563,11 +539,9 @@
   :ensure t)
 
 (with-eval-after-load 'org
-  ;; This is needed as of Org 9.2
   (require 'org-tempo)
-
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
 (add-hook 'org-mode-hook
@@ -575,6 +549,89 @@
     (setq-local electric-pair-inhibit-predicate
       `(lambda (c)
         (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+
+(defun suzu/visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :config
+  :hook
+  (org-mode . suzu/visual-fill)
+  (dired-mode . suzu/visual-fill)
+  (eshell-mode . suzu/visual-fill)
+  (prog-mode . suzu/visual-fill)
+  (text-mode . suzu/visual-fill))
+
+(defun suzu/org-mode-setup ()
+  (setq org-ellipsis " ▾")
+  (setq org-edit-src-content-indentetion 0)
+  (setq-default org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2
+  (setq-default org-image-actual-width nil)
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
+
+(defun suzu/org-icons ()
+  "Beautify org mode keywords."
+  (setq prettify-symbols-alist '(("TODO" . "")
+                                 ("WAIT" . "")        
+                                 ("NOPE" . "")
+                                 ("DONE" . "")
+                                 ("[#A]" . "")
+                                 ("[#B]" . "")
+                                 ("[#C]" . "")
+                                 ("[ ]" . "")
+                                 ("[X]" . "")
+                                 ("[-]" . "")
+                                 ("#+begin_src" . "")
+                                 ("#+end_src" . "")
+                                 (":properties:" . "")
+                                 (":PROPERTIES:" . "")
+                                 (":end:" . "―")
+                                 (":END:" . "―")
+                                 (":ID:" . "")
+                                 ("#+startup:" . "")
+                                 ("#+title: " . "")
+                                 ("#+results:" . "")
+                                 ("#+name:" . "")
+                                 ("#+roam_tags:" . "")
+                                 ("#+filetags:" . "")
+                                 ("#+html_head:" . "")
+                                 ("#+subtitle:" . "")
+                                 ("#+author:" . "")
+                                 ("#+description:" . "󰦨")
+                                 (":effort:" . "")
+                                 ("*" . "󰣏")
+                                 ("**" . " 󱀝")
+                                 ("***" . "  ")
+                                 ("****" . "   ")
+                                 ("*****" . "    ")
+                                 ("******" . "     ")
+                                 ("scheduled:" . "")
+                                 ("deadline:" . "")))
+  (prettify-symbols-mode))
+
+(defun suzu/org-mode-hook ()
+  (require 'suzu-org-indent)
+  (setq org-indent-mode-turns-on-hiding-stars nil)
+  (org-indent-mode)
+  (suzu/org-icons)
+  (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
+  (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down)
+  (visual-line-mode 1))
+
+(use-package org
+  :pin org
+  :commands (org-capture org-agenda)
+  :config
+  (suzu/org-mode-setup)
+  :hook (org-mode . suzu/org-mode-hook))
+
+(use-package toc-org
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -588,258 +645,20 @@
 			       (plantuml . t)
 			       (sql . t)))
 
-(defun suzu/visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :ensure t
-  :config
-  :hook
-  (org-mode . suzu/visual-fill)
-  (dired-mode . suzu/visual-fill)
-  (eshell-mode . suzu/visual-fill)
-  (prog-mode . suzu/visual-fill)
-  (text-mode . suzu/visual-fill))
-
-(defun suzu/org-font-setup ()
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Set faces for heading levels
-  ;; (dolist (face '((org-level-1 . 1.2)
-  ;;                 (org-level-2 . 1.1)
-  ;;                 (org-level-3 . 1.05)
-  ;;                 (org-level-4 . 1.0)
-  ;;                 (org-level-5 . 1.1)
-  ;;                 (org-level-6 . 1.1)
-  ;;                 (org-level-7 . 1.1)
-  ;;                 (org-level-8 . 1.1)))
-    ;; (set-face-attribute (car face) nil :font "Iosevka NF" :weight 'regular :height (cdr face)))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  ;; (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-  ;; (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-  ;; (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-  ;; (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-  ;; (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-  ;; (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  ;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  ;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  ;; (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-  ;; (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-  ;; (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
-)
-
-(defun suzu/org-mode-setup ()
-  (org-indent-mode)
-  ;; (variable-pitch-mode 1)
-  (visual-line-mode 1))
-
-(use-package org
-  :pin org
-  :commands (org-capture org-agenda)
-  :hook (org-mode . suzu/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾")
-
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-
-  (setq org-agenda-files
-        '("~/org-roam/tasks.org"
-          "~/org-roam/habits.org"))
-
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60)
-
-  (setq org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-
-  (setq org-refile-targets
-    '(("Archive.org" :maxlevel . 1)
-      ("Tasks.org" :maxlevel . 1)))
-
-  ;; Save Org buffers after refiling!
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-  (setq org-tag-alist
-    '((:startgroup)
-       ; Put mutually exclusive tags here
-       (:endgroup)
-       ("@errand" . ?E)
-       ("@home" . ?H)
-       ("@work" . ?W)
-       ("agenda" . ?a)
-       ("planning" . ?p)
-       ("publish" . ?P)
-       ("batch" . ?b)
-       ("note" . ?n)
-       ("idea" . ?i)))
-
-  ;; Configure custom agenda views
-  (setq org-agenda-custom-commands
-   '(("d" "Dashboard"
-     ((agenda "" ((org-deadline-warning-days 7)))
-      (todo "NEXT"
-        ((org-agenda-overriding-header "Next Tasks")))
-      (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
-
-    ("n" "Next Tasks"
-     ((todo "NEXT"
-        ((org-agenda-overriding-header "Next Tasks")))))
-
-    ("W" "Work Tasks" tags-todo "+work-email")
-
-    ;; Low-effort next actions
-    ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-     ((org-agenda-overriding-header "Low Effort Tasks")
-      (org-agenda-max-todos 20)
-      (org-agenda-files org-agenda-files)))
-
-    ("w" "Workflow Status"
-     ((todo "WAIT"
-            ((org-agenda-overriding-header "Waiting on External")
-             (org-agenda-files org-agenda-files)))
-      (todo "REVIEW"
-            ((org-agenda-overriding-header "In Review")
-             (org-agenda-files org-agenda-files)))
-      (todo "PLAN"
-            ((org-agenda-overriding-header "In Planning")
-             (org-agenda-todo-list-sublevels nil)
-             (org-agenda-files org-agenda-files)))
-      (todo "BACKLOG"
-            ((org-agenda-overriding-header "Project Backlog")
-             (org-agenda-todo-list-sublevels nil)
-             (org-agenda-files org-agenda-files)))
-      (todo "READY"
-            ((org-agenda-overriding-header "Ready for Work")
-             (org-agenda-files org-agenda-files)))
-      (todo "ACTIVE"
-            ((org-agenda-overriding-header "Active Projects")
-             (org-agenda-files org-agenda-files)))
-      (todo "COMPLETED"
-            ((org-agenda-overriding-header "Completed Projects")
-             (org-agenda-files org-agenda-files)))
-      (todo "CANC"
-            ((org-agenda-overriding-header "Cancelled Projects")
-             (org-agenda-files org-agenda-files)))))))
-
-  (setq org-capture-templates
-    `(("t" "Tasks / Projects")
-      ("tt" "Task" entry (file+olp "~/org-roam/tasks.org" "Inbox")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-
-      ("j" "Journal Entries")
-      ("jj" "Journal" entry
-           (file+olp+datetree "~/org-roam/journal.org")
-           "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-           :clock-in :clock-resume
-           :empty-lines 1)
-      ("jm" "Meeting" entry
-           (file+olp+datetree "~/org-roam/journal.org")
-           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-           :clock-in :clock-resume
-           :empty-lines 1)
-
-      ("w" "Workflows")
-      ("we" "Checking Email" entry (file+olp+datetree "~/org-roam/journal.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
-
-      ("m" "Metrics Capture")
-      ("mw" "Weight" table-line (file+headline "~/org-roam/metrics.org" "Weight")
-       "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
-
-  (define-key global-map (kbd "C-c j")
-    (lambda () (interactive) (org-capture nil "jj")))
-
-  (suzu/org-font-setup))
-
-(use-package toc-org
-  :commands toc-org-enable
-  :init (add-hook 'org-mode-hook 'toc-org-enable))
-
-(add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets
- :hook (org-mode . org-bullets-mode)
- :custom (org-bullets-bullet-list '("◉" "○" "󰣏" "󱀝" "󰴈" "○" "●")))
-
-(setq-default org-image-actual-width nil)
-
 (use-package org-auto-tangle
-  :ensure t
-  :defer t
   :hook (org-mode . org-auto-tangle-mode))
 
-(
-defun suzu/run-after-tangle-hook ()
+(defun suzu/run-after-tangle-hook ()
     (add-hook 'org-bable-tangle-finished-hook (lambda () (org-babel-ref-resolve "run-after-save"))))
 
 ;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
 
-(defun suzu/org-icons ()
-  "Beautify org mode keywords."
-  (setq prettify-symbols-alist '(("TODO" . "")
-	                         ("WAIT" . "")        
-   				 ("NOPE" . "")
-				 ("DONE" . "")
-				 ("[#A]" . "")
-				 ("[#B]" . "")
- 				 ("[#C]" . "")
-				 ("[ ]" . "")
-				 ("[X]" . "")
-				 ("[-]" . "")
-				 ("#+begin_src" . "")
-				 ("#+end_src" . "")
-				 (":properties:" . "")
-				 (":PROPERTIES:" . "")
-				 (":end:" . "―")
-                                 (":END:" . "―")
-                                 (":ID:" . "")
-				 ("#+startup:" . "")
-				 ("#+title: " . "")
-				 ("#+results:" . "")
-				 ("#+name:" . "")
-				 ("#+roam_tags:" . "")
-				 ("#+filetags:" . "")
-				 ("#+html_head:" . "")
-				 ("#+subtitle:" . "")
-				 ("#+author:" . "")
-				 ("#+description:" . "󰦨")
-				 (":effort:" . "")
-                            ("scheduled:" . "")
-				 ("deadline:" . "")))
-  (prettify-symbols-mode))
-(add-hook 'org-mode-hook 'suzu/org-icons)
-
-(defun suzu/setup-org-mode ()
-    (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
-    (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down))
-
-(add-hook 'org-mode-hook 'suzu/setup-org-mode)
-
-;; (defun suzu/disable-git-gutter ()
-;;   (git-gutter-mode nil))
-;; (add-hook 'org-mode-hook 'suzu/disable-git-gutter)
-
 (use-package org-roam
-  :ensure t
   :config
   (org-roam-db-autosync-mode))
 
 (setq org-directory "~/org-roam")
 (setq org-agenda-files '("tasks.org" "habits.org"))
-
-;; If you only want to see the agenda for today
-;; (setq org-agenda-span 'day)
-
 (setq org-agenda-start-with-log-mode t)
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
@@ -897,7 +716,6 @@ defun suzu/run-after-tangle-hook ()
              (org-agenda-files org-agenda-files)))))))
 
 (use-package pdf-tools
-  :ensure t
   :config
   (pdf-tools-install))
 
@@ -912,7 +730,6 @@ defun suzu/run-after-tangle-hook ()
                               #'suzu/dir-contains-project-marker))
 
 (use-package marginalia
-  :ensure t
   :custom
   (marginalia-max-relative-age 0)
   (marginalia-align 'left)
@@ -920,7 +737,6 @@ defun suzu/run-after-tangle-hook ()
   (marginalia-mode))
 
 (use-package all-the-icons-completion
-  :ensure t
   :after (marginalia all-the-icons)
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
   :init
@@ -928,7 +744,6 @@ defun suzu/run-after-tangle-hook ()
   (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
 
 (use-package vertico
-  :ensure t
   :custom
   (vertico-count 13)
   (vertico-resize nil)
@@ -936,13 +751,9 @@ defun suzu/run-after-tangle-hook ()
   :config
   (vertico-mode))
 
-(use-package consult
-  :ensure t
-  :config
-)
+(use-package consult)
 
 (use-package rainbow-mode
-  :ensure t
   :diminish
   :hook
   ((org-mode prog-mode) . rainbow-mode))
@@ -950,7 +761,6 @@ defun suzu/run-after-tangle-hook ()
 (setq comint-input-ignoredups t)
 
 (use-package eshell-syntax-highlighting
-  :ensure t
   :after esh-mode
   :config
   (eshell-syntax-highlighting-global-mode +1))
@@ -1003,7 +813,6 @@ defun suzu/run-after-tangle-hook ()
         eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
 
 (use-package eshell-toggle
-  :ensure t
   :custom
   (eshell-toggle-window-side 'above)
   (eshell-toggle-size-fraction 3)
@@ -1015,7 +824,6 @@ defun suzu/run-after-tangle-hook ()
   :ensure t)
 
 (use-package vterm
-  :ensure t
   :config
   (setq vterm-shell "/usr/bin/bash"
         vterm-buffer-name-string "vterm %s"
@@ -1055,7 +863,6 @@ defun suzu/run-after-tangle-hook ()
 )
 
 (use-package vterm-toggle
-  :ensure t
   :after vterm
   :config
   (setq vterm-toggle-fullscreen-p nil)
@@ -1075,7 +882,6 @@ defun suzu/run-after-tangle-hook ()
                  (window-height . 0.3))))
 
 (use-package multi-vterm
-  :ensure t
   :config
   (add-hook 'vterm-mode-hook
             (lambda ()
@@ -1084,14 +890,13 @@ defun suzu/run-after-tangle-hook ()
   (define-key vterm-mode-map [return]                      #'vterm-send-return))
 
 (use-package sudo-edit
-  :ensure t
   :config
   (suzu/leader-keys
     "o w s" '(sudo-edit :wk "Sudo edit file")))
 
 (use-package tldr :ensure t)
 
-(add-to-list 'default-frame-alist '(alpha-background . 100))
+(add-to-list 'default-frame-alist '(alpha-background . 60))
 
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
@@ -1104,7 +909,6 @@ defun suzu/run-after-tangle-hook ()
         (rust-ts-mode . rust-mode)))
 
 (use-package which-key
-  :ensure t
   :diminish
   :init
   (which-key-mode)
@@ -1113,7 +917,6 @@ defun suzu/run-after-tangle-hook ()
         which-key-side-window-max-height 0.50))
 
 (use-package perspective
-  :ensure t
   :init
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
@@ -1184,14 +987,12 @@ defun suzu/run-after-tangle-hook ()
    :cookie (auth-source-pass--read-entry  "slack.com/cookie")))
 
 (use-package alert
-  :ensure t
   :commands (alert)
   :init
   (setq alert-default-style 'libnotify))
 
 (use-package gptel
   :disabled
-  :ensure t
   :config
   (setq
    gptel-log-level 'info
