@@ -13,10 +13,11 @@ $grey: #100F10;
 $fg: #FDFDFD;
 $red: #FCABCF;
 $flamingo: #2CA3ED;
-$green: #6AE4B9;
+$green: #44bc44;
 $cyan: #6AE4B9;
 $yellow: #C5976A;
 $peach: #F07854;
+$red: #F07854;
 $purple: #B6A0FF;
 
 * {
@@ -46,6 +47,14 @@ $purple: #B6A0FF;
 
 .fg-light {
     color: $fg;
+}
+
+.fg-red {
+    color: $red;
+}
+
+.fg-green {
+    color: $green;
 }
 
 .bg-transparent {
@@ -95,7 +104,7 @@ $purple: #B6A0FF;
 
 .bat_bar {
     background-color: rgba($yellow, 0.2);
-    color: $green;
+    color: $cyan;
 }
 
 .battery_charging {
