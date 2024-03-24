@@ -1,6 +1,10 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+if [[ "$TERM" == 'dumb' ]]; then
+    return
+fi
+
 # Aliases setup
 alias ll="exa --long --header --icons"
 alias g="git"
