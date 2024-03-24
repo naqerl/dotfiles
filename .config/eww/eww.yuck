@@ -3,7 +3,7 @@
                        :width "100%"
                        :anchor "top center")
            :monitor 0
-           :stacking "bottom"
+           :stacking "bg"
            :exclusive true
            :namespace eww
            (bar))
@@ -290,7 +290,7 @@
             (box
                 :style "padding: 2px;"
                 (circular-progress :value {EWW_BATTERY.BAT0.capacity}
-                                   :class "bg-dark fg-cyan ${EWW_BATTERY.BAT0.status == 'Charging' ? 'bg-green' : 'bg-yellow'}"
+                                   :class "bg-dark fg-cyan ${EWW_BATTERY.BAT0.status == 'Charging' ? 'bg-cyan-07' : 'bg-dark'}"
                                    :thickness 3
                                    ))))
 
@@ -427,6 +427,10 @@
              :left "cyan"
              :right "cyan"
              (text :content notification_text :class "fg-dark"))))
+
+(defwidget app_launcher []
+  (box :space-evenly false
+    (input :value "App name")))
 
 (defwindow powermenu
            :monitor 0
