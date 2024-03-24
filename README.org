@@ -120,10 +120,6 @@ My personal preffered apps
 | NETworkManager | Manage networks with TUI                                                                 | https://github.com/BornToBeRoot/NETworkManager                              |
 | Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman                                  |
 | Emacs          | An emacs priest now                                                                      | https://www.gnu.org/software/emacs/                                         |
-| Spotify        | Audio streaming of chose                                                                 | https://www.spotify.com                                                     |
-| Vesktop        | Discord client                                                                           | https://github.com/Vencord/Vesktop                                          |
-| Pacwall        | Generates wallpaper from pacman deps graph                                               | https://github.com/Kharacternyk/pacwall?tab=readme-ov-file#list-of-settings |
-| Swaybg         | Manage desktop wallpaper (required by pacwall)                                           | https://man.archlinux.org/man/swaybg.1.en                                   |
 
 #+begin_src bash
 paru -S kitty \
@@ -140,9 +136,6 @@ paru -S kitty \
         pavucontrol \
         networkmanager \
         blueman \
-        spotify-wayland \
-        vesktop-bin \
-        pacwall-git \
         swaybg \
         --needed
 #+end_src
@@ -171,39 +164,6 @@ paru -S catppuccin-gtk-theme-frappe \
 #+end_src
 
 [[https://github.com/catppuccin/gtk][Theme source]]
-
-*** Spotify setup
-Install adblock
-
-#+begin_src bash
-if [[ "$1" == spotify ]]; then
-    if [[ ! -d spotify-adblock ]]; then
-        git clone https://github.com/abba23/spotify-adblock
-    fi
-
-    if [[ ! -f /usr/local/lib/spotify-adblock.so ]]; then
-        cd spotify-adblock
-        make
-        sudo make install
-        cd ..
-        sudo rm -r spotify-adblock
-    fi
-fi
-#+end_src
-
-Install catppuccin theme. I have customized script for spicetify installation to skip interactive request for installation of SpicetifyMarket and do not add spicetify to PATH automatically
-
-#+begin_src  bash
-if [[ "$1" == spotify ]]; then
-    bash .config/spicetify/spicetify-install.sh
-    export PATH="$PATH:$HOME/.spicetify"
-    spicetify config current_theme catppuccin
-    spicetify config color_scheme frappe
-    spicetify config inject_css 1 inject_theme_js 1 replace_colors 1 overwrite_assets 1
-    spicetify backup apply
-    sudo rm -r ~/.spicetify install.log
-fi
-#+end_src
 
 *** System postinsall
 
