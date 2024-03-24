@@ -1,6 +1,7 @@
 (add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'package-manager)
+(require 'suzu-extensions)
 
 (use-package gcmh
   :init
@@ -518,7 +519,15 @@
 (setq-default electric-indent-inhibit t)
 (setq backward-delete-char-untabify-method 'hungry)
 
-(global-display-line-numbers-mode 1)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'org-mode-hook 'display-line-numbers-mode)
+(dolist (mode '(pdf-view-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                vterm-mode-hook
+                imenu-list-minor-mode-hook
+                imenu-list-major-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode -1))))
 (setq-default display-line-numbers-type 'relative)
 
 (electric-pair-mode 1)
@@ -716,9 +725,22 @@
             ((org-agenda-overriding-header "Cancelled Projects")
              (org-agenda-files org-agenda-files)))))))
 
+(defun suzu/pdf-setup-hook ()
+  (setq blink-cursor-mode nil))
+
 (use-package pdf-tools
   :config
   (pdf-tools-install))
+
+(add-hook 'pdf-view-mode-hook 'suzu/pdf-setup-hook)
+
+(defun suzu/find-pdf-file ()
+  (interactive)
+  (let* ((places '("~/Downloads" "~/Documents/books"))
+         (files-from-places (mapcar (lambda (place) (directory-files place t "\\.pdf$")) places))
+         (files (suzu/flatten-list files-from-places))
+         (file (completing-read "Choose PDF file: " files)))
+    (find-file file)))
 
 (defun suzu/dir-contains-project-marker (dir)
   "Checks if `.project' file is present in directory at DIR path."
@@ -770,7 +792,7 @@
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
   (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
-  (add-hook 'evil-normal-state-entry-hook '(lambda () (setq display-line-numbers t)) nil t)
+  (add-hook 'evil-normal-state-entry-hook '(lambda () (display-line-numbers-mode 1) (setq display-line-numbers-type 'relative)) nil t)
   (visual-line-mode)
   (evil-normalize-keymaps))
 
