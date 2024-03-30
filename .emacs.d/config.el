@@ -128,7 +128,7 @@
     :global-prefix "C-M-SPC")
 
   (suzu/leader-keys
-    "." '(find-file :wk "Find file")
+    "." '(ido-find-file :wk "Find file")
     ";" '(execute-extended-command :wk "M-x")
     "'" '(consult-ripgrep :wk "Ripgrep project symbols")
     "i" '(consult-imenu :wk "Open imenu")
@@ -151,7 +151,7 @@
     "b I" '(ibuffer :wk "Ibuffer")
     "b i" '(persp-ibuffer :wk "Perspective ibuffer")
     "b s" '(consult-buffer :wk "Search buffer")
-    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b k" '(suzu/kill-current-buffer :wk "Kill this buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
     "b m" '(bookmark-set :wk "Bookmark")
     "b l" '(list-bookmarks :wk "Bookmarks list"))
@@ -201,6 +201,7 @@
   (suzu/leader-keys
     "m" '(:ignore t :wk "Org")
     "m a" '(org-agenda :wk "Org agenda")
+    "m o" '(org-open-at-point :wk "Org open at point")
     "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
     "m i" '(org-toggle-item :wk "Org toggle item")
     "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
@@ -376,12 +377,11 @@
                        ("https://linux.softpedia.com/backend.xml" softpedia linux)
                        ("https://itsfoss.com/feed/" itsfoss linux)
                        ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
-                       ("https://www.phoronix.com/rss.php" phoronix linux)
                        ("https://www.computerworld.com/index.rss" computerworld linux)
                        ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
                        ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
                        ("https://betanews.com/feed" betanews linux)
-                       ("https://systemcrafters.net/rss/news.xml" emac)
+                       ("https://systemcrafters.net/rss/news.xml" emacs)
                        ("https://hnrss.org/frontpage" hackernews)
                        ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
 
@@ -504,6 +504,12 @@
 (use-package csv-mode
   :ensure t)
 
+(use-package typescript-mode)
+
+(defun suzu/format-elisp-on-save ()
+  (add-hook 'before-save-hook 'elisp-autofmt-buffer nil t))
+(add-hook 'emacs-lisp-mode-hook 'suzu/format-elisp-on-save)
+
 (setq read-process-output-max (* 1024 1024))
 
 (use-package eglot
@@ -530,6 +536,8 @@
   (add-hook mode (lambda () (display-line-numbers-mode -1))))
 (setq-default display-line-numbers-type 'relative)
 
+(setq-default scroll-margin 7)
+
 (electric-pair-mode 1)
 
 (menu-bar-mode -1)           ;; Disable the menu bar
@@ -543,6 +551,8 @@
 
 (setq help-window-select t)
 
+(setq-default truncate-lines t)
+
 (use-package emojify
   :ensure t)
 
@@ -550,6 +560,7 @@
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+  (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
   (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
 (add-hook 'org-mode-hook
@@ -647,13 +658,15 @@
 
 (setq-default plantuml-exec-mode "plantuml")
 
-(org-babel-do-load-languages 'org-babel-load-languages
-			     '((shell . t)
-			       (python . t)
-			       (sqlite . t)
-			       (emacs-lisp . t)
-			       (plantuml . t)
-			       (sql . t)))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell . t)
+   (python . t)
+   (sqlite . t)
+   (emacs-lisp . t)
+   (plantuml . t)
+   (restclient . t)
+   (sql . t)))
 
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))
@@ -786,6 +799,18 @@
 (use-package eshell-git-prompt
   :ensure t)
 
+(setq suzu/eshell-aliases
+      '((g  . magit)
+        (gl . magit-log)
+        (d  . dired)
+        (o  . find-file)	
+        (clc  . eshell/clear-scrollback)	
+        (oo . find-file-other-window)))
+
+(mapc (lambda (alias)
+        (defalias (car alias) (cdr alias)))
+      suzu/eshell-aliases)
+
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
@@ -827,6 +852,11 @@
 
 (use-package pcmpl-args
   :ensure t)
+
+(defun eshell/asc (cmd)
+  "Runs `cmd` in async bash shell"
+  (async-shell-command (format "bash -c '%s'" cmd)))
+(put 'eshell/asc 'eshell-no-numeric-conversions t)
 
 (use-package vterm
   :config
@@ -907,12 +937,14 @@
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
         (python "https://github.com/tree-sitter/tree-sitter-python")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
         (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
 
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        (rust-ts-mode . rust-mode)))
+        (rust-ts-mode . rust-mode)
+        (typescript-ts-mode . typescript-mode)))
 
 (use-package which-key
   :diminish
@@ -1051,3 +1083,6 @@
                     vc-ignore-dir-regexp
                     tramp-file-name-regexp))
 (setq tramp-verbose 1)
+
+(use-package restclient)
+(use-package ob-restclient)
