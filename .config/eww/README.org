@@ -101,7 +101,7 @@ $purple: #B6A0FF;
                     :width 300
                     (label
                      :class "fg-purple"
-                     :text {" "})
+                     :text {"  "})
                     (label
                      :text emacs_session
                      :limit-width 50)
@@ -119,25 +119,7 @@ $purple: #B6A0FF;
                :transition "slideright"
                :reveal {emacs_focused == "t"}
                :duration "300ms"
-               (box :class "box"
-                    :orientation "h"
-                    :space-evenly false
-                    :halign "end"
-                    :width 300
-                    (separator)
-                    (box
-                     :hexpand true
-                     :space-evenly false
-                     :halign "end"
-                     (label
-                      :text emacs_window_icon
-                      :limit-width 2)
-                     (space)
-                     (space)
-                     (label
-                      :text emacs_window
-                      :xalign 1
-                      :limit-width 50))))))
+               (emacs_window))))
             (revealer
              :transition "slideright"
              :reveal {emacs_focused == "t" && emacs_buffer_modifier != ""}
@@ -308,24 +290,24 @@ $purple: #B6A0FF;
 (defvar emacs_window "")
 (defvar emacs_window_icon "")
 
-(defwidget emacs_window []
-    (revealer
-    :transition "fade"
-    :reveal {emacs_focused == "t"}
-    :duration "300ms"
-    :halign "end"
-    (box :orientation "h" :space-evenly false :halign "end"
-        (label
-        :text emacs_window_icon
-        :xalign 1
-        :limit-width 2)
-        (space)
-        (space)
-        (label
-        :text emacs_window
-        :xalign 1
-        :limit-width 50)
-        (emacs_buffer_modifier))))
+(defwidget
+ emacs_window []
+ (box
+  :class "box"
+  :orientation "h"
+  :space-evenly false
+  :halign "end"
+  :width 300 (separator)
+  (box
+   :hexpand true
+   :space-evenly false
+   :halign
+   "end"
+   (label :text emacs_window_icon :limit-width 2)
+   (space)
+   (space)
+   (space)
+   (label :text emacs_window :xalign 1 :limit-width 50))))
 #+end_src
 
 **** Save status 
