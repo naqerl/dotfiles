@@ -767,6 +767,8 @@ Setup lsp client
   (org-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill)
   (eshell-mode . suzu/visual-fill)
+  (term-mode . suzu/visual-fill)
+  (shell-mode . suzu/visual-fill)
   (prog-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 #+end_src
@@ -1352,7 +1354,8 @@ Turn off duplicating lines on execution
 (add-hook 'persp-switch-hook 'suzu/lsp-status)
 #+end_src
 
-* Slack
+* Social
+** Slack
 #+begin_src elisp
 (use-package slack
   :disabled
@@ -1372,6 +1375,24 @@ Turn off duplicating lines on execution
   :commands (alert)
   :init
   (setq alert-default-style 'libnotify))
+#+end_src
+
+** Telegram
+~TDLib~ is required, build it from source on Linux:
+
+#+begin_src bash
+git clone https://github.com/tdlib/td.git
+mkdir build && cd build && cmake ../
+make -j8
+sudo make install
+#+end_src
+
+It will install headers to ~/usr/local/include~ and library itself into ~/usr/local/lib~. If you have ~TDLib~ installed in other location, don't forget to modify ~telega-server-libs-prefix~ before starting telega.
+
+For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise telega server build will fail. 
+
+#+begin_src elisp
+(use-package telega)
 #+end_src
 
 * GPTel
