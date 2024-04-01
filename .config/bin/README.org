@@ -22,6 +22,7 @@
 - [[#lock-screen][Lock screen]]
 - [[#microphone-state][Microphone state]]
 - [[#toggle-second-monitor][Toggle second monitor]]
+- [[#setup-monitors-on-startup][Setup monitors on startup]]
 
 * Make files executable
 Just checks all files here and makes them executable if they aren't 
@@ -202,6 +203,8 @@ hyprctl workspaces -j \
 
 # How long each line stays on screen
 duration=5
+telegram_bot_token=$(pass show telegram.org/suzumenobu_bot)
+my_telegram_id=$(pass show telegram.org/idevtier_id)
 
 tiramisu -s -o '{"source": "#source", "summary": "#summary", "body": "#body", "icon": "#icon", "timeout": "#timeout"}' |
     while read -r notif; do
@@ -258,7 +261,7 @@ tiramisu -s -o '{"source": "#source", "summary": "#summary", "body": "#body", "i
                 app=" "
                 telegram_msg=" "
                 ;;
-	    *)
+	    ,*)
 		app="$app:"
 		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
 		;;
@@ -281,13 +284,12 @@ tiramisu -s -o '{"source": "#source", "summary": "#summary", "body": "#body", "i
         continue
       fi
 
-      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/209493779/; s/\$text/$telegram_msg $summary/")
-      COMPATION_TELEGRAM_BOT_TOKEN="7074489476:AAG3VykSn-gBFKB6gukCeH06M4OktoO-0VA"
+      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/$my_telegram_id/; s/\$text/$telegram_msg $summary/")
 
       curl -X POST \
             -H 'Content-Type: application/json' \
             -d "$body" \
-            "https://api.telegram.org/bot$COMPATION_TELEGRAM_BOT_TOKEN/sendMessage"
+            "https://api.telegram.org/bot$telegram_bot_token/sendMessage"
     done
 #+end_src
 
@@ -393,13 +395,38 @@ fi
 #+begin_src bash :tangle toggle-second-monitor
 #!/usr/bin/env bash
 monitor="eDP-1"
-second_monitor_activated=$(hyprctl monitors | rg "$monitor")
-if [[ -z "$second_monitor_activated" ]]; then
-    notify-send "Enabling $monitor monitor"
-    keyword="$monitor, 2560x1440, 2560x0, 1.6"
+
+monitors_count=$(hyprctl monitors -j | jq '.[] | .id' | wc -l)
+
+if [[ "$monitors_count" -eq 0 ]]; then
+    keyword="$monitor, 2560x1440, 0x0, 1"
 else
-    notify-send "Disabling $monitor monitor"
-    keyword="$monitor, disable"
+    second_monitor_activated=$(hyprctl monitors | rg "$monitor")
+
+    if [[ -z "$second_monitor_activated" ]]; then
+        notify-send "Enabling $monitor monitor"
+        keyword="$monitor, 2560x1440, 2560x0, 1.6"
+    else
+        notify-send "Disabling $monitor monitor"
+        keyword="$monitor, disable"
+    fi
 fi
+
 hyprctl keyword monitor "$keyword"
+pkill eww && eww open bar
 #+end_src
+
+* Setup monitors on startup
+#+begin_src bash :tangle setup-monitors
+#!/usr/bin/env bash
+
+monitors_count=$(hyprctl monitors -j | jq '.[] | .id' | wc -l)
+hyprctl monitors > /home/suzu/debug
+if [[ "$monitors_count" -eq 2 ]]; then
+    hyprctl keyword monitor 'HDMI-A-1, 2560x1440, 0x0, 1.25'
+    hyprctl keyword monitor 'eDP-1, disable'
+else
+    hyprctl keyword monitor 'eDP-1, 2560x1440, 0x0, 1.6'
+fi
+#+end_src
+
