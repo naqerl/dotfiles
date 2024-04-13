@@ -134,17 +134,11 @@
     "i" '(consult-imenu :wk "Open imenu")
     "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
     "B" '(consult-project-buffer :wk "Switch buffer in perspective")
-    "S" '(persp-switch :wk "Switch perspective")
+    "s" '(persp-switch :wk "Switch perspective")
+    "S" '(persp-kill :wk "Kill perspective")
     "l" '(persp-switch-last :wk "Switch last perspective")
     "/" '(consult-line :wk "Search in buffer")
     "f" '(project-find-file :wk "Find file"))
-
-  (suzu/leader-keys
-    "s" '(:ignore t :wk "Session")
-    "s b" '(bufler-switch-buffer :wk "Switch buffer")
-    "s k" '(persp-kill :wk "Kill perspective")
-    "s p" '(persp-prev :wk "Prev session")
-    "s n" '(persp-next :wk "Next session"))
 
   (suzu/leader-keys
     "b" '(:ignore t :wk "buffer || bookmark")
@@ -203,7 +197,6 @@
     "m a" '(org-agenda :wk "Org agenda")
     "m o" '(org-open-at-point :wk "Org open at point")
     "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
-    "m i" '(org-toggle-item :wk "Org toggle item")
     "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
     "m t" '(org-todo :wk "Org todo")
     "m B" '(org-babel-tangle :wk "Org babel tangle")
@@ -227,19 +220,19 @@
     "t" '(:ignore t :wk "Toggle")
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t i" '(eglot-inlay-hints-mode :wk "Toggle inlay hints")
-    "t c" '(suzu/center-buffer :wk "Center buffer")
+    "t c" '(suzu/center-buffer :wk "Toggle Center buffer [deprecated]")
+    "t f" '(visual-fill-column-mode :wk "Toggle visual fill")
     "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
-  (suzu/leader-keys
-    "s" '(:ignore t :wk "Slack")
-    "s m" '(slack-im-select :wk "Select instant message")
-    "s c" '(slack-channel-select :wk "Select channel")
-    "s t" '(slack-all-threads :wk "List threads")
-    "s f" '(slack-search-from-messages :wk "Find message")
-    "s F" '(slack-search-from-files :wk "Find file"))
-  )
+  ;; (suzu/leader-keys
+  ;;   "s" '(:ignore t :wk "Slack")
+  ;;   "s m" '(slack-im-select :wk "Select instant message")
+  ;;   "s c" '(slack-channel-select :wk "Select channel")
+  ;;   "s t" '(slack-all-threads :wk "List threads")
+  ;;   "s f" '(slack-search-from-messages :wk "Find message")
+  ;;   "s F" '(slack-search-from-files :wk "Find file")))
 
-(setq modus-themes-mode-line '(borderless 3d)
+(setq modus-themes-mode-line '(borderless (height . 0.1))
       modus-themes-region '(bg-only)
       modus-themes-org-blocks 'gray-background
       modus-themes-completions '((selection intense) (popup intense))
@@ -267,6 +260,8 @@
 (use-package golden-ratio
   :init
   (golden-ratio-mode 1)
+  :config
+  (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
   :custom
   (golden-ratio-auto-scale t))
 
@@ -300,15 +295,28 @@
 
 (setq make-backup-files nil)
 
-(use-package corfu
+(use-package
+  corfu
   :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto nil)                 ;; Enable auto completion
-  (corfu-auto-delay 1)
+  (corfu-cycle t) ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t) ;; Enable auto completion
+  (corfu-auto-delay 0.5)
   (corfu-auto-prefix 2)
   (corfu-popupinfo-mode t)
+  (corfu-echo-documentation 0.25)
+  :bind
+  (:map
+   corfu-map
+   ("M-SPC" . corfu-insert-separator)
+   ("RET" . nil)
+   ("TAB" . corfu-next)
+   ([tab] . corfu-next)
+   ("S-TAB" . corfu-previous)
+   ([backtab] . corfu-previous)
+   ("S-<return>" . corfu-insert))
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
 
 (defun corfu-enable-always-in-minibuffer ()
   "Enable Corfu in the minibuffer if Vertico/Mct are not active."
@@ -422,9 +430,10 @@
 (defun suzu/ediff-hook ()
 (ediff-setup-keymap)
 (define-key ediff-mode-map "j" 'ediff-next-difference)
-(define-key ediff-mode-map "k" 'ediff-previous-difference))
+(define-key ediff-mode-map "k" 'ediff-previous-difference)
+(golden-ratio-mode nil))
 
-(add-hook 'ediff-mode-hook 'suzu/ediff-hook)
+(add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
 
 (use-package evil-nerd-commenter
   :config
@@ -510,6 +519,10 @@
   (add-hook 'before-save-hook 'elisp-autofmt-buffer nil t))
 (add-hook 'emacs-lisp-mode-hook 'suzu/format-elisp-on-save)
 
+(use-package tex-mode)
+
+(use-package css-mode)
+
 (setq read-process-output-max (* 1024 1024))
 
 (use-package eglot
@@ -524,6 +537,11 @@
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
 (setq backward-delete-char-untabify-method 'hungry)
+
+(use-package
+ indent-guide
+ :custom (indent-guide-char "│")
+ :config (add-hook 'prog-mode-hook 'indent-guide-mode))
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'org-mode-hook 'display-line-numbers-mode)
@@ -553,21 +571,22 @@
 
 (setq-default truncate-lines t)
 
-(use-package emojify
-  :ensure t)
+(use-package emojify)
+;; :hook (after-init . global-emojify-mode)
 
 (with-eval-after-load 'org
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
   (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
+  (add-to-list 'org-structure-template-alist '("sqt" . "src sql :var table=table-name"))
   (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
 (add-hook 'org-mode-hook
   (lambda ()
     (setq-local electric-pair-inhibit-predicate
       `(lambda (c)
-        (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+        (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c)))))))
 
 (defun suzu/visual-fill ()
   (setq visual-fill-column-width 100
@@ -583,6 +602,7 @@
   (term-mode . suzu/visual-fill)
   (shell-mode . suzu/visual-fill)
   (prog-mode . suzu/visual-fill)
+  (info-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 
 (defun suzu/org-mode-setup ()
@@ -668,6 +688,7 @@
    (emacs-lisp . t)
    (plantuml . t)
    (restclient . t)
+   (awk . t)
    (sql . t)))
 
 (use-package org-auto-tangle
@@ -1090,3 +1111,29 @@
 
 (use-package restclient)
 (use-package ob-restclient)
+
+(defun advise-dimmer-config-change-handler ()
+  "Advise to only force process if no predicate is truthy."
+  (let ((ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
+                         dimmer-prevent-dimming-predicates)))
+    (unless ignore
+      (when (fboundp 'dimmer-process-all)
+        (dimmer-process-all t)))))
+
+(defun corfu-frame-p ()
+  "Check if the buffer is a corfu frame buffer."
+  (string-match-p "\\` \\*corfu" (buffer-name)))
+
+(defun dimmer-configure-corfu ()
+  "Convenience settings for corfu users."
+  (add-to-list
+   'dimmer-prevent-dimming-predicates
+   #'corfu-frame-p))
+
+(use-package dimmer
+  :config
+  (advice-add
+   'dimmer-config-change-handler
+   :override 'advise-dimmer-config-change-handler)
+  (dimmer-configure-corfu)
+  (dimmer-mode t))

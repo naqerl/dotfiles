@@ -23,10 +23,10 @@
 
 (defun suzu/project-discover-in-directory (directory &optional depth)
   "Recursively searches projects under given directroy.
-   Default depth is 4
+   Default depth is 6
    Returns number of total found projects"
   (interactive (list (read-directory-name "Base search path: ")))
-  (or depth (setq depth 4))
+  (or depth (setq depth 6))
 
   (when (not (file-directory-p directory))
     (error "Base path should be a directory."))

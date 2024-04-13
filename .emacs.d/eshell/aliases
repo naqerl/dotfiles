@@ -1,6 +1,8 @@
+alias 200󰘧  $*
 alias total ~/org-roam/ $*
 alias File ~/code/work/pixelplex/749-airflow-dags.git/CWA-4575-fair-price/ $*
 alias l. exa -a1 --icons $* | grep "^\."
 alias lt exa -aT --icons --color=always --group-directories-first $*
 alias l exa -al --icons --color=always --group-directories-first $*
 alias Got: ~/sql/ $*
+alias 403󰘧 $*
