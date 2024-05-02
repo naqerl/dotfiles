@@ -517,8 +517,8 @@ Automatically resizes windows to fit golden ratio
 (set-face-attribute 'font-lock-keyword-face nil
                     :slant 'italic)
 
-(add-to-list 'default-frame-alist '(font . "Iosevka NF 13"))
-(setq default-frame-alist '((font . "Iosevka NF 13")))
+(add-to-list 'default-frame-alist '(font . "Iosevka NF 16"))
+(setq default-frame-alist '((font . "Iosevka NF 16")))
 
 (setq-default line-spacing 0)
 #+end_src
@@ -1178,6 +1178,7 @@ Turn off duplicating lines on execution
 ** Vterm
 #+begin_src elisp
 (use-package vterm
+  :disabled
   :config
   (setq vterm-shell "/usr/bin/bash"
         vterm-buffer-name-string "vterm %s"
@@ -1220,6 +1221,7 @@ Turn off duplicating lines on execution
 ** Vterm-toggle
 #+begin_src elisp
 (use-package vterm-toggle
+  :disabled
   :after vterm
   :config
   (setq vterm-toggle-fullscreen-p nil)
@@ -1242,6 +1244,7 @@ Turn off duplicating lines on execution
 ** Multi vterm
 #+begin_src elisp
 (use-package multi-vterm
+  :disabled
   :config
   (add-hook 'vterm-mode-hook
             (lambda ()
@@ -1265,7 +1268,7 @@ Turn off duplicating lines on execution
 
 * Transparency
 #+begin_src elisp
-(add-to-list 'default-frame-alist '(alpha-background . 60))
+(add-to-list 'default-frame-alist '(alpha-background . 100))
 (add-to-list 'corfu--frame-parameters '(alpha-background . 100))
 #+end_src
 
@@ -1330,7 +1333,8 @@ Turn off duplicating lines on execution
 ** Common
 #+begin_src elisp
 (defun suzu/update-eww-var (var value)
-  (call-process "eww" nil nil nil "update" (format "%s=%s" var value)))
+  ;; (call-process "eww" nil nil nil "update" (format "%s=%s" var value))
+  )
 #+end_src
 
 ** Current perspective
