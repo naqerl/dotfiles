@@ -89,7 +89,7 @@ function M.config()
 					local tail = require("telescope.utils").path_tail(path)
 					return string.format("%s (%s)", tail, path)
 				end,
-				sorting_strategy = "ascending",
+				-- sorting_strategy = "ascending",
 				previewer = false,
 				layout_config = {
 					width = 0.5,

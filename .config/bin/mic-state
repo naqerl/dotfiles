@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 mic_name=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ \
-    | rg 'node.nick' \
+    | rg 'device.profile.description' \
     | sed 's/.*"\(.*\)"$/\1/')
 
 is_muted=$(wpctl status | rg "$mic_name" | rg -i muted) 
