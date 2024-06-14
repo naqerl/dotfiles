@@ -31,7 +31,7 @@ $purple: #B6A0FF;
 #+begin_src yuck :tangle eww.yuck
 (defwindow bar
            :geometry (geometry
-                       :width "100%"
+                       :width "1600px"
                        :anchor "top center")
            :monitor 0
            :stacking "bg"

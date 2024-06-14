@@ -1,0 +1,1 @@
+(#s(compilation-setup "Stop Haas API" "cd ../server && docker-compose down") #s(compilation-setup "Start Haas API" "cd ../server && docker-compose up") #s(compilation-setup "Generate requirements.txt" "make requirements") #s(compilation-setup "Unit Tests" "make unit-test") #s(compilation-setup "Run Streamlit Dev" "make run"))

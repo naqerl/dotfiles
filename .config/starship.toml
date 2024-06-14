@@ -1,6 +1,6 @@
 format = '''
-[┌](black)$character$shell$git_branch$git_status$python$rust$jobs $fill $directory$fill $time
-[└](black) '''
+[┌](gray)$character$shell$git_branch$git_status$python$rust$jobs $fill $directory$fill $time
+[└](gray) '''
 
 [shell]
 disabled = false
@@ -48,5 +48,4 @@ disabled = true
 [fill]
 disabled = false
 symbol = '─'
-style = 'black'
-
+style = 'gray'

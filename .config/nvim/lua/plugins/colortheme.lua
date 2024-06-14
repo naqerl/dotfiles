@@ -188,6 +188,20 @@ M.opts = {
 
     highlights.FloatBorder = { bg = colors.bg_dim, fg = colors.bg_dim }
     highlights.NormalFloat = { bg = colors.bg_dim }
+
+    highlights.LspInlayHint = { bg = nil, fg = colors.fg_dim }
+
+    highlights.GitSignsAdd = { bg = nil, fg = colors.green }
+    highlights.GitSignsAddLn = { bg = nil, fg = colors.green }
+    highlights.GitSignsAddNr = { bg = nil, fg = colors.green }
+
+    highlights.GitSignsChange = { bg = nil, fg = colors.yellow }
+    highlights.GitSignsChangeLn = { bg = nil, fg = colors.yellow }
+    highlights.GitSignsChangeNr = { bg = nil, fg = colors.yellow }
+
+    highlights.GitSignsDelete = { bg = nil, fg = colors.red }
+    highlights.GitSignsDeleteLn = { bg = nil, fg = colors.red }
+    highlights.GitSignsDeleteNr = { bg = nil, fg = colors.red }
   end,
 }
 

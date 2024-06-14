@@ -41,6 +41,10 @@ return {
 					local mason_lspconfig = require('mason-lspconfig')
 					local util = require('lspconfig/util')
 
+					mason_lspconfig.setup({
+						inlay_hints = { enabled = true },
+					})
+
 					local servers = {
 						clangd = {},
 						pyright = {
@@ -89,6 +93,10 @@ return {
 						-- 		require('venv-selector').retrieve_from_cache()
 						-- 	end
 						-- end
+
+						if vim.lsp.inlay_hint then
+							vim.lsp.inlay_hint.enable(true, { 0 })
+						end
 
 						local nmap = function(keys, func, desc)
 							if desc then

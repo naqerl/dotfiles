@@ -1,4 +1,6 @@
-(add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
+(setq native-comp-speed 3) ;; maximum native Elisp speed!
+(native-compile-async "~/.emacs.d" 'recursively)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/scripts"))
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'package-manager)
 (require 'suzu-extensions)
@@ -116,6 +118,8 @@
 
   (general-define-key
    :states '(normal visual)
+   "C-+" '(text-scale-increase :wk "Zoom in")
+   "C--" '(text-scale-decrease :wk "Zoom out")
    "[ g" '(git-gutter:previous-hunk :wk "Prev git hunk")
    "] g" '(git-gutter:next-hunk :wk "Next git hunk")
    "[ d" '(flymake-goto-prev-error :wk "Prev diagnostic")
@@ -163,7 +167,12 @@
     "g p" '((lambda () (interactive) (git-gutter:popup-hunk) (other-window 1)) :wk "Preview hunk diff")
     "g r" '(git-gutter:revert-hunk :wk "Preview hunk diff")
     "g w" '(magit-worktree :wk "Git worktree")
-    "g s" '(git-gutter:stage-hunk :wk "Preview hunk diff"))
+    "g s" '(git-gutter:stage-hunk :wk "Preview hunk diff")
+    "g m n" '(smerge-next :wk "Next merge conflict")
+    "g m p" '(smerge-prev :wk "Previous merge conflict")
+    "g m u" '(smerge-keep-upper :wk "Keep upper version")
+    "g m l" '(smerge-keep-lower :wk "Keep lower version")
+    "g m a" '(smerge-keep-lower :wk "Keep both versions"))
 
   (suzu/leader-keys
     "o" '(:ignore t :wk "Open")
@@ -182,13 +191,13 @@
               (project-switch-project "~/dotfiles/")) :wk "Edit emacs config"))
 
   (suzu/leader-keys
-    "h" '(:ignore t :wk "Help")
-    "h f" '(describe-function :wk "Describe function")
-    "h v" '(describe-variable :wk "Describe variable")
-    "h M" '(info-display-manual :wk "Manual")
-    "h m" '(describe-mode :wk "Describe mode")
-    "h p" '(describe-package :wk "Describe package")
-    "h r r" '((lambda ()
+    "H" '(:ignore t :wk "Help")
+    "H f" '(describe-function :wk "Describe function")
+    "H v" '(describe-variable :wk "Describe variable")
+    "H M" '(info-display-manual :wk "Manual")
+    "H m" '(describe-mode :wk "Describe mode")
+    "H p" '(describe-package :wk "Describe package")
+    "H r r" '((lambda ()
                 (interactive)
                 (load-file "~/dotfiles/.emacs.d/init.el")) :wk "Reload emacs config"))
 
@@ -224,29 +233,39 @@
     "t f" '(visual-fill-column-mode :wk "Toggle visual fill")
     "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
-  ;; (suzu/leader-keys
-  ;;   "s" '(:ignore t :wk "Slack")
-  ;;   "s m" '(slack-im-select :wk "Select instant message")
-  ;;   "s c" '(slack-channel-select :wk "Select channel")
-  ;;   "s t" '(slack-all-threads :wk "List threads")
-  ;;   "s f" '(slack-search-from-messages :wk "Find message")
-  ;;   "s F" '(slack-search-from-files :wk "Find file")))
+  (suzu/leader-keys
+    "p" '(:ignore t :wk "Project")
+    "p c" '(project-recompile :wk "Recompile project")
+    "p e" '(project-async-shell-command :wk "Execute shell command in project root")
+    "p C" '(suzu/project-compile :wk "Compile project"))
 
-(setq modus-themes-mode-line '(borderless (height . 0.1))
+(setq modus-themes-mode-line '(borderless)
       modus-themes-region '(bg-only)
       modus-themes-org-blocks 'gray-background
       modus-themes-completions '((selection intense) (popup intense))
       modus-themes-bold-constructs t
       modus-themes-italic-constructs t
       modus-themes-paren-match '(bold)
-      modus-themes-fringes nil
+      modus-themes-completions
+      '((matches . (extrabold underline))
+        (selection . (semibold)))
       modus-themes-syntax '(green-strings yellow-comments)
       modus-themes-headings '((0 . (rainbow 1.9))
         (1 . (rainbow 1.5))
         (2 . (rainbow 1.3))
         (3 . (rainbow 1.2))
         (t . (semilight 1.1 ))))
+
+(setq modus-themes-common-palette-overrides
+      '((border-mode-line-active unspecified)
+        (border-mode-line-inactive unspecified)))
+
 (load-theme 'modus-vivendi :no-confirm)
+
+(add-to-list 'default-frame-alist '(left-fringe . 0))
+(add-to-list 'default-frame-alist '(right-fringe . 0))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(undecorated . t))
 
 (setq-default display-line-numbers-width 4)
 
@@ -286,7 +305,16 @@
   :config
   (global-git-gutter-mode +1))
 
+(use-package smerge)
+
+;; (setq-default mode-line-format nil)
 (setq-default mode-line-format nil)
+
+;; (use-package doom-modeline
+;; :disabled
+;; :config
+;; (setq doom-modeline-persp-name t)
+;; :init (doom-modeline-mode 1))
 
 (use-package all-the-icons
   :ensure t)
@@ -300,10 +328,10 @@
   :custom
   (corfu-cycle t) ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t) ;; Enable auto completion
-  (corfu-auto-delay 0.5)
-  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0)
+  (corfu-auto-prefix 1)
   (corfu-popupinfo-mode t)
-  (corfu-echo-documentation 0.25)
+  (corfu-echo-documentation 0)
   :bind
   (:map
    corfu-map
@@ -420,7 +448,6 @@
                     :slant 'italic)
 
 (add-to-list 'default-frame-alist '(font . "Iosevka NF 13"))
-(setq default-frame-alist '((font . "Iosevka NF 13")))
 
 (setq-default line-spacing 0)
 
@@ -442,18 +469,143 @@
    :prefix "g"
    "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
 
+;; (use-package
+;;  dashboard
+;;  :config
+;;  (dashboard-setup-startup-hook)
+;;  (setq initial-buffer-choice
+;;        (lambda () (get-buffer-create "*dashboard*")))
+;;  (setq dashboard-display-icons-p t)
+;;  (setq dashboard-path-max-length 10)
+;;  (setq dashboard-vertically-center-content nil)
+;;  (setq dashboard-startupify-list
+;;        '(dashboard-insert-banner
+;;          dashboard-insert-newline
+;;          dashboard-insert-banner-title
+;;          dashboard-insert-newline
+;;          ;; dashboard-insert-navigator
+;;          dashboard-insert-newline
+;;          ;; dashboard-insert-init-info
+;;          ;; dashboard-insert-items
+;;          ;; dashboard-insert-newline
+;;          dashboard-insert-footer))
+;;  :custom
+;;  (dashboard-startup-banner
+;;   (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
+;;  (dashboard-center-content t)
+;;  (dashboard-set-heading-icons t)
+;;  (dashboard-set-file-icons t))
+
 (use-package dashboard
-  :config
-  (dashboard-setup-startup-hook)
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  (setq dashboard-display-icons-p t)
-  (setq dashboard-path-max-length 10)
-  (setq dashboard-vertically-center-content nil)
+  :ensure t
   :custom
-  (dashboard-startup-banner "/home/suzu/.emacs.d/images/hydra.txt")
+  ;; Set info & center
+  (dashboard-set-init-info t)
+  (dashboard-set-navigator t)
+  (dashboard-show-shortcuts t)
   (dashboard-center-content t)
+  (dashboard-startup-banner (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
+  (dashboard-banner-logo-title "Welcome to Emacs")
+  ;; Add icons
   (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons t))
+  (dashboard-set-file-icons nil)
+  :custom-face
+  (dashboard-banner-logo-title ((nil (:family "Fira Code Medium"
+				      :foundry "CTDB" 
+				      :height 190 
+				      :foreground "white"
+				      :weight black))))
+  (dashboard-version-info ((nil (:family "Fira Code Regular"
+			      :foundry "CTDB" 
+			      :height 190 
+			      :foreground "#878787"
+			      :weight demibold))))
+  (dashboard-init-info ((nil (:family "Fira Code Light"
+			      :foundry "CTDB" 
+			      :height 160 
+			      :foreground "#878787"
+			      :weight medium))))
+  (dashboard-heading   ((nil (:family "Cartograph CF Bold Italic"
+			      :height 200 
+			      :foreground "#FF9447"
+			      :weight demibold))))
+  (dashboard-heading-icon   ((nil (:family "Fira Code Medium"
+			      :height 220 
+			      :foreground "#FF9447"
+			      :weight medium))))
+  (dashboard-items-face ((nil (:family "Fira Code Light"
+			      :foundry "CTDB" 
+			      :height 150 
+			      :foreground "#DCE1FF"
+			      :weight bold))))
+  :config
+  (dashboard-setup-startup-hook))
+
+;(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+
+(defface nav-face '((nil (:family "Fira Code Medium"
+				:foundry "CTDB" 
+				:height 190 
+				:foreground "#FF628E"
+				:weight black)))
+  "Face used for no items."
+  :group 'dashboard)
+
+(defface nav-icon-face '((nil (:family "Fira Code Medium"
+				     :foundry "CTDB" 
+				     :height 190 
+				     :foreground "white"
+				     :weight black)))
+  "Face used for no items."
+  :group 'dashboard)
+
+(setq dashboard-path-style 'truncate-middle
+      dashboard-path-max-length 48)
+
+;; Format: "(icon title help action face prefix suffix)"
+(setq dashboard-navigator-buttons
+      `((("[m]" "Mail" "Check mails" (lambda () (+ 0 0))
+	  'nav-face
+	  'nav-icon-face)
+	 ("[a]" "Agenda" "Check mails" (lambda () (+ 0 0))
+	  'nav-face
+	  'nav-icon-face)
+	 ("[s]" "Scratch" "Check mails" (lambda () (+ 0 0))
+	  'nav-face
+	  'nav-icon-face))))
+
+(setq dashboard-items '((recents  . 5)))
+
+;; Ignore surrounding white space on selection
+(defun my-hl-line-range-function ()
+  (let ((beg (save-excursion
+           (back-to-indentation)
+           (point)))
+        (end (save-excursion
+           (end-of-visual-line)
+           (point))))
+    (cons beg end)))
+
+(defun selection-hl ()
+  (when (derived-mode-p  'dashboard-mode)
+	;; Activate selection highlighting
+	(setq-local hl-line-range-function #'my-hl-line-range-function)
+	(face-remap-add-relative 'highlight
+				 '(:foreground "white"
+				   :background "#4B487C"
+				   :box (:line-width (10 . 1) :color "#4B487C" :style nil)))
+	(hl-line-mode t)
+	(forward-char)
+	;; Hide cursor
+	(setq cursor-type nil)))
+
+(add-hook 'focus-in-hook
+	  (lambda () (selection-hl)))
+(add-hook 'focus-out-hook
+	  (lambda () (selection-hl)))
+
+(add-hook 'minibuffer-exit-hook
+	  (lambda () (selection-hl)))
 
 (use-package eldoc-box
   :config
@@ -515,6 +667,7 @@
 
 (use-package typescript-mode)
 
+(use-package elisp-autofmt)
 (defun suzu/format-elisp-on-save ()
   (add-hook 'before-save-hook 'elisp-autofmt-buffer nil t))
 (add-hook 'emacs-lisp-mode-hook 'suzu/format-elisp-on-save)
@@ -523,15 +676,50 @@
 
 (use-package css-mode)
 
+(use-package go-mode)
+
+(use-package dockerfile-mode)
+
+(use-package elf-mode)
+
+(use-package plantuml-mode)
+
+(use-package yaml-mode)
+
+(use-package php-mode)
+
 (setq read-process-output-max (* 1024 1024))
 
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright"))))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer"))))
 
 (use-package dap-mode
   :ensure t)
+
+(defvar suzu/dotenv-file-name ".env"
+  "The name of the .env file.")
+
+(defun suzu/find-env-file ()
+  "Find the closest .env file in the directory hierarchy."
+
+  (let* ((env-file-directory (locate-dominating-file "." suzu/dotenv-file-name))
+         (file-name (concat env-file-directory suzu/dotenv-file-name)))
+    (when (file-exists-p file-name)
+      file-name)))
+
+(defun suzu/set-project-env ()
+  "Export all environment variables in the closest .env file."
+
+  (let ((env-file (suzu/find-env-file)))
+    (when env-file
+      (load-env-vars env-file))))
+
+(use-package load-env-vars
+  :hook
+  (eshell-mode . suzu/set-project-env)
+  (prog-mode . suzu/set-project-env))
 
 (setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
@@ -545,6 +733,7 @@
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'org-mode-hook 'display-line-numbers-mode)
+(add-hook 'compilation-mode-hook 'display-line-numbers-mode)
 (dolist (mode '(pdf-view-mode-hook
                 term-mode-hook
                 eshell-mode-hook
@@ -617,11 +806,7 @@
 
 (defun suzu/org-icons ()
   "Beautify org mode keywords."
-  (setq prettify-symbols-alist '(("TODO" . "")
-                                 ("WAIT" . "")        
-                                 ("NOPE" . "")
-                                 ("DONE" . "")
-                                 ("[#A]" . "")
+  (setq prettify-symbols-alist '(("[#A]" . "")
                                  ("[#B]" . "")
                                  ("[#C]" . "")
                                  ("[ ]" . "")
@@ -688,6 +873,7 @@
    (emacs-lisp . t)
    (plantuml . t)
    (restclient . t)
+   (plantuml . t)
    (awk . t)
    (sql . t)))
 
@@ -699,9 +885,29 @@
 
 ;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
 
+(setq org-plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
+(add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+(org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+
 (use-package org-roam
+  :disabled
   :config
   (org-roam-db-autosync-mode))
+
+(use-package org-present
+:config
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write))))
 
 (setq org-directory "~/org-roam")
 (setq org-agenda-files '("tasks.org" "habits.org"))
@@ -765,10 +971,10 @@
   (setq blink-cursor-mode nil))
 
 (use-package pdf-tools
+  :disabled
   :config
-  (pdf-tools-install))
-
-(add-hook 'pdf-view-mode-hook 'suzu/pdf-setup-hook)
+  (pdf-tools-install)
+  (add-hook 'pdf-view-mode-hook 'suzu/pdf-setup-hook))
 
 (defun suzu/find-pdf-file ()
   (interactive)
@@ -787,6 +993,17 @@
 (customize-set-variable 'project-find-functions
                         (list #'project-try-vc
                               #'suzu/dir-contains-project-marker))
+
+(use-package ansi-color)
+(defun suzu/ansi-colorize-buffer ()
+  (let ((buffer-read-only nil))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+(add-hook 'compilation-filter-hook 'suzu/ansi-colorize-buffer)
+
+(evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
+(evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
+
+(setq-default compilation-max-output-line-length 5000)
 
 (use-package marginalia
   :custom
@@ -818,6 +1035,7 @@
   ((org-mode prog-mode) . rainbow-mode))
 
 (setq comint-input-ignoredups t)
+(setq shell-file-name "/usr/bin/fish")
 
 (use-package eshell-git-prompt
   :ensure t)
@@ -826,8 +1044,8 @@
       '((g  . magit)
         (gl . magit-log)
         (d  . dired)
-        (o  . find-file)	
-        (clc  . eshell/clear-scrollback)	
+        (o  . find-file)  
+        (clc  . eshell/clear-scrollback)  
         (oo . find-file-other-window)))
 
 (mapc (lambda (alias)
@@ -836,7 +1054,6 @@
 
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
   (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
@@ -881,7 +1098,19 @@
   (async-shell-command (format "bash -c '%s'" cmd)))
 (put 'eshell/asc 'eshell-no-numeric-conversions t)
 
+(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") '(lambda ()
+                             (interactive)
+                             (insert
+                              (completing-read "Eshell history: "
+                                                   (delete-dups
+                                                    (ring-elements eshell-history-ring))))))
+;; (add-hook 'eshell-mode-hook
+;;           (lambda ()
+;;             (local-set-key (kbd "C-r")
+;;                            )))
+
 (use-package vterm
+  :disabled
   :config
   (setq vterm-shell "/usr/bin/bash"
         vterm-buffer-name-string "vterm %s"
@@ -921,6 +1150,7 @@
 )
 
 (use-package vterm-toggle
+  :disabled
   :after vterm
   :config
   (setq vterm-toggle-fullscreen-p nil)
@@ -940,12 +1170,20 @@
                  (window-height . 0.3))))
 
 (use-package multi-vterm
+  :disabled
   :config
   (add-hook 'vterm-mode-hook
             (lambda ()
               (setq-local evil-insert-state-cursor 'box)
               (evil-insert-state)))
   (define-key vterm-mode-map [return]                      #'vterm-send-return))
+
+(defun run-powershell ()
+  "Run powershell"
+  (interactive)
+  (async-shell-command "c:/Users/suzu/AppData/Local/Microsoft/WindowsApps/pwsh.exe -Command -"
+               nil
+               nil))
 
 (use-package sudo-edit
   :config
@@ -954,13 +1192,17 @@
 
 (use-package tldr :ensure t)
 
-(add-to-list 'default-frame-alist '(alpha-background . 60))
+(add-to-list 'default-frame-alist '(alpha-background . 80))
 (add-to-list 'corfu--frame-parameters '(alpha-background . 100))
 
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
         (python "https://github.com/tree-sitter/tree-sitter-python")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (emacs-lisp "https://github.com/emacs-tree-sitter/elisp-tree-sitter")
         (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
 
 (setq treesit-font-lock-level 4)
@@ -996,7 +1238,8 @@
   :ensure t)
 
 (defun suzu/update-eww-var (var value)
-  (call-process "eww" nil nil nil "update" (format "%s=%s" var value)))
+  (call-process "eww" nil nil nil "update" (format "%s=%s" var value))
+  )
 
 (defun suzu/current-perspective ()
   (suzu/update-eww-var "emacs_session" (persp-current-name)))
@@ -1052,7 +1295,8 @@
   :init
   (setq alert-default-style 'libnotify))
 
-(use-package telega)
+(use-package telega
+  :disabled)
 
 (use-package gptel
   :disabled
@@ -1065,9 +1309,6 @@
 
 (use-package helpful
   :commands (helpful-callable helpful-variable helpful-command helpful-key)
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   :bind
   ([remap describe-function] . helpful-function)
   ([remap describe-command] . helpful-command)
@@ -1137,3 +1378,42 @@
    :override 'advise-dimmer-config-change-handler)
   (dimmer-configure-corfu)
   (dimmer-mode t))
+
+;; (setenv "PATH"
+;;         (concat
+;;          "C:/mingw/bin" path-separator
+;;          "C:/Program Files/Git/bin" path-separator
+;;          "C:/Users/suzu/.cargo/bin" path-separator
+;;          (getenv "PATH")))
+;; (add-to-list 'exec-path "C:/MinGW/bin")
+;; (add-to-list 'exec-path "C:/Program Files/Git/bin")
+;; (add-to-list 'exec-path "C:/Users/suzu/.cargo/bin")
+;; (add-to-list 'exec-path "C:/Program Files/PostgreSQL/16/bin")
+(add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
+(setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
+
+(add-to-list 'default-frame-alist '(drag-internal-border . 1))
+(add-to-list 'default-frame-alist '(internal-border-width . 5))
+
+(display-time)
+
+(use-package harpoon
+:after general
+:config
+(general-define-key
+   :states 'normal
+   "C-1" 'harpoon-go-to-1
+   "C-2" 'harpoon-go-to-2
+   "C-3" 'harpoon-go-to-3
+   "C-4" 'harpoon-go-to-4
+   "C-5" 'harpoon-go-to-5
+   "C-6" 'harpoon-go-to-6
+   "C-7" 'harpoon-go-to-7
+   "C-8" 'harpoon-go-to-8
+   "C-9" 'harpoon-go-to-9)
+
+  (suzu/leader-keys
+    "h" '(:ignore t :wk "Harpoon")
+    "h a" '(harpoon-add-file :wk "Add file")
+    "h f" '(harpoon-find-file :wk "Find file")
+    "h l" '(harpoon-toggle-quick-menu :wk "Toggle quick menu")))
