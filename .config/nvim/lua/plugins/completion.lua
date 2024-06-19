@@ -8,12 +8,17 @@ return {
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-path',
       'saadparwaiz1/cmp_luasnip',
-      'L3MON4D3/LuaSnip',
+      {
+        'L3MON4D3/LuaSnip',
+        dependencies = {
+          "rafamadriz/friendly-snippets"
+        }
+      },
     },
     config = function()
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
-      require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
+      require("luasnip.loaders.from_vscode").lazy_load()
 
       local kind_icons = {
         Text = "",
@@ -77,13 +82,12 @@ return {
           end, { 'i', 's' }),
         },
         experimental = {
-          ghost_text = true,
+          ghost_text = false,
         },
         sources = {
+          { name = 'luasnip' },
           { name = 'nvim_lsp' },
           { name = 'buffer' },
-          { name = 'obsidian' },
-          { name = 'luasnip' },
         },
         formatting = {
           format = function(entry, vim_item)

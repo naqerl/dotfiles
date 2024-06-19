@@ -1,6 +1,7 @@
 local M = {
 	-- Debug adapter protocol support.
 	"mfussenegger/nvim-dap",
+	enabled = true,
 	lazy = true,
 	keys = {
 		{
@@ -34,6 +35,7 @@ local M = {
 		-- Use Telescope to select actions
 		'nvim-telescope/telescope-dap.nvim',
 		'mfussenegger/nvim-dap-python',
+		'nvim-neotest/nvim-nio',
 	},
 }
 
@@ -150,10 +152,6 @@ local function keymaps(dap)
 	vim.keymap.set("n", "<leader>dr", function()
 		dap.restart()
 	end, { desc = "Toggle REPL" })
-
-	require("which-key").register({
-		d = { name = "Debugger" },
-	}, { prefix = "<leader>" })
 end
 
 function M.config()
