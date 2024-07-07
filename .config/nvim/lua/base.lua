@@ -36,12 +36,11 @@ M.setup = function()
 
   vim.o.termguicolors = true
 
-  vim.opt.winbar = '%=%m %f'
+  -- vim.opt.winbar = '%=%m %f'
   vim.opt.wrap = false -- No wrap lines
   vim.wo.relativenumber = true
 
   vim.opt.scrolloff = 7
-  vim.opt.shell = 'fish'
 
   -- Keymaps for better default experience
   vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -89,10 +88,10 @@ M.setup = function()
   })
 
   -- Yank to system clipboard
-  vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { silent = true })
-  vim.keymap.set({ 'n', 'v' }, '<leader>Y', '"+Y', { silent = true })
-  vim.keymap.set({ 'n', 'v' }, '<leader>p', '"+p', { silent = true })
-  vim.keymap.set({ 'n', 'v' }, '<leader>P', '"+P', { silent = true })
+  -- vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { silent = true })
+  -- vim.keymap.set({ 'n', 'v' }, '<leader>Y', '"+Y', { silent = true })
+  -- vim.keymap.set({ 'n', 'v' }, '<leader>p', '"+p', { silent = true })
+  -- vim.keymap.set({ 'n', 'v' }, '<leader>P', '"+P', { silent = true })
 
   -- region:    Toggle wrap
   vim.opt.wrap = false
@@ -113,6 +112,8 @@ M.setup = function()
   -- vim.opt.winblend = 5
 
   vim.opt.fillchars = { eob = " " }
+
+  vim.api.nvim_set_option("clipboard", "unnamedplus")
 end
 
 return M

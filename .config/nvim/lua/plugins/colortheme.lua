@@ -123,7 +123,7 @@ M.opts = {
     -- Value is any valid attr-list value for `:help nvim_set_hl`
     comments = { italic = true },
     keywords = { italic = true },
-    functions = {},
+    functions = { bold = true },
     variables = {},
   },
 
@@ -142,9 +142,9 @@ M.opts = {
     highlights.CursorLine = { bg = colors.none }
     highlights.CursorLineNr = { bg = colors.none, fg = colors.blue, bold = true }
 
-    highlights.Normal = { bg = colors.none }
+    -- highlights.Normal = { bg = colors.none }
 
-    highlights.Pmenu = { bg = colors.bg_dim, fg = colors.blue }
+    -- highlights.Pmenu = { bg = colors.bg_dim, fg = colors.blue }
 
     highlights.TelescopeBorder = { bg = colors.bg_dim, fg = colors.bg_dim }
     highlights.TelescopePromptBorder = { bg = colors.base, fg = colors.base }
@@ -187,7 +187,7 @@ M.opts = {
     highlights.WhichKeyFloat = { bg = colors.bg_dim }
 
     highlights.FloatBorder = { bg = colors.bg_dim, fg = colors.bg_dim }
-    highlights.NormalFloat = { bg = colors.bg_dim }
+    -- highlights.NormalFloat = { bg = colors.bg_dim }
 
     highlights.LspInlayHint = { bg = nil, fg = colors.fg_dim }
 

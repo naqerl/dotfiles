@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+echo_name_and_command ()
+{
+	local desktop_file="$1"
+	name=$(grep -Po '(?<=^Name=).*' "$desktop_file" | head -n 1)
+	command=$(grep -Po '(?<=^Exec=).*' "$desktop_file" | head -n 1)
+	echo -e "$name\t$command"
+}
+export -f echo_name_and_command
+
+# echo_apps(/usr/share/applications)
+cd /usr/share/applications && fd '.desktop$' \
+	| xargs -I {} bash -c 'echo_name_and_command $1' _ {} \
+	| fzf

@@ -13,6 +13,10 @@ $peach: #F07854;
 $red: #F07854;
 $purple: #B6A0FF;
 
+* {
+    border-radius: 5px;
+}
+
 .space {
     margin: 0 2px;
 }
@@ -97,7 +101,8 @@ $purple: #B6A0FF;
 }
 
 .bg-transparent {
-    background-color: rgba(#100F10, 0.98);
+    background-color: rgba(#100F10, 0.8);
+    border-radius: 0px;
 }
 
 .layout-box {
@@ -143,3 +148,8 @@ $purple: #B6A0FF;
 	}
     }
 }
+
+.px-4 {
+    padding: 0 4px;
+}
+

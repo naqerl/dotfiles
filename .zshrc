@@ -1,3 +1,6 @@
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.config/bin:$PATH"
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -72,6 +75,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 alias l='exa --long --header --icons'
 alias v='nvim'
 alias c='clear'
+alias d='docker'
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -79,7 +83,6 @@ eval "$(fzf --zsh)"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.config/bin:$PATH"
+bindkey -e
 
 . "$HOME/.cargo/env"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+PASSWORD_STORE="$HOME/.password-store"
+wfzf="$HOME/dotfiles/.config/bin/wfzf"
+
+choosed_password=$(cd $PASSWORD_STORE && fd --type f | sed 's/\.gpg$//'| $wfzf)
+
+if [[ -z "$choosed_password" ]]; then
+	exit
+fi
+
+password=$(pass $choosed_password)
+password=$(echo $password | sed 's/ Username:.*//')  # Username data from window pass GUI
+
+wtype $password
+

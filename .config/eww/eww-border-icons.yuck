@@ -8,7 +8,7 @@
 
 (defwidget bar []
            (centerbox :class "bg-transparent"
-                :style "padding: 4px;"
+                :style "padding: 4px 0;"
                 :orientation "h"
                 (left)
                 (center)
@@ -30,9 +30,7 @@
               (text :content current_workspace_name)
               (space)
               (space)))
-            (space)
             (mpv_player)
-            (space)
             (notification)))
 
 (defwidget center []
@@ -69,16 +67,15 @@
                :reveal {mic_state == 'muted' ? false : true}
                :duration "200ms"
                (mic))
-              (space)
               (clock)
               (space)
               (battery_v2)
+              (layout_alert)
               (revealer ;; Right Emacs status
                :transition "slideright"
                :reveal {emacs_focused == "t"}
                :duration "300ms"
                (emacs_window))))
-              (layout_alert)
             (revealer
              :transition "slideright"
              :reveal {emacs_focused == "t" && emacs_buffer_modifier != ""}
@@ -131,12 +128,16 @@
                    :transition "slideleft"
                    :reveal {timer69 == '' ? false : true}
                    :duration "500ms"
-                          (text
-                    :class "fg-${timer_color} px-4"
+                   (text
+                    :class "fg-${timer_color}"
                     :content "${timer69}"))
+                  (space)
+                  (space)
                   (text
-                   :class "fg-${timer_color} px-4"
-                   :content " ")))))
+                   :class "fg-${timer_color}"
+                   :content " ")
+                  (space)
+                  (space)))))
 
 (defwidget separator []
            (box (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space)))
@@ -152,14 +153,18 @@
              (revealer
               :transition "slideleft"
               :reveal {left != ""}
-              )
+              (icon
+               :path "/home/suzu/Pictures/icons/left-triangle-${left}.svg"
+               :size {size != "" ? size : 24}))
             (box
              :class "bg-${bg} fg-${fg}"
              (children))
             (revealer
               :transition "slideright"
               :reveal {right != ""}
-              )))
+              (icon
+               :path "/home/suzu/Pictures/icons/right-triangle-${right}.svg"
+               :size {size != "" ? size : 24}))))
 
 (defwidget icon [path ?size]
            (image
@@ -289,14 +294,12 @@
              :duration "250ms"
              (box
               :space-evenly false
-              (space)
               (container
                :left "yellow"
                :right "yellow"
                :bg "yellow"
                :fg "dark"
-               (text :content "ru" :class "fg-dark px-4"))
-              (space))))
+               (text :content "ru" :class "fg-dark")))))
 
 (defvar timer69 "")
 (defvar timer_color "light")

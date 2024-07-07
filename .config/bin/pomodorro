@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+fzf="$HOME/dotfiles/.config/bin/wfzf"
 
 declare -A options=(
     ["Work"]='port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=52&color=red"'
@@ -7,7 +8,7 @@ declare -A options=(
 )
 
 # Use fzf to select an option
-selected=$(printf "%s\n" "${!options[@]}" | fzf --prompt="Action: ")
+selected=$(printf "%s\n" "${!options[@]}" | $fzf --prompt="Action: ")
 
 # Check if a valid option was selected
 if [[ -n "$selected" && -n "${options[$selected]}" ]]; then

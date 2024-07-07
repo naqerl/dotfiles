@@ -168,7 +168,7 @@ function M.config()
 
 			-- Override `Codelldb` with our own setup function
 			codelldb = function()
-				require("plugins/dap_adapters/codelldb").setup(dap)
+				-- require("plugins/dap_adapters/codelldb").setup(dap)
 			end,
 		},
 	})

@@ -1,7 +1,18 @@
 return {
   {
-    'tpope/vim-fugitive',
-    event = 'BufReadPre',
+    "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",  -- required
+      "sindrets/diffview.nvim", -- optional - Diff integration
+
+      -- Only one of these is needed, not both.
+      "nvim-telescope/telescope.nvim", -- optional
+      "ibhagwan/fzf-lua",              -- optional
+    },
+    keys = {
+      { '<leader>og', function() require('neogit').open() end, desc = '[O]pen [G]it' },
+    },
+    config = true
   },
   {
     'tpope/vim-rhubarb',
@@ -15,7 +26,6 @@ return {
       { ']g',         function() require('gitsigns').next_hunk() end,    desc = 'Next git hunk' },
       { '[g',         function() require('gitsigns').prev_hunk() end,    desc = 'Previous git hunk' },
       { '<leader>hp', function() require('gitsigns').preview_hunk() end, desc = '[H]unk [P]review' },
-      { '<leader>og', ':vertical Git<CR><C-w>o',                         desc = '[O]pen [G]it' },
     },
     config = function()
       require('gitsigns').setup()
