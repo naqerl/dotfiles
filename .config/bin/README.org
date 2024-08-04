@@ -200,23 +200,22 @@ hyprctl workspaces -j \
 #+begin_src bash :tangle notification-daemon
 #!/usr/bin/env bash
 
-
 # How long each line stays on screen
 duration=5
 
-tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "timeout": "#timeout"}' |
+tiramisu -s -o '{"source": "#source", "summary": "#summary", "body": "#body", "icon": "#icon", "timeout": "#timeout"}' |
     while read -r notif; do
-	app=$(echo "$notif" | xq '.source' | xargs)
-      telegram_msg=""
+        app=$(echo "$notif" | jq -r '.source')
+        telegram_msg=""
 
 	case "$app" in
 	    "Telegram Desktop") 
 		app=" "
-		# mpv "$HOME/.config/notification_sounds/telegram_default.mp3" >/dev/null 2>&1 &
+		mpv "$HOME/.config/notification_sounds/telegram_default.mp3" >/dev/null 2>&1 &
 		;;
 	    "Slack")
 		app=" "
-		# mpv "$HOME/.config/notification_sounds/slack_default.mp3" >/dev/null 2>&1 &
+		mpv "$HOME/.config/notification_sounds/slack_default.mp3" >/dev/null 2>&1 &
 		;;
 	    "Google Chrome")
 		app=" "
@@ -255,13 +254,17 @@ tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "t
 		app="󱎫 "
               telegram_msg="⏲"
 		;;
-	    ,*)
+            "Emacs")
+                app=" "
+                telegram_msg=" "
+                ;;
+	    *)
 		app="$app:"
 		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
 		;;
 	esac
 
-	summary=$(echo "$notif" | xq '.summary' | xargs)
+	summary=$(echo "$notif" | jq -r '.summary')
 	body="$app $summary"
 
 	eww update notification_text="$body"
@@ -278,7 +281,7 @@ tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "t
         continue
       fi
 
-      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/209493779/; s/\$text/$telegram_msg: $summary/")
+      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/209493779/; s/\$text/$telegram_msg $summary/")
       COMPATION_TELEGRAM_BOT_TOKEN="7074489476:AAG3VykSn-gBFKB6gukCeH06M4OktoO-0VA"
 
       curl -X POST \
@@ -286,13 +289,6 @@ tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "t
             -d "$body" \
             "https://api.telegram.org/bot$COMPATION_TELEGRAM_BOT_TOKEN/sendMessage"
     done
-#+end_src
-
-#+begin_src json :tangle telegram_message_template.json
-{
-  "chat_id": "$chat_id",
-  "text": "$text"
-}
 #+end_src
 
 * Open pdf
