@@ -94,7 +94,7 @@ chsh -s $(which fish)
 
 if [[ ! -d "$HOME/.tmux/plugins/tmp" ]]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-done
+fi
 
 cd "$HOME/dotfiles" && stow . --adopt
 
