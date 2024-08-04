@@ -4,6 +4,7 @@
 #+auto_tangle: t
 
 * Table of contents :toc:
+- [[#monitor][Monitor]]
 - [[#alisaes][Alisaes]]
   - [[#super-key][Super key]]
   - [[#emacs][Emacs]]
@@ -16,7 +17,6 @@
   - [[#start-apps][Start apps]]
   - [[#idle-daemon][Idle daemon]]
   - [[#timer][Timer]]
-- [[#monitor][Monitor]]
 - [[#workspaces][Workspaces]]
 - [[#input][Input]]
 - [[#xwayland][Xwayland]]
@@ -41,6 +41,17 @@
   - [[#brightness][Brightness]]
   - [[#second-monitor][Second monitor]]
   - [[#timer-1][Timer]]
+
+* Monitor
+Currently game mode needs manual config change
+
+#+begin_src conf
+# monitor = HDMI-A-1, 2560x1440, 0x0, 1.25
+# monitor = eDP-1, disable
+exec = setup-monitors
+# monitor = HDMI-A-1, 1920x1080, 0x0, 1
+# monitor = eDP-1, 2560x1440, 2560x0, 1.6
+#+end_src
 
 * Alisaes
 ** Super key
@@ -102,7 +113,7 @@ exec-once = hyprsistant
 ** Start apps
 #+begin_src conf
 exec-once = hyprctl dispatch workspace 2
-exec-once = [workspace 1 silent] librewolf
+exec-once = [workspace 1 silent] vieb
 exec-once = [workspace 2 silent] $emacsDaemon && $emacsClient
 #+end_src
 
@@ -114,16 +125,6 @@ exec-once = wl-idle --time 5 --file /tmp/idle
 ** Timer
 #+begin_src conf
 exec-once = timer
-#+end_src
-
-* Monitor
-Currently second monitor activation needs manual config change
-
-#+begin_src conf
-monitor = HDMI-A-1, 2560x1440, 0x0, 1.25
-# monitor = HDMI-A-1, 1920x1080, 0x0, 1
-# monitor = eDP-1, 2560x1440, 2560x0, 1.6
-monitor = eDP-1, disable
 #+end_src
 
 * Workspaces
@@ -325,7 +326,6 @@ bind = $mainMod, P, exec, hyprpicker -a
 bind = $mainMod, W, exec, change-wallpaper
 bind = $mainShiftMod, W, exec, bash -c 'notify-send "Running Win10 VM"; virsh --connect qemu:///system start win10; virt-manager --connect qemu:///system --show-domain-console win10'
 bind = $mainMod, TAB, exec, eww open --toggle powermenu
-# bind = $mainShiftMod, D, exec, hyprctl dispatch workspace $(hypr-first-emtpy-workspace) && edit-img-from-clipboard
 bind = $mainMode, O, exec, thunar
 #+end_src
 
@@ -471,6 +471,7 @@ binde=, XF86MonBrightnessDown, exec, brightnessctl set 2%-
 #+end_src
 
 ** Second monitor
+
 #+begin_src conf
 bind = $mainShiftMod, D, exec, toggle-second-monitor
 #+end_src
