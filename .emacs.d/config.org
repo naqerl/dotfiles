@@ -42,6 +42,8 @@
   - [[#enable-org-bullets][Enable Org bullets]]
   - [[#turn-off-images-actual-width][Turn off images actual width]]
   - [[#show-hidden-elements-on-curosr-hover][Show hidden elements on curosr hover]]
+  - [[#auto-babel-tangle][Auto babel tangle]]
+  - [[#run-source-block-hook][Run source block hook]]
 - [[#pdf-tools][PDF tools]]
 - [[#projectile][Projectile]]
 - [[#rainbow-mode][Rainbow mode]]
@@ -520,7 +522,7 @@ Used for reviewing of the pull requests
 ** Ediff
 #+begin_src elisp
 (setq ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-window-plain)
+      ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (defun suzu/ediff-hook ()
 (ediff-setup-keymap)
@@ -552,8 +554,9 @@ Used for reviewing of the pull requests
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (setq dashboard-display-icons-p t)
   (setq dashboard-path-max-length 10)
+  (setq dashboard-vertically-center-content nil)
   :custom
-  (dashboard-startup-banner "/home/suzu/.emacs.d/images/salmon-dragon.png")
+  (dashboard-startup-banner "/home/suzu/.emacs.d/images/official.png")
   (dashboard-center-content t)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
@@ -777,6 +780,27 @@ Used for reviewing of the pull requests
         org-appear-trigger 'always))
 #+end_src
 
+** Auto babel tangle
+#+begin_src elisp
+(use-package org-auto-tangle
+  :ensure t
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode))
+#+end_src
+
+** Run source block hook
+Sometimes I want run some scripts on saving files
+So it'll be nice to run them automatically
+
+#+begin_src elisp
+(defun suzu/org-babel-run-after-save-hook ()
+    (message "Added org-babel-run-after-tangle hook")
+    (add-hook 'after-save-hook (lambda () (org-babel-ref-resolve "run-after-save")))
+)
+
+(add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
+#+end_src
+
 * PDF tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
@@ -952,9 +976,7 @@ Used for reviewing of the pull requests
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
   :config
-  (persp-turn-off-modestring)
-  (setq persp-state-default-file "~/.config/emacs/sessions"
-        persp-show-modestring nil))
+  (persp-turn-off-modestring))
 #+end_src
 
 ** Group buffers in ibuffer by perspective

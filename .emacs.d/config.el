@@ -52,6 +52,16 @@
   (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
   (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
+(defun suzu/split-window-vertical()
+(interactive)
+(split-window-right)
+(other-window 1))
+
+(defun suzu/split-window-horizontal()
+(interactive)
+(split-window-below)
+(other-window 1))
+
 (use-package general
   :ensure t
   :config
@@ -62,6 +72,12 @@
    :prefix "g"
    "n" '(suzu/buffer-next :wk "Next buffer")
    "p" '(suzu/buffer-prev :wk "Previous buffer"))
+
+  (general-define-key
+   :states 'normal
+   :prefix "C-w"
+   "v" '(suzu/split-window-vertical :wk "Vertical split")
+   "s" '(suzu/split-window-horizontal :wk "Horizontal split"))
 
   (general-define-key
    :states '(normal visual)
@@ -367,7 +383,7 @@
 (setq-default line-spacing 0.12)
 
 (setq ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-window-plain)
+      ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (defun suzu/ediff-hook ()
 (ediff-setup-keymap)
@@ -393,8 +409,9 @@
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (setq dashboard-display-icons-p t)
   (setq dashboard-path-max-length 10)
+  (setq dashboard-vertically-center-content nil)
   :custom
-  (dashboard-startup-banner "/home/suzu/.emacs.d/images/salmon-dragon.png")
+  (dashboard-startup-banner "/home/suzu/.emacs.d/images/official.png")
   (dashboard-center-content t)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
@@ -566,6 +583,18 @@
         org-appear-autoentities t
         org-appear-trigger 'always))
 
+(use-package org-auto-tangle
+  :ensure t
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode))
+
+(defun suzu/org-babel-run-after-save-hook ()
+    (message "Added org-babel-run-after-tangle hook")
+    (add-hook 'after-save-hook (lambda () (org-babel-ref-resolve "run-after-save")))
+)
+
+(add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
+
 (use-package pdf-tools
   :ensure t
   :config
@@ -701,9 +730,7 @@
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
   :config
-  (persp-turn-off-modestring)
-  (setq persp-state-default-file "~/.config/emacs/sessions"
-        persp-show-modestring nil))
+  (persp-turn-off-modestring))
 
 (add-hook 'ibuffer-hook
           (lambda ()
