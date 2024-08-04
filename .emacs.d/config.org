@@ -583,10 +583,13 @@ Used for reviewing of the pull requests
 
 ** Rust
 #+begin_src elisp
+(defun suzu/rust-mode()
+(add-hook 'after-save-hook 'rust-format-buffer))
+
 (use-package rust-mode
   :ensure t
   :hook
-  (after-save . eglot-format-buffer))
+  (rust-mode . suzu/rust-mode))
 #+end_src
 
 ** Python
