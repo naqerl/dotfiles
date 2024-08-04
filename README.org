@@ -25,11 +25,13 @@ set -e
 I use arch btw and prefer [[https://github.com/Morganamilo/paru][paru]] as my main package manager
 
 #+begin_src shell
-sudo pacman -S --needed base-devel
-git clone https://aur.archlinux.org/paru.git
-cd paru
-makepkg -si
-cd .. && rm -r paru
+if [[ -z $(command -v paru) ]]; then
+    sudo pacman -S --needed base-devel
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
+    cd .. && rm -r paru
+fi
 #+end_src
 
 *** System apps
