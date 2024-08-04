@@ -1,7 +1,5 @@
 set -ex
 
-git pull origin main
-
 if [[ -z $(command -v rustup) ]]; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     source "$HOME/.cargo/env"
@@ -21,7 +19,7 @@ paru -S hyprland \
         hyprpicker \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
-        fish \
+        fish fisher \
         starship \
         tiramisu-git \
         ripgrep \
@@ -36,7 +34,8 @@ paru -S hyprland \
         slurp \
         socat \
         pass \
-        stow
+        stow \
+        --needed --noconfirm
 
 paru -S kitty \
         qutebrowser \
@@ -53,16 +52,19 @@ paru -S kitty \
         networkmanager \
         blueman \
         spotify-wayland \
-        vesktop-bin
+        vesktop-bin \
+        --needed --noconfirm
 
 paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
-        ttf-opensans
+        ttf-opensans \
+        --needed --noconfirm
 
 paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
-        papirus-icon-theme
+        papirus-icon-theme \
+        --needed --noconfirm
 
 if [[ "$1" == spotify ]]; then
     if [[ ! -d spotify-adblock ]]; then
@@ -88,7 +90,6 @@ if [[ "$1" == spotify ]]; then
     sudo rm -r ~/.spicetify install.log
 fi
 
-paru -S fisher
 chsh -s $(which fish)
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
@@ -96,7 +97,8 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cd "$HOME/dotfiles" && stow .
 
 paru -S python-pipx \
-     python-poetry
+     python-poetry \
+     --needed --noconfirm
 
 pipx install pyright
 
@@ -104,4 +106,5 @@ rustup component add rust-analyzer
 
 paru -S docker \
         docker-buildx \
-        docker-compose
+        docker-compose \
+        --needed --noconfirm

@@ -20,11 +20,6 @@ All of them saved to the =build.sh= file
 set -ex
 #+end_src
 
-*** Update
-#+begin_src shell
-git pull origin main
-#+end_src
-
 *** Rust
 #+begin_src shell
 if [[ -z $(command -v rustup) ]]; then
@@ -83,7 +78,7 @@ paru -S hyprland \
         hyprpicker \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
-        fish \
+        fish fisher \
         starship \
         tiramisu-git \
         ripgrep \
@@ -98,7 +93,8 @@ paru -S hyprland \
         slurp \
         socat \
         pass \
-        stow
+        stow \
+        --needed --noconfirm
 #+end_src
 
 *** Essential apps
@@ -141,7 +137,8 @@ paru -S kitty \
         networkmanager \
         blueman \
         spotify-wayland \
-        vesktop-bin
+        vesktop-bin \
+        --needed --noconfirm
 #+end_src
 
 *** Fonts
@@ -152,7 +149,8 @@ paru -S kitty \
 paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
-        ttf-opensans
+        ttf-opensans \
+        --needed --noconfirm
 #+end_src
 
 *** Gtk
@@ -162,7 +160,8 @@ paru -S ttf-iosevka-nerd \
 #+begin_src bash
 paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
-        papirus-icon-theme
+        papirus-icon-theme \
+        --needed --noconfirm
 #+end_src
 
 [[https://github.com/catppuccin/gtk][Theme source]]
@@ -205,7 +204,6 @@ fi
 Install plugin manager & Change default shell to `fish`
 
 #+begin_src bash
-paru -S fisher
 chsh -s $(which fish)
 #+end_src
 
@@ -229,7 +227,8 @@ Install package managers
 
 #+begin_src bash
 paru -S python-pipx \
-     python-poetry
+     python-poetry \
+     --needed --noconfirm
 #+end_src
 
 Install LSP pyright
@@ -251,6 +250,7 @@ rustup component add rust-analyzer
 #+begin_src bash
 paru -S docker \
         docker-buildx \
-        docker-compose
+        docker-compose \
+        --needed --noconfirm
 #+end_src
 
