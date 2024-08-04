@@ -1,6 +1,6 @@
 (add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
-(require 'elpaca-setup)
+(require 'package-manager)
 
 (use-package gcmh
   :ensure t
@@ -59,16 +59,31 @@
   (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
   (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
+(defun suzu/window-left ()
+  (interactive)
+  (evil-window-left 1)
+  (golden-ratio))
+
+(defun suzu/window-down ()
+  (interactive)
+  (evil-window-down 1)
+  (golden-ratio))
+
+(defun suzu/window-up ()
+  (interactive)
+  (evil-window-up 1)
+  (golden-ratio))
+
+(defun suzu/window-right ()
+  (interactive)
+  (evil-window-right 1)
+  (golden-ratio))
+
 (with-eval-after-load 'evil-maps
-  (global-set-key (kbd "C-h") nil)
-  (global-set-key (kbd "C-k") nil)
-  (global-unset-key (kbd "C-j"))
-  (global-unset-key (kbd "C-l"))
-  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-)
+  (define-key evil-normal-state-map (kbd "C-h") 'suzu/window-left)
+  (define-key evil-normal-state-map (kbd "C-j") 'suzu/window-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'suzu/window-up)
+  (define-key evil-normal-state-map (kbd "C-l") 'suzu/window-right))
 
 (defun suzu/split-window-vertical()
   (interactive)
@@ -185,7 +200,7 @@
     "h r r" '((lambda ()
                 (interactive)
                 (load-file "~/dotfiles/.emacs.d/init.el")
-                (ignore (elpaca-process-queues))) :wk "Reload emacs config"))
+                ) :wk "Reload emacs config"))
 
   (suzu/leader-keys
     "m" '(:ignore t :wk "Org")
@@ -200,11 +215,12 @@
 
   (suzu/leader-keys
     "m b" '(:ignore t :wk "Tables")
-    "m b -" '(org-table-insert-hline :wk "Insert hline in table"))
-
-  (suzu/leader-keys
+    "m b -" '(org-table-insert-hline :wk "Insert hline in table")
     "m d" '(:ignore t :wk "Date/deadline")
-    "m d t" '(org-time-stamp :wk "Org time stamp"))
+    "m d t" '(org-time-stamp :wk "Org time stamp")
+    "m r f" '(org-roam-node-find :wk "Org Roam find node")
+    "m r b" '(org-roam-buffer-toggle :wk "Org Roam show backlinks")
+    "m r i" '(org-roam-node-insert :wk "Org Roam insert node"))
 
   (suzu/leader-keys
     "c a" '(eglot-code-actions :wk "Code actions")
@@ -256,6 +272,21 @@
   (auto-dim-other-buffers-affected-faces '((default . auto-dim-other-buffers-face)
                                            (org-hide . auto-dim-other-buffers-hide-face))))
 
+(use-package golden-ratio
+  :ensure t
+  :init
+  (golden-ratio-mode 1)
+  :custom
+  (golden-ratio-auto-scale t))
+
+(use-package zen-mode
+  :ensure t)
+
+(use-package auth-source
+  :config
+  (auth-source-pass-enable)
+  (setq auth-source-debug 'trivia))
+
 (use-package magit
   :ensure t
   :config
@@ -271,24 +302,6 @@
   :config
   (global-git-gutter-mode +1))
 
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init
-;;   (doom-modeline-mode nil)
-;;   :config
-;;   (setq doom-modeline-height 15
-;;         doom-modeline-buffer nil
-;;         doom-modeline-buffer-name nil
-;;         doom-modeline-bar-width 6
-;;         doom-modeline-lsp t
-;;         doom-modeline-github nil
-;;         doom-modeline-mu4e nil
-;;         doom-modeline-irc t
-;;         doom-modeline-minor-modes nil
-;;         doom-modeline-persp-name nil
-;;         doom-modeline-display-default-persp-name nil
-;;         doom-modeline-persp-icon nil
-;;         doom-modeline-major-mode-icon nil))
 (setq-default mode-line-format nil)
 
 (use-package all-the-icons
@@ -306,59 +319,17 @@
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-auto-delay 1)
   (corfu-auto-prefix 2)
-  ;; (corfu-echo-documentation 0.25)
-  ;; ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
-
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
-  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
-  ;; be used globally (M-/).  See also the customization variable
-  ;; `global-corfu-modes' to exclude certain modes.
   :bind (:map corfu-map
         ("TAB" . corfu-next)
         ([tab] . corfu-next)
         ("S-TAB" . corfu-previous)
         ([backtab] . corfu-previous))
-  ;; (define-key corfu-map (kbd "M-j") #'corfu-doc-scroll-down)
-  ;; (define-key corfu-map (kbd "M-k") #'corfu-doc-scroll-up)
   :init
-  ;; (add-hook 'corfu-mode-hook #'corfu-popupinfo-mode)
   (global-corfu-mode))
 
-;; (defun corfu-send-shell (&rest _)
-;;   "Send completion candidate when inside comint/eshell."
-;;   (cond
-;;    ((and (derived-mode-p 'eshell-mode) (fboundp 'eshell-send-input))
-;;     (eshell-send-input))
-;;    ((and (derived-mode-p 'comint-mode)  (fboundp 'comint-send-input))
-;;     (comint-send-input))))
-
-;; (advice-add #'corfu-insert :after #'corfu-send-shell)
-
-;; A few more useful configurations...
 (use-package emacs
   :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
-
-  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
-  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  ;; (setq tab-always-indent 'complete)
-)
+  (setq completion-cycle-threshold 3))
 
 (use-package dabbrev
   ;; Swap M-/ and C-M-/
@@ -382,11 +353,9 @@
 :config
 (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-(use-package diminish
-  :ensure t)
-
 (use-package dired-open
   :ensure t
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
   :config
   (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
   (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
@@ -424,14 +393,13 @@
                        ("https://itsfoss.com/feed/" itsfoss linux)
                        ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
                        ("https://www.phoronix.com/rss.php" phoronix linux)
-                       ("http://feeds.feedburner.com/d0od" omgubuntu linux)
                        ("https://www.computerworld.com/index.rss" computerworld linux)
                        ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
                        ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
                        ("https://betanews.com/feed" betanews linux)
                        ("https://systemcrafters.net/rss/news.xml" emac)
-                       ("http://lxer.com/module/newswire/headlines.rss" lxer linux)
-                       ("https://distrowatch.com/news/dwd.xml" distrowatch linux)))))
+                       ("https://hnrss.github.io/#firehose-feeds" hackernews)
+                       ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
 
 
 (use-package elfeed-goodies
@@ -441,12 +409,14 @@
   :config
   (setq elfeed-goodies/entry-pane-size 0.5))
 
+(add-hook 'elfeed-show-mode-hook 'visual-line-mode)
+
 (set-face-attribute 'default nil
-                    :font "iosevka nf"
+                    :font "iosevka NF"
                     :height 130
                     :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-                    :font "Iosevka Lyte Term"
+                    :font "Iosevka NF"
                     :height 130
                     :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
@@ -484,8 +454,6 @@
 (use-package dashboard
   :ensure t
   :config
-  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
-  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (setq dashboard-display-icons-p t)
@@ -518,27 +486,9 @@
   (general-define-key
    :states '(normal visual motion)
    :keymaps 'override
-   "K" '(eldoc-box-help-at-point :wk "Show doc")
-   ;; "C-k" '(suzu/eldoc-box-scroll-up)
-   ;; "C-j" '(suzu/eldoc-box-scroll-down)
-   )
-  ;; :general
-  ;; (:keymaps 'eglot-mode-map
-  ;;           "C-k" 'rex/eldoc-box-scroll-up
-  ;;           "C-j" 'rex/eldoc-box-scroll-down
-  ;;           "K" 'eldoc-box-eglot-help-at-point)
-  )
-
-;; (use-package eldoc-box
-;;   :ensure t
-;;   :config
-;;   (general-define-key
-;;    :states '(normal visual motion)
-;;    :keymaps 'override
-;;    "K" '(eldoc-box-help-at-point :wk "Show doc")))
+   "K" '(eldoc-box-help-at-point :wk "Show doc")))
 
 (defun suzu/rust-mode()
-  ;; (add-hook 'after-save-hook 'rust-format-buffer)
   (eglot-ensure))
 
 (use-package rust-mode
@@ -549,13 +499,12 @@
 (add-hook 'rust-mode-hook 'suzu/rust-mode)
 
 (defun suzu/python-mode()
-  (add-hook 'before-save-hook 'python-black-buffer)
-  (add-hook 'before-save-hook 'python-sort-imports)
   (eglot-ensure))
 
 (use-package python
   :hook
-  (python-ts-mode . suzu/python-mode))
+  (python-ts-mode . suzu/python-mode)
+  (python-ts-mode . python-black-on-save-mode))
 
 (use-package python-black
   :ensure t)
@@ -572,6 +521,9 @@
 (sql-mode-hook . sqlformat-on-save-mode))
 
 (use-package markdown-mode
+  :ensure t)
+
+(use-package csv-mode
   :ensure t)
 
 (setq read-process-output-max (* 1024 1024))
@@ -610,7 +562,14 @@
 (use-package emojify
   :ensure t)
 
-(require 'org-tempo)
+(with-eval-after-load 'org
+  ;; This is needed as of Org 9.2
+  (require 'org-tempo)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+
 (add-hook 'org-mode-hook
   (lambda ()
     (setq-local electric-pair-inhibit-predicate
@@ -644,75 +603,225 @@
   (prog-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 
+(defun suzu/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  ;; (dolist (face '((org-level-1 . 1.2)
+  ;;                 (org-level-2 . 1.1)
+  ;;                 (org-level-3 . 1.05)
+  ;;                 (org-level-4 . 1.0)
+  ;;                 (org-level-5 . 1.1)
+  ;;                 (org-level-6 . 1.1)
+  ;;                 (org-level-7 . 1.1)
+  ;;                 (org-level-8 . 1.1)))
+    ;; (set-face-attribute (car face) nil :font "Iosevka NF" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  ;; (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+  ;; (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+  ;; (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  ;; (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+  ;; (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+  ;; (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  ;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  ;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  ;; (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+  ;; (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+  ;; (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+)
+
+(defun suzu/org-mode-setup ()
+  (org-indent-mode)
+  ;; (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+(use-package org
+  :pin org
+  :commands (org-capture org-agenda)
+  :hook (org-mode . suzu/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (setq org-agenda-files
+        '("~/org-roam/tasks.org"
+          "~/org-roam/habits.org"))
+
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+
+  (setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+  (setq org-refile-targets
+    '(("Archive.org" :maxlevel . 1)
+      ("Tasks.org" :maxlevel . 1)))
+
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+  (setq org-tag-alist
+    '((:startgroup)
+       ; Put mutually exclusive tags here
+       (:endgroup)
+       ("@errand" . ?E)
+       ("@home" . ?H)
+       ("@work" . ?W)
+       ("agenda" . ?a)
+       ("planning" . ?p)
+       ("publish" . ?P)
+       ("batch" . ?b)
+       ("note" . ?n)
+       ("idea" . ?i)))
+
+  ;; Configure custom agenda views
+  (setq org-agenda-custom-commands
+   '(("d" "Dashboard"
+     ((agenda "" ((org-deadline-warning-days 7)))
+      (todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))
+      (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+    ("n" "Next Tasks"
+     ((todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))))
+
+    ("W" "Work Tasks" tags-todo "+work-email")
+
+    ;; Low-effort next actions
+    ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+     ((org-agenda-overriding-header "Low Effort Tasks")
+      (org-agenda-max-todos 20)
+      (org-agenda-files org-agenda-files)))
+
+    ("w" "Workflow Status"
+     ((todo "WAIT"
+            ((org-agenda-overriding-header "Waiting on External")
+             (org-agenda-files org-agenda-files)))
+      (todo "REVIEW"
+            ((org-agenda-overriding-header "In Review")
+             (org-agenda-files org-agenda-files)))
+      (todo "PLAN"
+            ((org-agenda-overriding-header "In Planning")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "BACKLOG"
+            ((org-agenda-overriding-header "Project Backlog")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "READY"
+            ((org-agenda-overriding-header "Ready for Work")
+             (org-agenda-files org-agenda-files)))
+      (todo "ACTIVE"
+            ((org-agenda-overriding-header "Active Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "COMPLETED"
+            ((org-agenda-overriding-header "Completed Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "CANC"
+            ((org-agenda-overriding-header "Cancelled Projects")
+             (org-agenda-files org-agenda-files)))))))
+
+  (setq org-capture-templates
+    `(("t" "Tasks / Projects")
+      ("tt" "Task" entry (file+olp "~/org-roam/tasks.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+      ("j" "Journal Entries")
+      ("jj" "Journal" entry
+           (file+olp+datetree "~/org-roam/journal.org")
+           "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+           :clock-in :clock-resume
+           :empty-lines 1)
+      ("jm" "Meeting" entry
+           (file+olp+datetree "~/org-roam/journal.org")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+
+      ("w" "Workflows")
+      ("we" "Checking Email" entry (file+olp+datetree "~/org-roam/journal.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+      ("m" "Metrics Capture")
+      ("mw" "Weight" table-line (file+headline "~/org-roam/metrics.org" "Weight")
+       "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+  (define-key global-map (kbd "C-c j")
+    (lambda () (interactive) (org-capture nil "jj")))
+
+  (suzu/org-font-setup))
+
 (use-package toc-org
-  :ensure t
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets
- :ensure t
  :hook (org-mode . org-bullets-mode)
  :custom (org-bullets-bullet-list '("◉" "○" "󰣏" "󱀝" "󰴈" "○" "●")))
 
 (setq-default org-image-actual-width nil)
-
-(use-package org-appear
-  :ensure t
-  :hook (org-mode-hook . org-appear-mode)
-  :config
-  (setq org-appear-autoemphasis t
-        org-appear-autolinks t
-        org-appear-autosubmarkers t
-        org-appear-autoentities t
-        org-appear-trigger 'always))
 
 (use-package org-auto-tangle
   :ensure t
   :defer t
   :hook (org-mode . org-auto-tangle-mode))
 
-(defun suzu/run-after-tangle-hook ()
-    (add-hook 'org-bable-tangle-finished-hook (lambda () (org-babel-ref-resolve "run-after-save")))
-)
+(
+defun suzu/run-after-tangle-hook ()
+    (add-hook 'org-bable-tangle-finished-hook (lambda () (org-babel-ref-resolve "run-after-save"))))
 
 ;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
 
 (defun suzu/org-icons ()
-   "Beautify org mode keywords."
-   (setq prettify-symbols-alist '(("TODO" . "")
-	                          ("WAIT" . "")        
-   				  ("NOPE" . "")
-				  ("DONE" . "")
-				  ("[#A]" . "")
-				  ("[#B]" . "")
- 				  ("[#C]" . "")
-				  ("[ ]" . "")
-				  ("[X]" . "")
-				  ("[-]" . "")
-				  ("#+begin_src" . "")
-				  ("#+end_src" . "")
-				  (":properties:" . "")
-				  (":end:" . "―")
-				  ("#+startup:" . "")
-				  ("#+title: " . "")
-				  ("#+results:" . "")
-				  ("#+name:" . "")
-				  ("#+roam_tags:" . "")
-				  ("#+filetags:" . "")
-				  ("#+html_head:" . "")
-				  ("#+subtitle:" . "")
-				  ("#+author:" . "")
-				  ("#+description:" . "󰦨")
-				  (":effort:" . "")
-				  ("scheduled:" . "")
-				  ("deadline:" . "")))
-   (prettify-symbols-mode))
+  "Beautify org mode keywords."
+  (setq prettify-symbols-alist '(("TODO" . "")
+	                         ("WAIT" . "")        
+   				 ("NOPE" . "")
+				 ("DONE" . "")
+				 ("[#A]" . "")
+				 ("[#B]" . "")
+ 				 ("[#C]" . "")
+				 ("[ ]" . "")
+				 ("[X]" . "")
+				 ("[-]" . "")
+				 ("#+begin_src" . "")
+				 ("#+end_src" . "")
+				 (":properties:" . "")
+				 (":PROPERTIES:" . "")
+				 (":end:" . "―")
+                                 (":END:" . "―")
+                                 (":ID:" . "")
+				 ("#+startup:" . "")
+				 ("#+title: " . "")
+				 ("#+results:" . "")
+				 ("#+name:" . "")
+				 ("#+roam_tags:" . "")
+				 ("#+filetags:" . "")
+				 ("#+html_head:" . "")
+				 ("#+subtitle:" . "")
+				 ("#+author:" . "")
+				 ("#+description:" . "󰦨")
+				 (":effort:" . "")
+                            ("scheduled:" . "")
+				 ("deadline:" . "")))
+  (prettify-symbols-mode))
 (add-hook 'org-mode-hook 'suzu/org-icons)
 
 (defun suzu/setup-org-mode ()
-    (evil-define-key '(normal) org-mode-map (kbd "C-k") 'evil-window-up)
-    (evil-define-key '(normal) org-mode-map (kbd "C-j") 'evil-window-down))
+    (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
+    (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down))
 
 (add-hook 'org-mode-hook 'suzu/setup-org-mode)
 
@@ -720,10 +829,87 @@
 ;;   (git-gutter-mode nil))
 ;; (add-hook 'org-mode-hook 'suzu/disable-git-gutter)
 
+(use-package org-roam
+  :ensure t
+  :config
+  (org-roam-db-autosync-mode))
+
+(setq org-directory "~/org-roam")
+(setq org-agenda-files '("tasks.org" "habits.org"))
+
+;; If you only want to see the agenda for today
+;; (setq org-agenda-span 'day)
+
+(setq org-agenda-start-with-log-mode t)
+(setq org-log-done 'time)
+(setq org-log-into-drawer t)
+
+(setq org-todo-keywords
+  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+    (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+(setq org-agenda-custom-commands
+  '(("d" "Dashboard"
+     ((agenda "" ((org-deadline-warning-days 7)))
+      (todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))
+      (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+    ("n" "Next Tasks"
+     ((todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))))
+
+
+    ("W" "Work Tasks" tags-todo "+work")
+
+    ;; Low-effort next actions
+    ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+     ((org-agenda-overriding-header "Low Effort Tasks")
+      (org-agenda-max-todos 20)
+      (org-agenda-files org-agenda-files)))
+
+    ("w" "Workflow Status"
+     ((todo "WAIT"
+            ((org-agenda-overriding-header "Waiting on External")
+             (org-agenda-files org-agenda-files)))
+      (todo "REVIEW"
+            ((org-agenda-overriding-header "In Review")
+             (org-agenda-files org-agenda-files)))
+      (todo "PLAN"
+            ((org-agenda-overriding-header "In Planning")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "BACKLOG"
+            ((org-agenda-overriding-header "Project Backlog")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "READY"
+            ((org-agenda-overriding-header "Ready for Work")
+             (org-agenda-files org-agenda-files)))
+      (todo "ACTIVE"
+            ((org-agenda-overriding-header "Active Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "COMPLETED"
+            ((org-agenda-overriding-header "Completed Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "CANC"
+            ((org-agenda-overriding-header "Cancelled Projects")
+             (org-agenda-files org-agenda-files)))))))
+
 (use-package pdf-tools
   :ensure t
   :config
   (pdf-tools-install))
+
+(defun suzu/dir-contains-project-marker (dir)
+  "Checks if `.project' file is present in directory at DIR path."
+  (let ((project-marker-path (file-name-concat dir ".project")))
+    (when (file-exists-p project-marker-path)
+       dir)))
+
+(customize-set-variable 'project-find-functions
+                        (list #'project-try-vc
+                              #'suzu/dir-contains-project-marker))
 
 (use-package marginalia
   :ensure t
@@ -796,8 +982,9 @@
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'evil-window-up)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'evil-window-down)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
+  (visual-line-mode)
   (evil-normalize-keymaps))
 
 (use-package eshell
@@ -821,6 +1008,7 @@
   (eshell-toggle-window-side 'above)
   (eshell-toggle-size-fraction 3)
   (eshell-toggle-use-projectile-root nil)
+  (eshell-toggle-use-git-root t)
   (eshell-toggle-run-command nil))
 
 (use-package pcmpl-args
@@ -958,7 +1146,7 @@
 (add-hook 'window-state-change-hook 'suzu/current-window)
 
 (defun suzu/current-buffer-saved ()
-  (if (buffer-modified-p)
+  (if (and (buffer-modified-p) (not buffer-read-only))
       (suzu/update-eww-var "emacs_buffer_modifier" " ")
       (suzu/update-eww-var "emacs_buffer_modifier" "")))
 
@@ -981,17 +1169,6 @@
 (add-hook 'find-file-hook 'suzu/lsp-status)
 (add-hook 'persp-switch-hook 'suzu/lsp-status)
 
-(use-package org-ai
-  :ensure t
-  :commands (org-ai-mode
-             org-ai-global-mode)
-  :init
-  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
-  (org-ai-global-mode) ; installs global keybindings on C-c M-a
-  :config
-  (setq org-ai-default-chat-model "gpt-3.5") ; if you are on the gpt-4 beta:
-) ; if you are using yasnippet and want `ai` snippets
-
 (use-package slack
   :disabled
   :ensure (:repo "https://github.com/yuya373/emacs-slack")
@@ -1003,11 +1180,32 @@
   (slack-register-team
    :default t
    :name "pixelplex"
-   :token "xoxc-4777443326-4451074101014-6449473241250-0554c5b458a7399d1813d75f1cbc04026038a40db5e26c275ec8d50e0fcd9194"
-   :cookie "xoxd-wuTr0YHy50a34f9zV6PmVqE7AOaMkf%2BydScfh8chKzySac8nlsZi%2BdltbY2XJMM%2FNKfl3FdJRNq0dTH2mGAgTMHJ1ZQV5GBDz9TbbSQ440WJOqyriJXRrdhJH2o0GlVUa5Yb2BiULElCQ0BSRpNaYqDk%2FjQfUUbyKLWqOBvW88wutWI%2FJgUi6ELKXVaSgsZ9wYvDDhE%3D"))
+   :token (auth-source-pass--read-entry  "slack.com/token")
+   :cookie (auth-source-pass--read-entry  "slack.com/cookie")))
 
 (use-package alert
   :ensure t
   :commands (alert)
   :init
   (setq alert-default-style 'libnotify))
+
+(use-package gptel
+  :disabled
+  :ensure t
+  :config
+  (setq
+   gptel-log-level 'info
+   gptel-model "claude-3-sonnet-20240229" ;  "claude-3-opus-20240229" also available
+   gptel-backend (gptel-make-anthropic "Claude"
+                                       :stream t :key (auth-source-pass--read-entry  "anthropic.com/apikey"))))
+
+(use-package helpful
+  :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . helpful-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-key] . helpful-key))
