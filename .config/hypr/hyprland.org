@@ -32,6 +32,7 @@
 - [[#window-rules][Window rules]]
 - [[#layer-rules][Layer rules]]
 - [[#binds][Binds]]
+  - [[#quit-hypland][Quit hypland]]
   - [[#app-launchers][App launchers]]
   - [[#workspaces-1][Workspaces]]
   - [[#windows][Windows]]
@@ -187,19 +188,19 @@ general {
 * Decoration
 #+begin_src conf
 decoration {
-    rounding = 5
+rounding = 5
 
-    drop_shadow = no
-    shadow_range = 14
-    shadow_render_power = 1
-    col.shadow = rgba(181926f2)
+drop_shadow = no
+shadow_range = 0
+shadow_render_power = 0
+col.shadow = rgba(181926f2)
 
-    blur {
-			enabled = true
-			size = 8
-			noise = 0.05
-			passes = 3
-    }
+blur {
+enabled = true
+size = 8
+noise = 0.05
+passes = 3
+}
 }
 #+end_src
 
@@ -307,12 +308,18 @@ layerrule = ignorezero, gtk-layer-shell
 #+end_src
 
 * Binds
+** Quit hypland
+#+begin_src conf
+bind = $mainShiftMod, Q, exec, hyprctl dispatch exit
+#+end_src
+
 ** App launchers
 #+begin_src conf
 bind = $mainMod, T, exec, kitty bash -c 'tmux new -s main || tmux a'
 bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 bind = $mainMod, B, exec, run-chrome-profile
 bind = $mainMod, SPACE, exec, fuzzel
+# bind = $mainMod, SPACE, exec, emacsclient -cF "((visibility . nil))" -e "(suzu/emacs-app-launcher)"
 bind = $mainShiftMod, P, exec, open-pdf
 bind = $mainMod, P, exec, hyprpicker -a
 bind = $mainMod, W, exec, change-wallpaper
