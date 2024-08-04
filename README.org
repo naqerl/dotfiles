@@ -83,6 +83,8 @@ paru -S hyprland \
 
 *** Essential apps
 
+My personal preffered apps
+
 | Package        | Description                                                                              | Link                                           |
 |----------------+------------------------------------------------------------------------------------------+------------------------------------------------|
 | Kitty          | terminal of chose                                                                        | https://github.com/kovidgoyal/kitty            |
@@ -99,6 +101,7 @@ paru -S hyprland \
 | Pavucontrole   | GTK audio control                                                                        | https://github.com/pulseaudio/pavucontrol      |
 | NETworkManager | Manage networks with TUI                                                                 | https://github.com/BornToBeRoot/NETworkManager |
 | Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman     |
+| Emacs          | An emacs priest now                                                                      | https://www.gnu.org/software/emacs/            |
 
 #+begin_src bash
 paru -S kitty \
@@ -144,31 +147,62 @@ paru -S catppuccin-gtk-theme-frappe \
 [[https://github.com/catppuccin/gtk][Theme source]]
 
 *** System postinsall
+
 Install plugin manager & Change default shell to `fish`
+
 #+begin_src bash
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
 fisher update
 chsh -s `which fish`
 #+end_src
+
+
 Link tmux config & install plugin manager
+
 #+begin_src bash
-ln -s "$HOME/.config/tmux/tmux.conf" .tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 #+end_src
-`xdg-open` setup
-#+begin_src bash
-xdg-settings set default-web-browser org.qutebrowser.qutebrowser.desktop
-xdg-mime default org.pwmt.zathura.desktop application/pdf
-xdg-mime default feh.desktop image/jpeg
-xdg-mime default feh.desktop image/png
+
+Should be executed if your just cloned that repo
+
+#+begin_src shell
+cd "$HOME/dotfiles" && stow .
 #+end_src
 
 *** Dev setup
+
+**** Python
+
+Install package managers
+
+#+begin_src bash
+paru -S python-pipx \
+     python-poetry \
+     --noconfirm
+#+end_src
+
+Install LSP pyright
+
+#+begin_src bash
+pipx install pyright
+#+end_src
+
 **** Rust
+
+Install rust
+
 #+begin_src bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 #+end_src
+
+Install LSP rust-analyzer
+
+#+begin_src bash
+rustup component add rust-analyzer
+#+end_src
+
 **** Docker
+
 #+begin_src bash
 paru -S docker \
         docker-buildx \
@@ -176,8 +210,3 @@ paru -S docker \
         --noconfirm
 #+end_src
 
-** Make symlinks
-Should be executed if your just cloned that repo
-#+begin_src shell
-cd "$HOME/dotfiles" && stow .
-#+end_src
