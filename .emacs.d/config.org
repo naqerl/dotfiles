@@ -584,7 +584,9 @@ Used for reviewing of the pull requests
 ** Rust
 #+begin_src elisp
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :hook
+  (after-save . eglot-format-buffer))
 #+end_src
 
 ** Python
@@ -612,7 +614,6 @@ Setup lsp client
   :hook
   (python-ts-mode . eglot-ensure)
   (rust-mode . eglot-ensure)
-  (after-save . eglot-format-buffer)
 )
 #+end_src
 
