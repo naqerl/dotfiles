@@ -11,6 +11,7 @@ image/jpeg=feh.desktop
 image/png=feh.desktop
 text/plain=emacsclient.desktop
 text/csv=emacsclient.desktop
+x-scheme-handler/discord-1176718791388975124=discord-1176718791388975124.desktop
 
 [Added Associations]
 application/wps-office.docx=google-chrome.desktop;
