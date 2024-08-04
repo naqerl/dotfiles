@@ -92,6 +92,35 @@ def setup(c, flavour, samecolorrows = False):
             "mantle": "#1e2030",
             "crust": "#181926",
         }
+    elif flavour == "modus-vivendi":
+        palette = {
+            "rosewater": "#feacd0",
+            "flamingo": "#f78fe7",
+            "pink": "#b6a0ff",
+            "mauve": "#caa6df",
+            "red": "#ff5f59",
+            "maroon": "#ff9580",
+            "peach": "#ff5f5f",
+            "yellow": "#fec43f",
+            "green": "#44bc44",
+            "teal": "#8bd5ca",
+            "sky": "#00bcff",
+            "sapphire": "#79a8ff",
+            "blue": "#2fafff",
+            "lavender": "#338fff",
+            "text": "#ffffff",
+            "subtext1": "#989898",
+            "subtext0": "#989898",
+            "overlay2": "#646464",
+            "overlay1": "#646464",
+            "overlay0": "#535353",
+            "surface2": "#535353",
+            "surface1": "#303030",
+            "surface0": "#1e1e1e",
+            "base": "#000000",
+            "mantle": "#1e1e1e",
+            "crust": "#212121",
+        }
     else:
         palette = {
             "rosewater": "#f5e0dc",
