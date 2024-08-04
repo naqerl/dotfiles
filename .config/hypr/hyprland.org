@@ -108,7 +108,7 @@ exec-once = [workspace 2 silent] $emacsDaemon && $emacsClient
 
 ** Idle daemon
 #+begin_src conf
-exec-once = wl-idle --idle 5
+exec-once = wl-idle --time 5 --file /tmp/idle
 #+end_src
 
 ** Timer
