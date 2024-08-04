@@ -20,7 +20,6 @@ paru -S hyprland \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
         fish fisher \
-        zsh \
         direnv \
         starship \
         tiramisu-git \
@@ -55,6 +54,8 @@ paru -S kitty \
         blueman \
         spotify-wayland \
         vesktop-bin \
+        pacwall-git \
+        swaybg \
         --needed
 
 paru -S ttf-iosevka-nerd \
