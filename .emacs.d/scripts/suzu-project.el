@@ -1,6 +1,18 @@
 (require 'project)
 (require 'suzu-extensions)
 
+(defvar suzu/compilation-setup-name nil)
+(defun suzu/project-compilation-buffer-name-function (maj-mode)
+  (concat
+   "*"
+   (project-name (project-current))
+   "/"
+   suzu/compilation-setup-name
+   "*"))
+
+(setq compilation-buffer-name-function
+      'suzu/project-compilation-buffer-name-function)
+
 (defun suzu/project--get-last-two-elements (dir)
   "Get the last two elements of a path."
   (let* ((dir-components (split-string dir "\/" t))
@@ -49,5 +61,92 @@
                         (1- depth))))))))
     (message "Total projects found: %s" projects-found)
     projects-found))
+
+(cl-defstruct compilation-setup name command)
+(defvar suzu/compilation-setup-base-path
+  (expand-file-name "projects-setup" user-emacs-directory)
+  "Directory path for saving project compilation setup")
+
+(defun suzu/project--init-setup-if-needed (project-setup-path)
+  (when (not (file-directory-p suzu/compilation-setup-base-path))
+    (message "Creating directory %s" suzu/compilation-setup-base-path)
+    (make-directory suzu/compilation-setup-base-path))
+  (message "Working with file %s" project-setup-path)
+  (when (not (file-exists-p project-setup-path))
+    (write-region "()" nil project-setup-path)))
+
+(defun suzu/project--read-project-setup (project-setup-path)
+  (with-temp-buffer
+    (insert-file-contents project-setup-path)
+    (cl-assert (eq (point) (point-min)))
+    (read (current-buffer))))
+
+(defun suzu/project--update-project-setup
+    (project-setup-path project-setup)
+  (with-temp-file project-setup-path
+    (prin1 project-setup (current-buffer))))
+
+(defun suzu/project--request-setup-name (project-setup)
+  (completing-read
+   "Choose setup name: "
+   (mapcar '(lambda (s) (compilation-setup-name s)) project-setup)))
+
+(defun suzu/project--request-setup-command (project-setup setup-name)
+  (let ((prev-command
+         (seq-find
+          '(lambda (s)
+             (string= (compilation-setup-name s) setup-name))
+          project-setup)))
+    (let ((default-directory (project-root (project-current))))
+      (read-shell-command "Input cmd: "
+                          (if prev-command
+                              (compilation-setup-command prev-command)
+                            "")))))
+
+(defun suzu/project-add-compilation-command ()
+  "Saves compilation command for the given project"
+  (interactive)
+  (let ((project-setup-path
+         (expand-file-name (project-name (project-current))
+                           suzu/compilation-setup-base-path)))
+    (suzu/project--init-setup-if-needed project-setup-path)
+    (let* ((project-setup
+            (suzu/project--read-project-setup project-setup-path))
+           (setup-name
+            (suzu/project--request-setup-name project-setup))
+           (setup-command
+            (suzu/project--request-setup-command
+             project-setup setup-name)))
+      (setq project-setup
+            (seq-filter
+             '(lambda (s)
+                (not (string= (compilation-setup-name s) setup-name)))
+             project-setup))
+      (add-to-list
+       'project-setup
+       (make-compilation-setup
+        :name setup-name
+        :command setup-command))
+      (suzu/project--update-project-setup
+       project-setup-path project-setup))))
+
+(defun suzu/project-compile ()
+  "Execute one of the project compilation commands"
+  (interactive)
+  (let* ((project-setup-path
+          (expand-file-name (project-name (project-current))
+                            suzu/compilation-setup-base-path))
+         (project-setup
+          (suzu/project--read-project-setup project-setup-path))
+         (setup-name (suzu/project--request-setup-name project-setup))
+         (setup
+          (seq-find
+           '(lambda (s)
+              (string= (compilation-setup-name s) setup-name))
+           project-setup)))
+    (let ((default-directory (project-root (project-current))))
+      (message "Starting compilation at %s" default-directory)
+      (setq suzu/compilation-setup-name setup-name)
+      (compile (compilation-setup-command setup)))))
 
 (provide 'suzu-project)

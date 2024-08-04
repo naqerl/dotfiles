@@ -2,6 +2,8 @@ local M = {}
 
 M.setup = function()
 	local set = vim.keymap.set
+
+	set('t', '<esc>', [[<C-\><C-n>]])
 	set('n', '<leader>.', require('functions').query_path, { desc = 'Create file and directories if needed' })
 	set('n', '<leader>Rc', function()
 		vim.cmd "so ~/.config/nvim/lua/base.lua"
