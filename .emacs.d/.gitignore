@@ -22,3 +22,5 @@ emojis/
 .org-id-locations
 elpa/
 request/
+bookmarks
+org-roam.db
