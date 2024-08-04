@@ -114,7 +114,7 @@
     :states '(normal insert visual emacs)
     :keymaps 'override
     :prefix "SPC"
-    :global-prefix "M-SPC")
+    :global-prefix "C-M-SPC")
 
   (suzu/leader-keys
     "." '(find-file :wk "Find file")
@@ -122,7 +122,7 @@
     "'" '(consult-ripgrep :wk "Ripgrep project symbols")
     "i" '(consult-imenu :wk "Open imenu")
     "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
-    "B" '(persp-switch-to-buffer :wk "Switch buffer in perspective")
+    "B" '(consult-project-buffer :wk "Switch buffer in perspective")
     "S" '(persp-switch :wk "Switch perspective")
     "l" '(persp-switch-last :wk "Switch last perspective")
     "/" '(consult-line :wk "Search in buffer")
@@ -171,7 +171,7 @@
     "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (message "Buffer diagnostics") (other-window 1)) :wk "Open buffer diagnostics")
     "o D" '((lambda () (interactive) (flymake-show-project-diagnostics) (message "Project diagnostics") (other-window 1)) :wk "Open project diagnostics")
     "o t" '(multi-vterm :wk "Open Vterm")
-    "o C" '((lambda ()
+    "o c" '((lambda ()
               (interactive)
               (persp-switch "dotfiles")
               (project-switch-project "~/dotfiles/")) :wk "Edit emacs config"))
@@ -217,6 +217,13 @@
     "t c" '(suzu/center-buffer :wk "Center buffer")
     "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
+  (suzu/leader-keys
+    "s" '(:ignore t :wk "Slack")
+    "s m" '(slack-im-select :wk "Select instant message")
+    "s c" '(slack-channel-select :wk "Select channel")
+    "s t" '(slack-all-threads :wk "List threads")
+    "s f" '(slack-search-from-messages :wk "Find message")
+    "s F" '(slack-search-from-files :wk "Find file"))
   )
 
 ;; (require 'catppuccin-theme)
@@ -240,6 +247,14 @@
 (load-theme 'modus-vivendi :no-confirm)
 
 (setq-default display-line-numbers-width 4)
+
+(use-package auto-dim-other-buffers
+  :disabled
+  :ensure t
+  :custom
+  (auto-dim-other-buffers-dim-on-switch-to-minibuffer nil)
+  (auto-dim-other-buffers-affected-faces '((default . auto-dim-other-buffers-face)
+                                           (org-hide . auto-dim-other-buffers-hide-face))))
 
 (use-package magit
   :ensure t
@@ -291,15 +306,14 @@
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-auto-delay 1)
   (corfu-auto-prefix 2)
-  (corfu-quit-at-boundy 'separator)
-  (corfu-echo-documentation 0.25)
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  (corfu-preview-current nil)    ;; Disable current candidate preview
-  (corfu-preselect 'first)      ;; Preselect the prompt
-  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  (corfu-scroll-margin 5)        ;; Use scroll margin
+  ;; (corfu-echo-documentation 0.25)
+  ;; ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
   ;; Enable Corfu only for certain modes.
   ;; :hook ((prog-mode . corfu-mode)
@@ -310,17 +324,25 @@
   ;; be used globally (M-/).  See also the customization variable
   ;; `global-corfu-modes' to exclude certain modes.
   :bind (:map corfu-map
-        ("M-SPC" . corfu-insert-separator)
         ("TAB" . corfu-next)
         ([tab] . corfu-next)
         ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous)
-        ("S-<return>" . corfu-insert))
+        ([backtab] . corfu-previous))
   ;; (define-key corfu-map (kbd "M-j") #'corfu-doc-scroll-down)
   ;; (define-key corfu-map (kbd "M-k") #'corfu-doc-scroll-up)
   :init
   ;; (add-hook 'corfu-mode-hook #'corfu-popupinfo-mode)
   (global-corfu-mode))
+
+;; (defun corfu-send-shell (&rest _)
+;;   "Send completion candidate when inside comint/eshell."
+;;   (cond
+;;    ((and (derived-mode-p 'eshell-mode) (fboundp 'eshell-send-input))
+;;     (eshell-send-input))
+;;    ((and (derived-mode-p 'comint-mode)  (fboundp 'comint-send-input))
+;;     (comint-send-input))))
+
+;; (advice-add #'corfu-insert :after #'corfu-send-shell)
 
 ;; A few more useful configurations...
 (use-package emacs
@@ -541,13 +563,6 @@
 (use-package yuck-mode
   :ensure t)
 
-(setq read-process-output-max (* 1024 1024))
-
-(use-package eglot
-  :config
-  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright"))))
-
 (use-package sqlformat
 :ensure t
 :config
@@ -557,6 +572,16 @@
 (sql-mode-hook . sqlformat-on-save-mode))
 
 (use-package markdown-mode
+  :ensure t)
+
+(setq read-process-output-max (* 1024 1024))
+
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright"))))
+
+(use-package dap-mode
   :ensure t)
 
 (setq-default indent-tabs-mode nil)
@@ -691,6 +716,10 @@
 
 (add-hook 'org-mode-hook 'suzu/setup-org-mode)
 
+;; (defun suzu/disable-git-gutter ()
+;;   (git-gutter-mode nil))
+;; (add-hook 'org-mode-hook 'suzu/disable-git-gutter)
+
 (use-package pdf-tools
   :ensure t
   :config
@@ -743,12 +772,38 @@
 (use-package eshell-git-prompt
   :ensure t)
 
+(defun suzu/eshell-prompt ()
+  "Eshell prompt"
+  (let (separator hr dir git git-dirty time sign command)
+    (setq separator (with-face " | " 'eshell-git-prompt-multiline-secondary-face))
+    (setq dir
+          (concat
+           (with-face "  " 'eshell-git-prompt-directory-face)
+           (concat  (abbreviate-file-name (eshell/pwd)))))
+    (setq time (with-face (format-time-string "%I:%M:%S %p") 'eshell-git-prompt-multiline-secondary-face))
+    (setq sign
+          (if (= (user-uid) 0)
+              (with-face "\n#" 'eshell-git-prompt-multiline-sign-face)
+            (with-face "\nλ" 'eshell-git-prompt-multiline-sign-face)))
+    (setq command (with-face " " 'eshell-git-prompt-multiline-command-face))
+
+    ;; Build prompt
+    (eshell-git-prompt---str-read-only
+     (concat dir separator time sign command))))
+
+(defconst suzu/eshell-prompt-regexp "^[^$\n]*λ ")
+
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'evil-window-up)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'evil-window-down)
-  (evil-normalize-keymaps)
+  (evil-normalize-keymaps))
+
+(use-package eshell
+  :hook (eshell-first-time-mode . suzu/configure-eshell)
+  :config
+  ;; (eshell-git-prompt-use-theme 'powerline)
   (setq eshell-history-size         10000
         eshell-buffer-maximum-lines 10000
         eshell-hist-ignoredups t
@@ -756,19 +811,20 @@
         eshell-rc-script (concat user-emacs-directory "eshell/profile")
         eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
         eshell-destroy-buffer-when-process-dies t
-        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh" "paru")))
-
-(use-package eshell
-  :hook (eshell-first-time-mode . suzu/configure-eshell)
-  :config
-  (eshell-git-prompt-use-theme 'powerline))
+        eshell-prompt-function 'suzu/eshell-prompt
+        eshell-prompt-regexp suzu/eshell-prompt-regexp
+        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
 
 (use-package eshell-toggle
   :ensure t
   :custom
-  (eshell-toggle-window-side 'right)
+  (eshell-toggle-window-side 'above)
+  (eshell-toggle-size-fraction 3)
   (eshell-toggle-use-projectile-root nil)
   (eshell-toggle-run-command nil))
+
+(use-package pcmpl-args
+  :ensure t)
 
 (use-package vterm
   :ensure t
@@ -907,6 +963,7 @@
       (suzu/update-eww-var "emacs_buffer_modifier" "")))
 
 (add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
+(add-hook 'window-state-change-hook 'suzu/current-buffer-saved)
 (add-hook 'after-save-hook 'suzu/current-buffer-saved)
 
 (defun suzu/current-vcs-branch ()
@@ -923,3 +980,34 @@
 (add-hook 'eglot-managed-mode-hook 'suzu/lsp-status)
 (add-hook 'find-file-hook 'suzu/lsp-status)
 (add-hook 'persp-switch-hook 'suzu/lsp-status)
+
+(use-package org-ai
+  :ensure t
+  :commands (org-ai-mode
+             org-ai-global-mode)
+  :init
+  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+  (org-ai-global-mode) ; installs global keybindings on C-c M-a
+  :config
+  (setq org-ai-default-chat-model "gpt-3.5") ; if you are on the gpt-4 beta:
+) ; if you are using yasnippet and want `ai` snippets
+
+(use-package slack
+  :disabled
+  :ensure (:repo "https://github.com/yuya373/emacs-slack")
+  ;; :commands (slack-start)
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :default t
+   :name "pixelplex"
+   :token "xoxc-4777443326-4451074101014-6449473241250-0554c5b458a7399d1813d75f1cbc04026038a40db5e26c275ec8d50e0fcd9194"
+   :cookie "xoxd-wuTr0YHy50a34f9zV6PmVqE7AOaMkf%2BydScfh8chKzySac8nlsZi%2BdltbY2XJMM%2FNKfl3FdJRNq0dTH2mGAgTMHJ1ZQV5GBDz9TbbSQ440WJOqyriJXRrdhJH2o0GlVUa5Yb2BiULElCQ0BSRpNaYqDk%2FjQfUUbyKLWqOBvW88wutWI%2FJgUi6ELKXVaSgsZ9wYvDDhE%3D"))
+
+(use-package alert
+  :ensure t
+  :commands (alert)
+  :init
+  (setq alert-default-style 'libnotify))
