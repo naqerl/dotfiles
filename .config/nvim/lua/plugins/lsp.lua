@@ -2,7 +2,7 @@
 --  The configuration is done below. Search for lspconfig to find it below.
 
 local configured_file_types =
-{ 'rust', 'python', 'lua', 'typescript', 'javascript', 'bash' }
+{ 'rust', 'python', 'lua', 'typescript', 'javascript', 'javascriptreact', 'bash', 'html' }
 
 return {
 	{
@@ -33,7 +33,7 @@ return {
 				ft = configured_file_types,
 				config = function()
 					-- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-					-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+					local capabilities = vim.lsp.protocol.make_client_capabilities()
 					-- Set up lspconfig.
 					-- local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
@@ -46,11 +46,13 @@ return {
 					})
 
 					local servers = {
+						html = {},
 						clangd = {},
 						pyright = {
 						},
 						bashls = {},
 						tsserver = {},
+						emmet_ls = {},
 						lua_ls = {
 							Lua = {
 								diagnostics = {
@@ -165,7 +167,7 @@ return {
 					mason_lspconfig.setup_handlers {
 						function(server_name)
 							require('lspconfig')[server_name].setup {
-								-- capabilities = capabilities,
+								capabilities = capabilities,
 								on_attach = on_attach,
 								settings = servers[server_name],
 							}
@@ -174,6 +176,7 @@ return {
 
 					require('lspconfig').pyright.setup({
 						on_attach = on_attach,
+						capabilities = capabilities,
 						before_init = function(_, config)
 							local match = vim.fn.glob(util.path.join(config.root_dir, 'poetry.lock'))
 							if match ~= '' then
@@ -182,6 +185,20 @@ return {
 								print("Python venv path:", venv)
 							end
 						end
+					})
+
+					require('lspconfig').emmet_ls.setup({
+						on_attach = on_attach,
+						capabilities = capabilities,
+						filetypes = { 'html', 'typescriptreact', 'javascriptreact', 'css', 'sass', 'scss', 'less', 'javascript' },
+						init_options = {
+							html = {
+								options = {
+									-- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+									["bem.enabled"] = true,
+								},
+							},
+						}
 					})
 				end,
 			},
@@ -193,6 +210,7 @@ return {
 			},
 			{
 				'linux-cultist/venv-selector.nvim',
+				enabled = false,
 				lazy = true,
 				ft = { 'python' },
 				dependencies = { 'nvim-telescope/telescope.nvim', 'mfussenegger/nvim-dap-python' },
@@ -221,11 +239,11 @@ return {
 					require('conform').setup({
 						formatters_by_ft = {
 							python = { "isort", "black" },
+							html = { "htmlbeautifier" }
 
 						},
-						format_on_save = {
+						format_after_save = {
 							lsp_fallback = true,
-							async = true,
 							timeout_ms = 3000,
 						},
 					})

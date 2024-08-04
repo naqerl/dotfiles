@@ -5,7 +5,6 @@
            :monitor 0
            :stacking "bg"
            :exclusive true
-           :namespace eww
            (bar))
 
 (defwidget bar []

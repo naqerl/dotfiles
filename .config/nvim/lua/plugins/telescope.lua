@@ -134,12 +134,6 @@ function M.config()
 	pcall(telescope.load_extension, 'git_worktree')
 	pcall(telescope.load_extension, 'dap')
 	pcall(telescope.load_extension, 'notify')
-
-
-	-- Add to which-key categories
-	require("which-key").register({
-		f = { name = "Finder" },
-	}, { prefix = "<leader>" })
 end
 
 return M

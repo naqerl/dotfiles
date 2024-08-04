@@ -13,6 +13,13 @@ M.keys = {
 			require('terminal.mappings').toggle()
 		end
 	},
+	{
+		mode = { "n", "x", "t", "i" },
+		"<F2>",
+		function()
+			require('terminal.mappings').toggle()
+		end
+	},
 	{ "<leader>tO", function() require('terminal.mappings').toggle({ open_cmd = "enew" }) end },
 	{ "<leader>tr", function() require('terminal.mappings').run() end },
 	{ "<leader>tR", function() require('terminal.mappings').run(nil, { layout = { open_cmd = "enew" } }) end },
@@ -31,6 +38,21 @@ function M.config()
 		layout = { open_cmd = "botright new" },
 		cmd = { "zsh" },
 		autoclose = false,
+	})
+
+	vim.api.nvim_create_autocmd("TermEnter", {
+		callback = function(_)
+			vim.wo.relativenumber = false
+			vim.wo.number = false
+		end
+	})
+
+	vim.api.nvim_create_autocmd("TermLeave", {
+		pattern = "term://*",
+		callback = function(_)
+			vim.wo.number = true
+			vim.wo.relativenumber = true
+		end
 	})
 end
 
