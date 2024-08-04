@@ -40,6 +40,7 @@
   - [[#audio][Audio]]
   - [[#brightness][Brightness]]
   - [[#second-monitor][Second monitor]]
+  - [[#timer-1][Timer]]
 
 * Alisaes
 ** Super key
@@ -341,7 +342,7 @@ bind = $mainMod, U, exec, mpv-controller volume-up 1
 bind = $mainShiftMod, U, exec, mpv-controller volume-down 1
 # bind = $mainShiftMod, D, exec, hyprctl dispatch workspace $(hypr-first-emtpy-workspace) && edit-img-from-clipboard
 bind = $mainMode, O, exec, thunar
-bind = $mainShiftMod, R, exec, pkill -9 emacs && $emacsDaemon && $emacsClient
+bind = $mainShiftMod, R, exec, notify-send "Killing emacs" && pkill -9 emacs && $emacsDaemon && $emacsClient
 #+end_src
 
 ** Workspaces
@@ -451,4 +452,11 @@ binde=, XF86MonBrightnessDown, exec, brightnessctl set 2%-
 ** Second monitor
 #+begin_src conf
 bind = $mainShiftMod, D, exec, toggle-second-monitor
+#+end_src
+
+** Timer
+#+begin_src conf
+bind =, XF86Tools, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=52"'
+bind =, XF86Launch5, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=17"'
+bind =, XF86Launch6, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/stop"'
 #+end_src
