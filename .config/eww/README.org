@@ -1,3 +1,29 @@
+#+title: EWW config
+#+author: Suzu
+#+description: My EWW widgets setup
+#+auto_tangle: t
+
+* Colors
+** Vivendi (Active)
+#+begin_src scss :tangle eww.scss
+$lightgrey: #323232;
+$darkgrey: #212121;
+$grey: #100F10;
+$fg: #FDFDFD;
+$red: #FCABCF;
+$flamingo: #2CA3ED;
+$green: #44bc44;
+$cyan: #6AE4B9;
+$yellow: #C5976A;
+$peach: #F07854;
+$red: #F07854;
+$purple: #B6A0FF;
+#+end_src
+
+* Status bar
+** Window
+s
+#+begin_src yuck :tangle eww.yuck
 (defwindow bar
            :geometry (geometry
                        :width "100%"
@@ -7,7 +33,12 @@
            :exclusive true
            :namespace eww
            (bar))
+#+end_src
 
+** Widgets
+*** Bar
+**** Main
+#+begin_src yuck :tangle eww.yuck
 (defwidget bar []
            (centerbox :class "bg-transparent"
                 :style "padding: 4px 0;"
@@ -15,7 +46,10 @@
                 (left)
                 (center)
                 (right)))
+#+end_src
 
+**** Left
+#+begin_src yuck :tangle eww.yuck
 (defwidget left []
            (box
             :orientation "h"
@@ -34,7 +68,10 @@
               (space)))
             (mpv_player)
             (notification)))
-
+#+end_src
+***
+**** Center
+#+begin_src yuck :tangle eww.yuck
 (defwidget center []
            (box
             :orientation "h"
@@ -105,7 +142,10 @@
               :right "dark"
               (box (text :content emacs_buffer_modifier :class "fg-yellow"))))
             ))
+#+end_src
 
+**** Right
+#+begin_src yuck :tangle eww.yuck
 (defwidget right []
            (box :orientation "h"
                 :space-evenly false
@@ -158,14 +198,30 @@
                    :content " ")
                   (space)
                   (space)))))
+#+end_src
 
+*** Common
+**** Separator
+#+begin_src yuck :tangle eww.yuck
 (defwidget separator []
            (box (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space) (space)))
+#+end_src
 
+**** Space
+#+begin_src yuck :tangle eww.yuck
 (defwidget space []
            (box :class "" :vexpand "false" :hexpand "false"
                 (label :class "space" :text " ")))
+#+end_src
 
+#+begin_src scss :tangle eww.scss
+.space {
+    margin: 0 2px;
+}
+#+end_src
+
+**** Container
+#+begin_src yuck :tangle eww.yuck
 (defwidget container [bg fg ?size ?left ?right]
            (box
              :orientation "horizontal"
@@ -185,21 +241,47 @@
               (icon
                :path "/home/suzu/Pictures/icons/right-triangle-${right}.svg"
                :size {size != "" ? size : 24}))))
+#+end_src
 
+**** Icon
+#+begin_src yuck :tangle eww.yuck
 (defwidget icon [path ?size]
            (image
              :class "icon"
              :path path
              :image-width size
              :image-height size))
+#+end_src
 
+#+begin_src scss :tangle eww.scss
+.icon {
+    padding: 0;
+    margin: 0;
+}
+#+end_src
+
+**** Text
+#+begin_src yuck :tangle eww.yuck
 (defwidget text [content ?class]
            (label
             :class "text ${class}"
             :text content))
+#+end_src
 
+#+begin_src scss :tangle eww.scss
+.text {
+    padding: 0;
+    margin: 0;
+}
+#+end_src
+
+*** Emacs
+#+begin_src yuck :tangle eww.yuck
 (defvar emacs_focused "f")
+#+end_src
 
+**** Session
+#+begin_src yuck :tangle eww.yuck
 (defvar emacs_session "")
 
 (defwidget emacs_session []
@@ -214,7 +296,10 @@
             (label
             :text emacs_session
             :limit-width 50))))
+#+end_src
 
+**** Window 
+#+begin_src yuck :tangle eww.yuck
 (defvar emacs_window "")
 (defvar emacs_window_icon "")
 
@@ -236,7 +321,10 @@
         :xalign 1
         :limit-width 50)
         (emacs_buffer_modifier))))
+#+end_src
 
+**** Save status 
+#+begin_src yuck :tangle eww.yuck
 (defvar emacs_buffer_modifier "")
 
 (defwidget emacs_buffer_modifier []
@@ -249,7 +337,10 @@
                     :text emacs_buffer_modifier
                     :xalign 1
                     :class "fg-yellow"))))
+#+end_src
 
+**** LSP status
+#+begin_src yuck :tangle eww.yuck
 (defvar emacs_lsp "")
 
 (defwidget emacs_lsp []
@@ -260,7 +351,10 @@
             :class "fg-blue"
             :limit-width 2
             :text emacs_lsp)))
+#+end_src
 
+**** VCS
+#+begin_src yuck :tangle eww.yuck
 (defvar git_branch "")
 
 (defwidget git_branch []
@@ -277,7 +371,11 @@
             :text git_branch
             :limit-width 50)
             (space))))
+#+end_src
 
+*** Battery
+**** v2 (Combined with volume circle inside)
+#+begin_src yuck :tangle eww.yuck
 (defwidget battery_v2 []
            (overlay 
             :width 20
@@ -293,7 +391,12 @@
                                    :class "bg-dark fg-cyan ${EWW_BATTERY.BAT0.status == 'Charging' ? 'bg-green' : 'bg-yellow'}"
                                    :thickness 3
                                    ))))
+#+end_src
 
+
+
+**** v1
+#+begin_src yuck :tangle eww.yuck
 (defwidget battery []
            (box :class "bat_module" :vexpand "false" :hexpand "false"
                 (circular-progress :value {EWW_BATTERY.BAT0.capacity}
@@ -304,7 +407,11 @@
                                      :tooltip "battery on ${EWW_BATTERY.BAT0.capacity }%"
                                      :onclick "$HOME/.config/eww/scripts/pop system"
                                      " "))))
+#+end_src
 
+
+*** Keyboard Layout
+#+begin_src yuck :tangle eww.yuck
 (defvar layout_alert_reveal false)
 
 (defwidget layout_alert []
@@ -320,7 +427,10 @@
                :bg "yellow"
                :fg "dark"
                (text :content "ru" :class "fg-dark")))))
+#+end_src
 
+*** Timer
+#+begin_src yuck :tangle eww.yuck
 (defvar timer69 "")
 (defvar timer_color "light")
 
@@ -336,7 +446,10 @@
                     :text {timer69}
                     :limit-width 35)
                   (space))))
+#+end_src
 
+*** Mic Status
+#+begin_src yuck :tangle eww.yuck
 (defpoll mic_state :interval "0.5s" :initial "" `$HOME/.config/bin/mic-state`)
 
 (defwidget mic []
@@ -347,7 +460,10 @@
                     :text " "
                     :limit-width 35)
                   (space)))
+#+end_src
 
+*** Clock
+#+begin_src yuck :tangle eww.yuck
 (defpoll time :interval "5s" `date +'{"h": "%H", "m": "%M"}'`)
 
 (defwidget clock []
@@ -357,7 +473,10 @@
                           (label :text {time.h} )
                           (label :text "󰇙" :class "clock_time_sep" )
                           (label :text {time.m} ))))
+#+end_src
 
+*** Currently playing
+#+begin_src yuck :tangle eww.yuck
 (deflisten playing_reveal "while true; do if [[ $(playerctl status) == 'Playing' ]]; then echo t; else echo f; fi; sleep 1; done")
 (deflisten playing_title "while true; do playerctl metadata title; sleep 1; done")
 (defvar playing_reveal_manual "t")
@@ -378,18 +497,48 @@
                     :text {'  ' + playing_title}
                     :limit-width 70)
                   (space)))))
+#+end_src
 
+#+begin_src scss :tangle eww.scss
+.mpv_player {
+    font-size: 12px;
+    border-radius: 5px;
+    background-color: $grey;
+    padding: 0 5px;
+}
+#+end_src
+
+*** Alerts
+**** CPU temperature
+State
+#+begin_src yuck :tangle eww.yuck
 (defvar warning_cpu_temp 55)
 (defpoll cpu_temp :interval "10s"
          :initial "0"
          `$HOME/.config/eww/scripts/temp`)
+#+end_src
 
+Widget
+#+begin_src yuck :tangle eww.yuck
 (defwidget cpu_temp_alert []
             (label
              :class "cpu_temp_alert"
              :text "${cpu_temp}󰔄 "
              :tooltip "brightness"))
+#+end_src
 
+Styles
+#+begin_src scss :tangle eww.scss
+.cpu_temp_alert {
+    background-color: $yellow;
+    border-radius: 5px;
+    padding: 0 5px;
+    color: $grey;
+}
+#+end_src
+
+**** RAM load
+#+begin_src yuck :tangle eww.yuck
 (defvar warning_used_mem_perc 80)
 
 (defwidget ram_alert []
@@ -397,14 +546,20 @@
                     :class "cpu_temp_alert"
                     :text " ${round(EWW_RAM.used_mem_perc, 0)}%"
                     :tooltip "brightness"))
+#+end_src
 
+*** Current workspace
+#+begin_src yuck :tangle eww.yuck
 (defvar current_workspace_name "?")
 
 (defwidget workspace []
            (box :space-evenly "false" :orientation "h" :spacing "3"
                 (label :text {current_workspace_name == '10' ? '0' : current_workspace_name})
                 (space)))
+#+end_src
 
+*** Volume
+#+begin_src yuck :tangle eww.yuck
 (defpoll volume_percent :interval "1h" `$HOME/.config/eww/scripts/volume current`)
 
 (defwidget volume_circle []
@@ -412,7 +567,10 @@
                 (circular-progress :value volume_percent
                                    :class "bg-dark fg-blue"
                                    :thickness 3)))
+#+end_src
 
+*** Notification
+#+begin_src yuck :tangle eww.yuck
 (defvar notification_reveal false)
 (defvar notification_text "")
 
@@ -427,13 +585,84 @@
              :left "cyan"
              :right "cyan"
              (text :content notification_text :class "fg-dark"))))
+#+end_src
 
+#+begin_src scss :tangle eww.scss
+.notification {
+    background-color: $green;
+    color: $grey;
+    padding: 0 5px;
+    border-radius: 5px;
+}
+#+end_src
+
+** Styles
+#+begin_src scss :tangle eww.scss
+.fg-purple {
+    color: $purple;
+}
+
+.fg-yellow {
+    color: $yellow;
+}
+
+.fg-blue {
+    color: $flamingo;
+}
+
+.fg-dark {
+    color: $darkgrey;
+}
+
+.fg-light {
+    color: $fg;
+}
+
+.fg-red {
+    color: $red;
+}
+
+.fg-green {
+    color: $green;
+}
+
+.fg-cyan {
+    color: $cyan;
+}
+
+.bg-transparent {
+    // all: unset;
+    // font-family: Iosevka Nerd Font;
+    // color: $fg;
+    // font-size: 14px;
+    background-color: rgba($red, 0.01);
+}
+
+.bg-dark {
+    background-color: $darkgrey;
+}
+
+.bg-yellow {
+    background-color: $yellow;
+}
+
+.bg-cyan {
+    background-color: $cyan;
+}
+#+end_src
+
+* Power menu
+** Window
+#+begin_src yuck :tangle eww.yuck
 (defwindow powermenu
            :monitor 0
            :stacking "fg"
            :geometry (geometry :width "100%" :height "100%")
            (powermenu_layout))
+#+end_src
 
+** Widgets
+#+begin_src yuck :tangle eww.yuck
 (defwidget _buttons [shutdown shutdown_icon reboot
                               reboot_icon logout logout_icon]
            (box :class "btns-box" :spacing 5
@@ -464,6 +693,10 @@
                      (_buttons :shutdown "poweroff" :reboot "reboot"
                                :logout "loginctl kill-session self"
                                :shutdown_icon "󰐥" :reboot_icon "" :logout_icon "󰍃"))))
+#+end_src
+
+** Variables
+#+begin_src yuck :tangle eww.yuck
 
 (defpoll net :interval "10s"
          :initial `0`
@@ -471,3 +704,51 @@
 (defpoll wireguard_vpn :interval "5s"
          :initial ``
          `nmcli device | rg pixelplex-vpn | awk '{print "active"}'`)
+#+end_src
+
+** Styles
+#+begin_src scss :tangle eww.scss
+.layout-box {
+    background-color: rgba($darkgrey, 0.2);
+    color: rgba($fg, 0.8);
+}
+
+.net-box,
+.bat-box,
+.tm-box {
+    background-color: $grey;
+    border-radius: 0.5em;
+    padding: 0.4em 0.5em 0.4em 0.7em;
+    label {
+	font-size: 2em;
+    }
+}
+
+.close-btn {
+    font-size: 2em;
+    &:hover {
+	color: $red;
+    }
+}
+
+.btns-box {
+    font-size: 2.5em;
+    padding: 0.3em;
+    border-radius: 0.5em;
+
+    button {
+	border-radius: 0.3em;
+	padding: 0.1em 0.8em 0.1em 0.5em;
+	background-color: $grey;
+
+	&:hover {
+	    transition: 200ms linear background-color, border-radius;
+	    background-color: rgba($lightgrey, 0.6);
+	}
+
+	&:first-child {
+	    color: rgba($red, 0.8);
+	}
+    }
+}
+#+end_src
