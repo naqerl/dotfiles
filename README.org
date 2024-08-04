@@ -64,7 +64,7 @@ The following apps needed for the minimal working system stup
 | Stow                        | Creates symlinks for the entire config            | https://www.gnu.org/software/stow/                    |
 
 #+begin_src bash
-paru -Si hyprland \
+paru -S hyprland \
         hyprpaper \
         hyprpicker \
         xdg-desktop-portal-hyprland \
@@ -84,8 +84,7 @@ paru -Si hyprland \
         slurp \
         socat \
         pass \
-        stow \
-        --noconfirm
+        stow
 #+end_src
 
 *** Essential apps
@@ -113,7 +112,7 @@ My personal preffered apps
 | Vesktop        | Discord client                                                                           | https://github.com/Vencord/Vesktop             |
 
 #+begin_src bash
-paru -Si kitty \
+paru -S kitty \
         qutebrowser \
         mpv mpv-mpris \
         telegram-desktop \
@@ -128,8 +127,7 @@ paru -Si kitty \
         networkmanager \
         blueman \
         spotify-wayland \
-        vesktop-bin \ 
-        --noconfirm
+        vesktop-bin
 #+end_src
 
 *** Fonts
@@ -137,11 +135,10 @@ paru -Si kitty \
 [[https://typeof.net/Iosevka/) is the main font. Others were required for some apps (which are probably no longer needed][Iosevka]].
 
 #+begin_src bash
-paru -Si ttf-iosevka-nerd \
+paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
-        ttf-opensans \
-        --noconfirm
+        ttf-opensans
 #+end_src
 
 *** Gtk
@@ -149,10 +146,9 @@ paru -Si ttf-iosevka-nerd \
 [[https://github.com/catppuccin/catppuccin][Catppuccin]] is my favorite theme, so set up curosr and GTK apps
 
 #+begin_src bash
-paru -Si catppuccin-gtk-theme-frappe \
+paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
-        papirus-icon-theme \
-        --noconfirm
+        papirus-icon-theme
 #+end_src
 
 [[https://github.com/catppuccin/gtk][Theme source]]
@@ -211,9 +207,8 @@ cd "$HOME/dotfiles" && stow .
 Install package managers
 
 #+begin_src bash
-paru -Si python-pipx \
-     python-poetry \
-     --noconfirm
+paru -S python-pipx \
+     python-poetry
 #+end_src
 
 Install LSP pyright
@@ -240,9 +235,8 @@ rustup component add rust-analyzer
 **** Docker
 
 #+begin_src bash
-paru -Si docker \
+paru -S docker \
         docker-buildx \
-        docker-compose \
-        --noconfirm
+        docker-compose
 #+end_src
 

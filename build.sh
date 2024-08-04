@@ -8,7 +8,7 @@ if [[ -z $(command -v paru) ]]; then
     cd .. && rm -r paru
 fi
 
-paru -Si hyprland \
+paru -S hyprland \
         hyprpaper \
         hyprpicker \
         xdg-desktop-portal-hyprland \
@@ -28,10 +28,9 @@ paru -Si hyprland \
         slurp \
         socat \
         pass \
-        stow \
-        --noconfirm
+        stow
 
-paru -Si kitty \
+paru -S kitty \
         qutebrowser \
         mpv mpv-mpris \
         telegram-desktop \
@@ -46,19 +45,16 @@ paru -Si kitty \
         networkmanager \
         blueman \
         spotify-wayland \
-        vesktop-bin \ 
-        --noconfirm
+        vesktop-bin
 
-paru -Si ttf-iosevka-nerd \
+paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
-        ttf-opensans \
-        --noconfirm
+        ttf-opensans
 
-paru -Si catppuccin-gtk-theme-frappe \
+paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
-        papirus-icon-theme \
-        --noconfirm
+        papirus-icon-theme
 
 git clone https://github.com/abba23/spotify-adblock
 cd spotify-adblock
@@ -83,9 +79,8 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 cd "$HOME/dotfiles" && stow .
 
-paru -Si python-pipx \
-     python-poetry \
-     --noconfirm
+paru -S python-pipx \
+     python-poetry
 
 pipx install pyright
 
@@ -94,7 +89,6 @@ source "$HOME/.cargo/env"
 
 rustup component add rust-analyzer
 
-paru -Si docker \
+paru -S docker \
         docker-buildx \
-        docker-compose \
-        --noconfirm
+        docker-compose
