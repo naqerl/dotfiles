@@ -288,6 +288,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
       modus-themes-bold-constructs t
       modus-themes-italic-constructs t
       modus-themes-paren-match '(bold)
+      modus-themes-fringes nil
       modus-themes-syntax '(green-strings yellow-comments)
       modus-themes-headings '((0 . (rainbow 1.9))
         (1 . (rainbow 1.5))
@@ -391,11 +392,11 @@ Automatically resizes windows to fit golden ratio
   (unless (or (bound-and-true-p mct--active)
               (bound-and-true-p vertico--input)
               (eq (current-local-map) read-passwd-map))
-    ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+    (setq-local corfu-auto nil) ;; Enable/disable auto completion
     (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
                 corfu-popupinfo-delay nil)
     (corfu-mode 1)))
-;; (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+(add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
 
 (use-package emacs
   :init
@@ -460,11 +461,7 @@ Automatically resizes windows to fit golden ratio
   :config
   (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"
         elfeed-feeds (quote
-                      (("https://www.reddit.com/r/linux.rss" reddit linux)
-                       ("https://www.reddit.com/r/commandline.rss" reddit commandline)
-                       ("https://www.reddit.com/r/distrotube.rss" reddit distrotube)
-                       ("https://www.reddit.com/r/emacs.rss" reddit emacs)
-                       ("https://www.reddit.com/r/unixport.rss" reddit)
+                      (
                        ("https://www.reddit.com/r/emacsporn.rss" reddit)
                        ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
                        ("https://hackaday.com/blog/feed/" hackaday linux)
@@ -478,7 +475,7 @@ Automatically resizes windows to fit golden ratio
                        ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
                        ("https://betanews.com/feed" betanews linux)
                        ("https://systemcrafters.net/rss/news.xml" emac)
-                       ("https://hnrss.github.io/#firehose-feeds" hackernews)
+                       ("https://hnrss.org/frontpage" hackernews)
                        ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
 
 
@@ -513,7 +510,7 @@ Automatically resizes windows to fit golden ratio
 (add-to-list 'default-frame-alist '(font . "Iosevka NF 13"))
 (setq default-frame-alist '((font . "Iosevka NF 13")))
 
-(setq-default line-spacing 0.12)
+(setq-default line-spacing 0)
 #+end_src
 
 ** Ediff
@@ -549,11 +546,10 @@ Automatically resizes windows to fit golden ratio
   (setq dashboard-path-max-length 10)
   (setq dashboard-vertically-center-content nil)
   :custom
-  (dashboard-startup-banner "/home/suzu/.emacs.d/images/official.png")
+  (dashboard-startup-banner "/home/suzu/.emacs.d/images/hydra.txt")
   (dashboard-center-content t)
   (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons t)
-)
+  (dashboard-set-file-icons t))
 #+end_src
 
 * Dev
@@ -1019,42 +1015,10 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Eshell
-*** Fish like prompt highlight
-#+begin_src elisp
-(use-package eshell-syntax-highlighting
-  :after esh-mode
-  :config
-  (eshell-syntax-highlighting-global-mode +1))
-#+end_src
-
 *** Add git to the prompt
 #+begin_src elisp
 (use-package eshell-git-prompt
   :ensure t)
-#+end_src
-
-*** Custom prompt format
-#+begin_src elisp
-(defun suzu/eshell-prompt ()
-  "Eshell prompt"
-  (let (separator hr dir git git-dirty time sign command)
-    (setq separator (with-face " | " 'eshell-git-prompt-multiline-secondary-face))
-    (setq dir
-          (concat
-           (with-face "  " 'eshell-git-prompt-directory-face)
-           (concat  (abbreviate-file-name (eshell/pwd)))))
-    (setq time (with-face (format-time-string "%I:%M:%S %p") 'eshell-git-prompt-multiline-secondary-face))
-    (setq sign
-          (if (= (user-uid) 0)
-              (with-face "\n#" 'eshell-git-prompt-multiline-sign-face)
-            (with-face "\n󰘧" 'eshell-git-prompt-multiline-sign-face)))
-    (setq command (with-face " " 'eshell-git-prompt-multiline-command-face))
-
-    ;; Build prompt
-    (eshell-git-prompt---str-read-only
-     (concat dir separator time sign command))))
-
-(defconst suzu/eshell-prompt-regexp "^[^$\n]*λ ")
 #+end_src
 
 *** Main setup function
@@ -1083,9 +1047,18 @@ Turn off duplicating lines on execution
         eshell-rc-script (concat user-emacs-directory "eshell/profile")
         eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
         eshell-destroy-buffer-when-process-dies t
-        eshell-prompt-function 'suzu/eshell-prompt
-        eshell-prompt-regexp suzu/eshell-prompt-regexp
-        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
+        ;; eshell-prompt-function 'suzu/eshell-prompt
+        ;; eshell-prompt-regexp suzu/eshell-prompt-regexp
+        eshell-prompt-function (lambda () "A simple prompt." "󰘧 ")
+        eshell-prompt-regexp "^󰘧 "
+        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh" "paru")))
+#+end_src
+
+*** Fish like prompt highlight
+#+begin_src elisp
+(use-package eshell-syntax-highlighting
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
 #+end_src
 
 *** Toggle eshell
@@ -1363,4 +1336,46 @@ Turn off duplicating lines on execution
 #+begin_src elisp
 (use-package enwc
 :custom (enwc-default-backend 'nm))
+#+end_src
+
+* App launcher
+** Main function
+#+begin_src elisp
+(defun suzu/launch-linux-app ()
+  "Select and launch a Linux application using Vertico."
+  (interactive)
+  (let* ((app (completing-read "󰅂 "
+                               (directory-files "/usr/share/applications" t "\\.desktop$")))
+         (app-filename (file-name-nondirectory app))
+         (app-name (cl-subseq app-filename 0 (- (length app-filename) 8))))
+    (if (and app (file-exists-p app))
+        (start-process "linux-app-launcher" "gtk-launch" app-name)
+      (message "Invalid application selected."))))
+#+end_src
+
+** Actual launcher
+#+begin_src elisp
+(defun suzu/emacs-app-launcher ()
+  (interactive)
+  (with-selected-frame
+      (make-frame '((name . "emacs-run-launcher")
+                    (minibuffer . only)
+                    (fullscreen . 0)
+                    (undecorated . t)
+                    (internal-border-width . 10)
+                    (width . 80)
+                    (height . 10)))
+    (unwind-protect
+        (suzu/launch-linux-app)
+        (delete-frame))))
+#+end_src
+
+* Tramp
+#+begin_src elisp
+(setq remote-file-name-inhibit-cache nil)
+(setq vc-ignore-dir-regexp
+      (format "%s\\|%s"
+                    vc-ignore-dir-regexp
+                    tramp-file-name-regexp))
+(setq tramp-verbose 1)
 #+end_src
