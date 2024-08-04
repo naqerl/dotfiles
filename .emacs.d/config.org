@@ -168,7 +168,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     :global-prefix "C-M-SPC")
 
   (suzu/leader-keys
-    "." '(find-file :wk "Find file")
+    "." '(ido-find-file :wk "Find file")
     ";" '(execute-extended-command :wk "M-x")
     "'" '(consult-ripgrep :wk "Ripgrep project symbols")
     "i" '(consult-imenu :wk "Open imenu")
@@ -191,7 +191,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     "b I" '(ibuffer :wk "Ibuffer")
     "b i" '(persp-ibuffer :wk "Perspective ibuffer")
     "b s" '(consult-buffer :wk "Search buffer")
-    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b k" '(suzu/kill-current-buffer :wk "Kill this buffer")
     "b r" '(revert-buffer :wk "Reload buffer")
     "b m" '(bookmark-set :wk "Bookmark")
     "b l" '(list-bookmarks :wk "Bookmarks list"))
@@ -241,6 +241,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
   (suzu/leader-keys
     "m" '(:ignore t :wk "Org")
     "m a" '(org-agenda :wk "Org agenda")
+    "m o" '(org-open-at-point :wk "Org open at point")
     "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
     "m i" '(org-toggle-item :wk "Org toggle item")
     "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
@@ -434,6 +435,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 ** Dired
+*** Base
 #+begin_src elisp
 (use-package dired-open
   :custom ((dired-listing-switches "-agho --group-directories-first"))
@@ -470,12 +472,11 @@ Automatically resizes windows to fit golden ratio
                        ("https://linux.softpedia.com/backend.xml" softpedia linux)
                        ("https://itsfoss.com/feed/" itsfoss linux)
                        ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
-                       ("https://www.phoronix.com/rss.php" phoronix linux)
                        ("https://www.computerworld.com/index.rss" computerworld linux)
                        ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
                        ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
                        ("https://betanews.com/feed" betanews linux)
-                       ("https://systemcrafters.net/rss/news.xml" emac)
+                       ("https://systemcrafters.net/rss/news.xml" emacs)
                        ("https://hnrss.org/frontpage" hackernews)
                        ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
 
@@ -636,6 +637,18 @@ Required for better LSP docs rendering
   :ensure t)
 #+end_src
 
+*** Typescript
+#+begin_src elisp
+(use-package typescript-mode)
+#+end_src
+
+*** Emacs Lisp
+#+begin_src elisp
+(defun suzu/format-elisp-on-save ()
+  (add-hook 'before-save-hook 'elisp-autofmt-buffer nil t))
+(add-hook 'emacs-lisp-mode-hook 'suzu/format-elisp-on-save)
+#+end_src
+
 ** LSP client
 Inscrease amount of data which emacs reads from the process
 #+begin_src elisp
@@ -666,7 +679,7 @@ Setup lsp client
 #+end_src
 
 *** Line numbers
-#+begin_src emacs-lisp
+#+begin_src elisp
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'org-mode-hook 'display-line-numbers-mode)
 (dolist (mode '(pdf-view-mode-hook
@@ -679,38 +692,42 @@ Setup lsp client
 (setq-default display-line-numbers-type 'relative)
 #+end_src
 
-*** Scroll maring
-#+begin_src 
-(setq-default truncate-lines t)
+*** Scroll margin
+#+begin_src elisp
 (setq-default scroll-margin 7)
 #+end_src
 
 *** Autopairs
-#+begin_src emacs-lisp
+#+begin_src elisp
 (electric-pair-mode 1)
 #+end_src
 
 *** UI tweaks
-#+begin_src emacs-lisp
+#+begin_src elisp
 (menu-bar-mode -1)           ;; Disable the menu bar
 (scroll-bar-mode -1)         ;; Disable the scroll bar
 (tool-bar-mode -1)           ;; Disable the tool bar
 #+end_src
 *** 
 *** Stop wierd files creation 
-#+begin_src emacs-lisp
+#+begin_src elisp
 (setq create-lockfiles nil)
 (setq-default auto-save-default nil)
 #+end_src
 
 *** Automatically update buffer contents 
-#+begin_src emacs-lisp
+#+begin_src elisp
 (global-auto-revert-mode t)
 #+end_src
 
 *** Automatically select help frame
 #+begin_src elisp
 (setq help-window-select t)
+#+end_src
+
+*** Do not truncate lines
+#+begin_src elisp
+(setq-default truncate-lines t)
 #+end_src
 
 ** Emoji
@@ -725,6 +742,7 @@ Setup lsp client
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+  (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
   (add-to-list 'org-structure-template-alist '("py" . "src python")))
 #+end_src
 
@@ -813,7 +831,7 @@ Setup lsp client
 #+end_src
 
 *** Custom hook
-#+begin_src emacs-lisp
+#+begin_src elisp
 (defun suzu/org-mode-hook ()
   (require 'suzu-org-indent)
   (setq org-indent-mode-turns-on-hiding-stars nil)
@@ -848,14 +866,15 @@ Setup lsp client
 
 (setq-default plantuml-exec-mode "plantuml")
 
-(org-babel-do-load-languages 'org-babel-load-languages
-			     '((shell . t)
-			       (python . t)
-			       (sqlite . t)
-			       (emacs-lisp . t)
-			       (plantuml . t)
-			       (sql . t)))
-
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((shell . t)
+   (python . t)
+   (sqlite . t)
+   (emacs-lisp . t)
+   (plantuml . t)
+   (restclient . t)
+   (sql . t)))
 #+end_src
 
 *** Auto tangle
@@ -1045,6 +1064,21 @@ Turn off duplicating lines on execution
   :ensure t)
 #+end_src
 
+*** Aliases
+#+begin_src elisp
+(setq suzu/eshell-aliases
+      '((g  . magit)
+        (gl . magit-log)
+        (d  . dired)
+        (o  . find-file)	
+        (clc  . eshell/clear-scrollback)	
+        (oo . find-file-other-window)))
+
+(mapc (lambda (alias)
+        (defalias (car alias) (cdr alias)))
+      suzu/eshell-aliases)
+#+end_src
+
 *** Main setup function
 #+begin_src elisp
 (defun suzu/configure-eshell ()
@@ -1100,6 +1134,14 @@ Turn off duplicating lines on execution
 #+begin_src elisp
 (use-package pcmpl-args
   :ensure t)
+#+end_src
+
+*** Run command in background
+#+begin_src elisp
+(defun eshell/asc (cmd)
+  "Runs `cmd` in async bash shell"
+  (async-shell-command (format "bash -c '%s'" cmd)))
+(put 'eshell/asc 'eshell-no-numeric-conversions t)
 #+end_src
 
 ** Vterm
@@ -1201,12 +1243,14 @@ Turn off duplicating lines on execution
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
         (python "https://github.com/tree-sitter/tree-sitter-python")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
         (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
 
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        (rust-ts-mode . rust-mode)))
+        (rust-ts-mode . rust-mode)
+        (typescript-ts-mode . typescript-mode)))
 #+end_src
 
 * Which-key
@@ -1402,4 +1446,10 @@ Turn off duplicating lines on execution
                     vc-ignore-dir-regexp
                     tramp-file-name-regexp))
 (setq tramp-verbose 1)
+#+end_src
+
+* REST client
+#+begin_src elisp
+(use-package restclient)
+(use-package ob-restclient)
 #+end_src

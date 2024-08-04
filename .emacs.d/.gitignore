@@ -24,3 +24,4 @@ elpa/
 request/
 bookmarks
 org-roam.db
+elisp-autofmt-cache/
