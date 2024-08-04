@@ -1,7 +1,6 @@
 (add-to-list 'load-path "~/dotfiles/.emacs.d/scripts")
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'elpaca-setup)
-;; (require 'no-littering)
 
 (use-package gcmh
   :ensure t
@@ -61,8 +60,8 @@
   (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
 (with-eval-after-load 'evil-maps
-  ;; (global-set-key (kbd "C-h") nil)
-  ;; (global-set-key (kbd "C-k") nil)
+  (global-set-key (kbd "C-h") nil)
+  (global-set-key (kbd "C-k") nil)
   (global-unset-key (kbd "C-j"))
   (global-unset-key (kbd "C-l"))
   (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
@@ -172,7 +171,10 @@
     "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (message "Buffer diagnostics") (other-window 1)) :wk "Open buffer diagnostics")
     "o D" '((lambda () (interactive) (flymake-show-project-diagnostics) (message "Project diagnostics") (other-window 1)) :wk "Open project diagnostics")
     "o t" '(multi-vterm :wk "Open Vterm")
-    "o C" '((lambda () (interactive) (find-file "~/dotfiles/.emacs.d/config.org")) :wk "Edit emacs config"))
+    "o C" '((lambda ()
+              (interactive)
+              (persp-switch "dotfiles")
+              (project-switch-project "~/dotfiles/")) :wk "Edit emacs config"))
 
   (suzu/leader-keys
     "h" '(:ignore t :wk "Help")
@@ -678,10 +680,11 @@
    (prettify-symbols-mode))
 (add-hook 'org-mode-hook 'suzu/org-icons)
 
-(defun suzu/unset-org-mode-binds ()
-  (global-unset-key (kbd "C-j"))
-  (global-unset-key (kbd "C-k")))
-(add-hook 'org-mode-hook 'suzu/unset-org-mode-binds)
+(defun suzu/setup-org-mode ()
+    (evil-define-key '(normal) org-mode-map (kbd "C-k") 'evil-window-up)
+    (evil-define-key '(normal) org-mode-map (kbd "C-j") 'evil-window-down))
+
+(add-hook 'org-mode-hook 'suzu/setup-org-mode)
 
 (use-package pdf-tools
   :ensure t
@@ -735,6 +738,8 @@
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'evil-window-up)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'evil-window-down)
   (evil-normalize-keymaps)
   (setq eshell-history-size         10000
         eshell-buffer-maximum-lines 10000
@@ -756,7 +761,7 @@
       eshell-hist-ignoredups t
       eshell-scroll-to-bottom-on-input t
       eshell-destroy-buffer-when-process-dies t
-      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh" "paru"))
 
 (use-package eshell-toggle
   :ensure t)
