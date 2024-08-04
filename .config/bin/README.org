@@ -42,8 +42,6 @@ if [[ "$counter" > 0 ]]; then
 fi
 #+end_src
 
-#+RESULTS: run-after-save
-
 * Run desktop
 #+begin_src bash :tangle run-desktop
 #!/usr/bin/env bash
