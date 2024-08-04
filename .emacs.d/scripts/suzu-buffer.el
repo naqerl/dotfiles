@@ -27,3 +27,8 @@
       (message "Path copied [%s]" path)
       )
     ))
+
+(defun suzu/center-buffer ()
+  (let ((margin-size (/ (- (frame-width) 80) 2)))
+    (set-window-margins nil margin-size margin-size)))
+

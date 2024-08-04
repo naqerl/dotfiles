@@ -17,3 +17,7 @@ tldr/
 tramp/
 transient/
 url/
+tree-sitter/
+eshell/history
+projectile.cache
+projects
