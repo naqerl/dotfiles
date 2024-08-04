@@ -316,7 +316,7 @@
     (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
                 corfu-popupinfo-delay nil)
     (corfu-mode 1)))
-(add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+;; (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
 
 (use-package emacs
   :init
@@ -571,6 +571,7 @@
   (setq org-ellipsis " ▾")
   (setq org-edit-src-content-indentetion 0)
   (setq-default org-edit-src-content-indentation 0) ;; Set src block automatic indent to 0 instead of 2
+  (setq org-imenu-depth 4)
   (setq-default org-image-actual-width nil)
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
@@ -613,6 +614,7 @@
                                  ("*****" . "    ")
                                  ("******" . "     ")
                                  ("scheduled:" . "")
+                                 ("#+auto_tangle: t" . "󰁪")
                                  ("deadline:" . "")))
   (prettify-symbols-mode))
 
@@ -783,7 +785,7 @@
     (setq sign
           (if (= (user-uid) 0)
               (with-face "\n#" 'eshell-git-prompt-multiline-sign-face)
-            (with-face "\n" 'eshell-git-prompt-multiline-sign-face)))
+            (with-face "\n󰘧" 'eshell-git-prompt-multiline-sign-face)))
     (setq command (with-face " " 'eshell-git-prompt-multiline-command-face))
 
     ;; Build prompt
@@ -1018,4 +1020,4 @@
   ([remap describe-key] . helpful-key))
 
 (use-package enwc
-:custom (enwc-default-backend BACKEND-SYMBOL))
+:custom (enwc-default-backend 'nm))
