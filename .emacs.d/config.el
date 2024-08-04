@@ -239,6 +239,8 @@
         (t . (semilight 1.1 ))))
 (load-theme 'modus-vivendi :no-confirm)
 
+(setq-default display-line-numbers-width 4)
+
 (use-package magit
   :ensure t
   :config
@@ -391,6 +393,8 @@
                        ("https://www.reddit.com/r/commandline.rss" reddit commandline)
                        ("https://www.reddit.com/r/distrotube.rss" reddit distrotube)
                        ("https://www.reddit.com/r/emacs.rss" reddit emacs)
+                       ("https://www.reddit.com/r/unixport.rss" reddit)
+                       ("https://www.reddit.com/r/emacsporn.rss" reddit)
                        ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
                        ("https://hackaday.com/blog/feed/" hackaday linux)
                        ("https://opensource.com/feed" opensource linux)
@@ -403,6 +407,7 @@
                        ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
                        ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
                        ("https://betanews.com/feed" betanews linux)
+                       ("https://systemcrafters.net/rss/news.xml" emac)
                        ("http://lxer.com/module/newswire/headlines.rss" lxer linux)
                        ("https://distrowatch.com/news/dwd.xml" distrowatch linux)))))
 
@@ -735,6 +740,9 @@
   :config
   (eshell-syntax-highlighting-global-mode +1))
 
+(use-package eshell-git-prompt
+  :ensure t)
+
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
@@ -744,27 +752,23 @@
   (setq eshell-history-size         10000
         eshell-buffer-maximum-lines 10000
         eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t))
-
-(use-package eshell-git-prompt
-  :ensure t)
+        eshell-scroll-to-bottom-on-input t
+        eshell-rc-script (concat user-emacs-directory "eshell/profile")
+        eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+        eshell-destroy-buffer-when-process-dies t
+        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh" "paru")))
 
 (use-package eshell
   :hook (eshell-first-time-mode . suzu/configure-eshell)
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
-      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-      eshell-history-size 5000
-      eshell-buffer-maximum-lines 5000
-      eshell-hist-ignoredups t
-      eshell-scroll-to-bottom-on-input t
-      eshell-destroy-buffer-when-process-dies t
-      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh" "paru"))
-
 (use-package eshell-toggle
-  :ensure t)
+  :ensure t
+  :custom
+  (eshell-toggle-window-side 'right)
+  (eshell-toggle-use-projectile-root nil)
+  (eshell-toggle-run-command nil))
 
 (use-package vterm
   :ensure t
@@ -847,7 +851,8 @@
 
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
-        (python "https://github.com/tree-sitter/tree-sitter-python")))
+        (python "https://github.com/tree-sitter/tree-sitter-python")
+        (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
 
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
@@ -901,8 +906,8 @@
       (suzu/update-eww-var "emacs_buffer_modifier" " ")
       (suzu/update-eww-var "emacs_buffer_modifier" "")))
 
-;; (add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
-;; (add-hook 'after-save-hook 'suzu/current-buffer-saved)
+(add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
+(add-hook 'after-save-hook 'suzu/current-buffer-saved)
 
 (defun suzu/current-vcs-branch ()
   (suzu/update-eww-var "git_branch" (magit-get-current-branch)))
