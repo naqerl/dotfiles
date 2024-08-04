@@ -30,7 +30,7 @@
          `$HOME/.config/eww/scripts/temp`)
 
 (defvar timer69 "")
-(defvar timer_color "#ff8059")
+(defvar timer_color "light")
 
 (defpoll mic_state :interval "0.5s" :initial "" `$HOME/.config/bin/mic-state`)
 
@@ -55,7 +55,7 @@
 
 (defwidget bar []
            (centerbox :class "box bg-transparent"
-                :style "padding: 3px 0;"
+                :style "padding: 4px 0;"
                 :orientation "h"
                 (left)
                 (center)
@@ -92,11 +92,16 @@
              :fg "light"
              (box
               :space-evenly false
-              (revealer
+              (revealer  ;; Left Emacs status
                :transition "slideleft"
                :reveal {emacs_focused == "t"}
                :duration "300ms"
-               (box :class "box" :orientation "h" :space-evenly false :hexpand false :halign "start"
+               (box :class "box"
+                    :orientation "h"
+                    :space-evenly false
+                    :hexpand false
+                    :halign "start"
+                    :width 300
                     (label
                      :class "fg-purple"
                      :text {" "})
@@ -104,29 +109,38 @@
                      :text emacs_session
                      :limit-width 50)
                     (separator)))
+              (revealer
+               :transition "slideleft"
+               :reveal {mic_state == 'muted' ? false : true}
+               :duration "200ms"
+               (mic))
               (clock)
               (space)
               (battery_v2)
               (layout_alert)
-              (revealer
+              (revealer ;; Right Emacs status
                :transition "slideright"
                :reveal {emacs_focused == "t"}
                :duration "300ms"
-               :halign "end"
-               (box :class "box" :orientation "h" :space-evenly false :halign "end"
+               (box :class "box"
+                    :orientation "h"
+                    :space-evenly false
+                    :halign "end"
+                    :width 300
                     (separator)
-                    (label
-                     :text emacs_window_icon
-                     :xalign 1
-                     :limit-width 2)
-                    (space)
-                    (space)
-                    (label
-                     :text emacs_window
-                     :xalign 1
-                     :limit-width 50)
-                    ))
-              ))
+                    (box
+                     :hexpand true
+                     :space-evenly false
+                     :halign "end"
+                     (label
+                      :text emacs_window_icon
+                      :limit-width 2)
+                     (space)
+                     (space)
+                     (label
+                      :text emacs_window
+                      :xalign 1
+                      :limit-width 50))))))
             (revealer
              :transition "slideright"
              :reveal {emacs_focused == "t" && emacs_buffer_modifier != ""}
@@ -144,27 +158,54 @@
            (box :orientation "h"
                 :space-evenly false
                 :halign "end"
-                (space)
+                (revealer
+                 :transition "slideleft"
+                 :reveal {cpu_temp >= warning_cpu_temp ||  EWW_RAM.used_mem_perc >= warning_used_mem_perc ? true : false}
+                 (container
+                  :bg "yellow"
+                  :fg "dark"
+                  :left "yellow"
+                  :right "yellow"
+                  (box
+                   :space-evenly false
+                   (revealer
+                    :transition "slideleft"
+                    :reveal {cpu_temp >= warning_cpu_temp}
+                    :duration "250ms"
+                    (box
+                     :space-evenly
+                     (space)
+                     (text :content "${cpu_temp}󰔄" :class "fg-dark bg-yellow")
+                     (space)))
+                   (revealer
+                    :transition "slideleft"
+                    :reveal {EWW_RAM.used_mem_perc >= warning_used_mem_perc}
+                    :duration "250ms"
+                    (box
+                     :space-evenly false
+                     (space)
+                     (text :content " ${round(EWW_RAM.used_mem_perc, 0)}%" :class "fg-dark bg-yellow")
+                     (space))))))
                 (container
-                 :bg "yellow"
-                 :fg "dark"
-                 :left {cpu_temp >= warning_cpu_temp ||  EWW_RAM.used_mem_perc >= warning_used_mem_perc || timer69 != '' ? "yellow" : ""}
-                 (revealer
-                  :transition "slideleft"
-                  :reveal {cpu_temp >= warning_cpu_temp}
-                  :duration "250ms"
-                  (box
-                   :space-evenly false
-                   (text :content "${cpu_temp}󰔄" :class "fg-dark bg-yellow")
-                   (space)))
-                 (revealer
-                  :transition "slideright"
-                  :reveal {EWW_RAM.used_mem_perc >= warning_used_mem_perc}
-                  :duration "250ms"
-                  (box
-                   :space-evenly false
-                   (text :content " ${round(EWW_RAM.used_mem_perc, 0)}%" :class "fg-dark bg-yellow")
-                   (space))))))
+                 :left "dark"
+                 :bg "dark"
+                 :fg "light"
+                 (box
+                  :space-evenly false
+                  (revealer
+                   :transition "slideleft"
+                   :reveal {timer69 == '' ? false : true}
+                   :duration "500ms"
+                   (text
+                    :class "fg-${timer_color}"
+                    :content "${timer69}"))
+                  (space)
+                  (space)
+                  (text
+                   :class "fg-${timer_color}"
+                   :content " ")
+                  (space)
+                  (space)))))
 
 
 
@@ -344,9 +385,6 @@
 )
 
 (defwidget mic []
-(revealer
-             :reveal {mic_state == 'muted' ? false : true}
-             :duration "200ms"
              (box :class "mic" :orientation "h" :space-evenly false :hexpand true :width "20px"
                   (space)
                   (label
@@ -354,7 +392,6 @@
                     :text " "
                     :limit-width 35)
                   (space)))
-)
 
 (defwidget mpv_player []
            (revealer
