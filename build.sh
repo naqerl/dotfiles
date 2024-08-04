@@ -10,10 +10,10 @@ paru -S hyprland \
         hyprpaper \
         hyprpicker \
         xdg-desktop-portal-hyprland \
-        eww-wayland \
+        eww-tray-wayland-git \
         fish \
         starship \
-        tiramisu \
+        tiramisu-git \
         ripgrep \
         fd \
         jq xq \
@@ -22,7 +22,7 @@ paru -S hyprland \
         libnotify \
         pipewire pipewire-alsa pipewire-pulse pipewire-jack pipewire-audio \
         feh \
-        gim \
+        grim \
         slurp \
         socat \
         pass \
