@@ -8,6 +8,7 @@
 - [[#important-programs-to-load-first][Important programs to load first]]
   - [[#loading-scripts][Loading scripts]]
   - [[#upgrade-gc][Upgrade GC]]
+  - [[#debug-on-error][Debug on error]]
   - [[#continue-loading-scripts][Continue loading scripts]]
   - [[#load-evil-mode][Load evil mode]]
   - [[#general-keybindings][General keybindings]]
@@ -37,7 +38,9 @@
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
   - [[#babel][Babel]]
   - [[#visual-fill-column-center-buffer][Visual fill column (center buffer)]]
-- [[#ivy-counsel][Ivy (counsel)]]
+- [[#completion][Completion]]
+  - [[#ivy][Ivy]]
+  - [[#vertico][Vertico]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-contents][Enable table of contents]]
   - [[#enable-org-bullets][Enable Org bullets]]
@@ -79,6 +82,11 @@
   :ensure t
   :init
   (gcmh-mode 1))
+#+end_src
+
+** Debug on error
+#+begin_src elisp
+(setq-default debug-on-error nil)
 #+end_src
 
 ** Continue loading scripts
@@ -255,7 +263,8 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     "h" '(:ignore t :wk "Help")
     "h f" '(describe-function :wk "Describe function")
     "h v" '(describe-variable :wk "Describe variable")
-    "h m" '(info-display-manual :wk "Manual")
+    "h M" '(info-display-manual :wk "Manual")
+    "h m" '(describe-mode :wk "Describe mode")
     "h r r" '((lambda ()
                 (interactive)
                 (load-file "~/dotfiles/.emacs.d/init.el")
@@ -270,6 +279,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     "m t" '(org-todo :wk "Org todo")
     "m f" '(counsel-org-goto :wk "Find heading")
     "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m l" '(org-insert-link :wk "Org insert link")
     "m T" '(org-todo-list :wk "Org todo list"))
 
   (suzu/leader-keys
@@ -594,6 +604,16 @@ Used for reviewing of the pull requests
 
 ** Python
 #+begin_src emacs-lisp
+(defun suzu/python-mode()
+  (add-hook 'after-save-hook 'python-black-buffer)
+  (add-hook 'after-save-hook 'python-sort-imports)
+  (eglot-ensure)
+  (python-ts-mode))
+
+(use-package python
+  :hook
+  (python-mode . suzu/python-mode))
+
 (use-package python-black
   :ensure t)
 #+end_src
@@ -608,14 +628,13 @@ Setup lsp client
 #+begin_src emacs-lisp
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright")))
+  ;; (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright")))
   (add-to-list 'eglot-server-programs '(rust-mode . ("rust-analyzer")))
   (general-define-key
    :states '(normal visual motion)
    :keymaps 'override
    "K" '(eldoc-box-help-at-point :wk "Show doc"))
   :hook
-  (python-ts-mode . eglot-ensure)
   (rust-mode . eglot-ensure)
 )
 #+end_src
@@ -703,12 +722,14 @@ Setup lsp client
   :hook
   (org-mode . suzu/visual-fill)
   (python-mode . suzu/visual-fill)
+  (python-ts-mode . suzu/visual-fill)
   (rust-mode . suzu/visual-fill)
   (html-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill))
 #+end_src
 
-* Ivy (counsel)
+* Completion
+** Ivy
 #+begin_src emacs-lisp
 (use-package counsel
   :ensure t
@@ -754,6 +775,9 @@ Setup lsp client
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 #+end_src
+
+** Vertico
+https://kristofferbalintona.me/posts/202202211546/
 
 * Org mode
 ** Enable table of contents
