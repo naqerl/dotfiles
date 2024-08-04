@@ -2,9 +2,11 @@ set -ex
 
 git pull origin main
 
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source "$HOME/.cargo/env"
-rustup default stable
+if [[ -z $(command -v rustup) ]]; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source "$HOME/.cargo/env"
+    rustup default stable
+fi
 
 if [[ -z $(command -v paru) ]]; then
     sudo pacman -S --needed base-devel
@@ -86,9 +88,8 @@ if [[ "$1" == spotify ]]; then
     sudo rm -r ~/.spicetify install.log
 fi
 
-curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
-fisher update
-chsh -s `which fish`
+paru -S fisher
+chsh -s $(which fish)
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
