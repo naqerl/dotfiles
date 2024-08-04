@@ -86,3 +86,11 @@ eval "$(fzf --zsh)"
 bindkey -e
 
 . "$HOME/.cargo/env"
+
+export EDITOR="nvim"
+export MANPAGER="nvim +Man!"
+export FZF_DEFAULT_OPTS=""
+alias today-written="git log --shortstat --author \"Andrey\" --since \"midnight\" | \
+  grep -E \"file[s]* changed\" | \
+  sed -E 's/changed, ([0-9]+) deletions/changed, 0 insertions(+), \1 deletions/g' | \
+  awk '{files+=\$1; inserted+=\$4; deleted+=\$6} END {print \"files changed\", files, \"lines inserted:\", inserted, \"lines deleted:\", deleted}'"

@@ -1,0 +1,9 @@
+font=Iosevka NF 13
+text-color=#BEBEBE
+background-color=#000000
+border-color=#181616
+border-size=1
+border-radius=5
+outer-margin=0,0,0,0
+anchor=top-center
+default-timeout=3000

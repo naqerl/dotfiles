@@ -1,6 +1,6 @@
 (defwindow bar
            :geometry (geometry
-                       :width "2048"
+                       :width "1600"
                        :anchor "top center")
            :monitor 0
            :exclusive true

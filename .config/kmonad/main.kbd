@@ -7,7 +7,8 @@
 )
 
 (defalias 
- mod (layer-toggle mod)
+ lower (layer-toggle lower)
+ raise (layer-toggle raise)
 
  a (tap-hold-next-release 150 a lmet)
  s (tap-hold-next-release 150 s lalt)
@@ -37,14 +38,24 @@
  tab  q    w    e    r    t    y    u    i    o    p    [     ]        \
  caps @a    @s    @d    @f    g    h    @j    @k    @l    @;    '      ret
  lsft      z    x    c    v    b    n    m    ,    .    /              rsft
- lctl lmet @mod           spc           @mod prnt rctl       pgup up   pgdn 
+ lctl lmet @lower           spc           @raise prnt rctl       pgup up   pgdn 
 							     left down rght
 )
 
-(deflayer mod
+(deflayer lower
  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12 home end ins  del
  grv  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12      bspc
- tab  1    2    3    4    5    6    7    8    9    0    [     ]        \
+ tab  q    w    e    r    t    y    u    i    o    p    [     ]        \
+ caps 1    2    3    4    5    6    7    8    9    0    '             ret
+ lsft      z    x    c    v    b    n    m    ,    .    /              rsft
+ lctl lmet lalt           spc            ralt prnt rctl      pgup up   pgdn
+                                                             left down rght
+)
+
+(deflayer raise
+ esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12 home end ins  del
+ grv  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12      bspc
+ tab  q    w    e    r    t    y    u    i    o    p    [     ]        \
  caps @a   @s   @d   @f   g    left down up   rght @;    '             ret
  lsft      z    x    c    v    b    n    m    ,    .    /              rsft
  lctl lmet lalt           spc            ralt prnt rctl      pgup up   pgdn

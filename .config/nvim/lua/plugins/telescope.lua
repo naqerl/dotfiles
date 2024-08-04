@@ -84,6 +84,11 @@ function M.config()
 					['<C-d>'] = false,
 				},
 			},
+			borderchars = {
+				prompt = { "─", " ", " ", " ", "─", "─", " ", " " },
+				results = { " " },
+				preview = { " " },
+			},
 		},
 		pickers = {
 			find_files = {

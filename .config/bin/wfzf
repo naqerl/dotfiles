@@ -1,5 +1,5 @@
 #!/bin/bash
-[ "$1" == "INSIDEWINDOW" ] || exec kitty --title=Femoji $0 INSIDEWINDOW $$ "$@"
+[ "$1" == "INSIDEWINDOW" ] || exec kitty --title=wfzf $0 INSIDEWINDOW $$ "$@"
 exec >/proc/$2/fd/1 </proc/$2/fd/0 ; shift; shift;
 exec fzf "$@"
 
