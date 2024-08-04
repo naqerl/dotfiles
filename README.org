@@ -22,7 +22,7 @@ set -e
 
 *** Update
 #+begin_src shell
-git clone origin main
+git pull origin main
 #+end_src
 
 *** Package manager
