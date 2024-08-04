@@ -36,70 +36,108 @@
 (defvar emacs_session "")
 (defvar emacs_focused "f")
 (defvar emacs_window "")
+(defvar emacs_window_icon "")
 (defvar git_branch "")
+(defvar emacs_buffer_modifier "")
+(defvar emacs_lsp "")
 
 (defwidget emacs_session []
-           (revealer
-            :transition "fade"
-            :reveal {emacs_focused == "t"}
-            :duration "300ms"
-            (box :class "box" :orientation "h" :space-evenly false :hexpand false :halign "start"
-                 (label
-                  :class "purple-fg"
-                  :text {" "}
-                  :limit-width 2)
-                 (label
-                  :text emacs_session
-                  :limit-width 50))))
+    (revealer
+    :transition "fade"
+    :reveal {emacs_focused == "t"}
+    :duration "300ms"
+    (box :class "box" :orientation "h" :space-evenly false :hexpand false :halign "start"
+            (label
+            :class "fg-purple"
+            :text {" "}
+            :limit-width 2)
+            (label
+            :text emacs_session
+            :limit-width 50))))
 
 (defwidget emacs_window []
-(revealer
-             :transition "fade"
-             :reveal {emacs_focused == "t"}
-             :duration "300ms"
-             (box :class "box" :orientation "h" :space-evenly false :halign "end"
-                  (label
-                    :text {" "}
-                    :xaling 1
-                    :limit-width 2)
-                  (label
-                    :text emacs_window
+    (revealer
+    :transition "fade"
+    :reveal {emacs_focused == "t"}
+    :duration "300ms"
+    :halign "end"
+    (box :class "box" :orientation "h" :space-evenly false :halign "end"
+        (label
+        :text emacs_window_icon
+        :xalign 1
+        :limit-width 2)
+        (space)
+        (space)
+        (label
+        :text emacs_window
+        :xalign 1
+        :limit-width 50))))
+
+(defwidget emacs_buffer_modifier []
+    (revealer
+            :transition "slideright"
+            :reveal {emacs_buffer_modifier != ""}
+            (box :halign "end"
+                (space)
+                (label
+                    :text emacs_buffer_modifier
                     :xalign 1
-                    :limit-width 50)
-                  ))
-)
+                    :class "fg-yellow"))))
+
 
 (defwidget git_branch []
-(revealer
-             :transition "fade"
-             :reveal {emacs_focused == "t" && git_branch != ""}
-             :duration "300ms"
-             (box :class "box" :orientation "h" :space-evenly false :hexpand true :width "20px"
-                  (space)
-                  (label
-                    :text {"  "}
-                    :limit-width 3)
-                  (label
-                    :text git_branch
-                    :limit-width 50)
-                  (space)))
-)
+    (revealer
+        :transition "fade"
+        :reveal {emacs_focused == "t" && git_branch != ""}
+        :duration "300ms"
+        (box :class "box" :orientation "h" :space-evenly false :hexpand true :width "20px"
+            (space)
+            (label
+            :text {"  "}
+            :limit-width 3)
+            (label
+            :text git_branch
+            :limit-width 50)
+            (space))))
+
+(defwidget emacs_lsp []
+    (box :class "box" :orientation "h" :halign "end"
+        (label
+            :justify "end"
+            :xalign 0
+            :class "fg-blue"
+            :limit-width 2
+            :text emacs_lsp)))
+
+(defwidget emacs_x []
+ (box
+  :width 200
+  :orientation "h"
+  :space-evenly false
+  :hexpand false
+  :halign "start"
+  (emacs_session)
+  (emacs_lsp)))
+
+(defwidget emacs_y []
+ (box
+  :orientation "h"
+  :halign "end"
+  (emacs_window)))
 
 (defwidget emacs_info []
-           (revealer
-            :transition "fade"
-            :reveal {emacs_focused == "t"}
-            :duration "300ms"
-            (centerbox
-             :orientation "h"
-             :width "500"
-             :halign "baseline"
-             :space-evenly false
-             :class "box"
-             (emacs_session)
-             (space)
-             (emacs_window)
-             )))
+    (revealer
+        :transition "fade"
+        :reveal {emacs_focused == "t"}
+        :duration "300ms"
+        (centerbox
+            :orientation "h"
+            :class "box"
+            :space-evenly false
+            :width 600
+            (emacs_x)
+            (space)
+            (emacs_y))))
 
 (defwidget timer69 []
 (revealer
@@ -138,7 +176,7 @@
                   (space)
                   (label
                     :text {'  ' + playing_title}
-                    :limit-width 35)
+                    :limit-width 70)
                   (space))))
 
 (defwidget layout_alert []
@@ -225,14 +263,18 @@
 
 (defwidget notification []
            (revealer
-             :transition "crossfade"
-             :reveal notification_reveal
-             :duration "500ms"
+            :transition "crossfade"
+            :reveal notification_reveal
+            :duration "500ms"
+            (box :orientation "h" :space-evenly false
+             (space)
+             (space)
              (label
-               :class "box notification"
-               :text notification_text
-               :limit-width 50
-               )))
+              :class "box notification"
+              :text notification_text
+              :limit-width 35
+              )
+             )))
 
 (defwidget monitors []
            (box :orientation "h"
@@ -329,7 +371,7 @@
                        strength < 51 ? okay :
                        strength < 76 ? good : excellent})
 
-                (label :text {wireguard_vpn == 'active' ? '󰖂 ' : ''})))
+                (label :text {wireguard_vpn == 'active' ? "󰖂 " : " "})))
 
 (defwidget powermenu_layout []
            (box :class "layout-box" :space-evenly false :orientation "vertical"
