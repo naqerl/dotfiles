@@ -1,8 +1,6 @@
 #+TITLE: Suzu's GNU Emacs Config
 #+AUTHOR: Suzu
 #+DESCRIPTION: My personal Emacs config
-#+STARTUP: showeverything
-#+OPTIONS: toc:2
 
 * Table of contents :toc:
 - [[#important-programs-to-load-first][Important programs to load first]]
@@ -18,7 +16,7 @@
   - [[#header-line][Header line]]
   - [[#all-the-icons][All the icons]]
   - [[#no-backups-or--files][No backups (or `~` files)]]
-  - [[#completion][Completion]]
+  - [[#corfu][Corfu]]
   - [[#diminish][Diminish]]
   - [[#dired][Dired]]
   - [[#elfeed][Elfeed]]
@@ -46,8 +44,9 @@
   - [[#show-hidden-elements-on-curosr-hover][Show hidden elements on curosr hover]]
   - [[#auto-babel-tangle][Auto babel tangle]]
   - [[#run-source-block-hook][Run source block hook]]
+  - [[#prettify-symbols][Prettify symbols]]
 - [[#pdf-tools][PDF tools]]
-- [[#completion-1][Completion]]
+- [[#completion][Completion]]
   - [[#vertico][Vertico]]
 - [[#rainbow-mode][Rainbow mode]]
 - [[#shells-and-terminals][Shells and terminals]]
@@ -128,7 +127,8 @@
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "SPC") nil)
   (define-key evil-motion-state-map (kbd "RET") nil))
-(setq org-return-follows-link  t)
+  ;; (define-key evil-insert-state-map (kbd "<tab>") 'tab-to-tab-stop))
+(setq org-return-follows-link t)
 #+end_src
 
 *** Skip whole words with e and b (like in vim)
@@ -163,14 +163,14 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 ** General keybindings
 #+begin_src emacs-lisp
 (defun suzu/split-window-vertical()
-(interactive)
-(split-window-right)
-(other-window 1))
+  (interactive)
+  (split-window-right)
+  (other-window 1))
 
 (defun suzu/split-window-horizontal()
-(interactive)
-(split-window-below)
-(other-window 1))
+  (interactive)
+  (split-window-below)
+  (other-window 1))
 
 (use-package general
   :ensure t
@@ -190,10 +190,13 @@ Mostly needed to fix clearing of the jump list after switching perspectives
    "s" '(suzu/split-window-horizontal :wk "Horizontal split"))
 
   (general-define-key
-   :states '(normal visual)
+   :states '(normal visual insert)
    "<f2>" '(vterm-toggle-forward :wk "Toggle vterm forward")
-   "<f3>" '(vterm-toggle :wk "Toggle vterm")
-   "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward")
+   "<f3>" '(eshell-toggle :wk "Toggle eshell")
+   "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward"))
+
+  (general-define-key
+   :states '(normal visual)
    "[ g" '(git-gutter:previous-hunk :wk "Prev git hunk")
    "] g" '(git-gutter:next-hunk :wk "Next git hunk")
    "[ d" '(flymake-goto-prev-error :wk "Prev diagnostic")
@@ -292,7 +295,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
     "m d" '(:ignore t :wk "Date/deadline")
     "m d t" '(org-time-stamp :wk "Org time stamp"))
 
-    (suzu/leader-keys
+  (suzu/leader-keys
     "c a" '(eglot-code-actions :wk "Code actions")
     "r n" '(eglot-rename :wk "Rename"))
 
@@ -309,10 +312,28 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 ** Theme
 *** Custom catppuccin theme
 #+begin_src emacs-lisp
-(require 'catppuccin-theme)
-(load-theme 'catppuccin :no-confirm)
-(setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
-(catppuccin-reload)
+;; (require 'catppuccin-theme)
+;; (load-theme 'catppuccin :no-confirm)
+;; (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
+;; (catppuccin-reload)
+#+end_src
+
+*** Modus
+#+begin_src elisp
+(setq modus-themes-mode-line '(borderless 3d)
+      modus-themes-region '(bg-only)
+      modus-themes-org-blocks 'gray-background
+      modus-themes-completions '((selection intense) (popup intense))
+      modus-themes-bold-constructs t
+      modus-themes-italic-constructs t
+      modus-themes-paren-match '(bold)
+      modus-themes-syntax '(green-strings yellow-comments)
+      modus-themes-headings
+      '((1 . (rainbow 1.5))
+        (2 . (rainbow 1.3))
+        (3 . (rainbow bold 1.2))
+        (t . (semilight 1.1 ))))
+(load-theme 'modus-vivendi :no-confirm)
 #+end_src
 
 ** Git
@@ -329,6 +350,10 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 #+begin_src emacs-lisp
 (use-package git-gutter
   :ensure t
+  :custom
+  (git-gutter:modified-sign " ") ;; two space
+  (git-gutter:added-sign " ")    ;; multiple character is OK
+  (git-gutter:deleted-sign " ")
   :config
   (global-git-gutter-mode +1))
 #+end_src
@@ -394,8 +419,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 (setq make-backup-files nil)
 #+end_src
 
-** Completion
-*** Corfu
+** Corfu
 #+begin_src emacs-lisp
 (use-package corfu
   :ensure t
@@ -449,7 +473,7 @@ Mostly needed to fix clearing of the jump list after switching perspectives
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
   ;; (setq tab-always-indent 'complete)
-  )
+)
 #+end_src
 
 *** Dabbrev
@@ -663,23 +687,25 @@ Mostly needed to fix clearing of the jump list after switching perspectives
 ** Rust
 #+begin_src elisp
 (defun suzu/rust-mode()
-(add-hook 'after-save-hook 'rust-format-buffer))
+  (add-hook 'after-save-hook 'rust-format-buffer)
+  (eglot-ensure))
 
 (use-package rust-mode
   :ensure t
   :hook
-  (rust-mode . suzu/rust-mode))
+  (rust-ts-mode . suzu/rust-mode))
 #+end_src
 
 ** Python
 #+begin_src emacs-lisp
 (defun suzu/python-mode()
   (add-hook 'before-save-hook 'python-black-buffer)
-  (add-hook 'before-save-hook 'python-sort-imports))
+  (add-hook 'before-save-hook 'python-sort-imports)
+  (eglot-ensure))
 
 (use-package python
   :hook
-  (python-mode . suzu/python-mode))
+  (python-ts-mode . suzu/python-mode))
 
 (use-package python-black
   :ensure t)
@@ -726,6 +752,8 @@ Required for better LSP docs rendering
 (setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
+(setq backward-delete-char-untabify-method 'hungry)
+
 (setq create-lockfiles nil)
 (electric-pair-mode 1)
 (setq org-edit-src-content-indentetion 0)
@@ -751,17 +779,17 @@ Required for better LSP docs rendering
 ** Emoji
 #+begin_src emacs-lisp
 (use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode))
+  :ensure t)
 #+end_src
 
 ** Source code block tag expansion
 #+begin_src emacs-lisp
 (require 'org-tempo)
-(add-hook 'org-mode-hook (lambda ()
-			   (setq-local electric-pair-inhibit-predicate
-				       `(lambda (c)
-					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+(add-hook 'org-mode-hook
+          (lambda ()
+            (setq-local electric-pair-inhibit-predicate
+                        `(lambda (c)
+                           (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 #+end_src
 
 ** Babel
@@ -789,13 +817,15 @@ Required for better LSP docs rendering
 
 (use-package visual-fill-column
   :ensure t
+  :config
   :hook
   (org-mode . suzu/visual-fill)
-  (python-mode . suzu/visual-fill)
   (python-ts-mode . suzu/visual-fill)
-  (rust-mode . suzu/visual-fill)
-  (html-mode . suzu/visual-fill)
-  (dired-mode . suzu/visual-fill))
+  (rust-ts-mode . suzu/visual-fill)
+  (html-ts-mode . suzu/visual-fill)
+  (dired-mode . suzu/visual-fill)
+  (text-mode . suzu/visual-fill)
+)
 #+end_src
 
 * Org mode
@@ -810,8 +840,10 @@ Required for better LSP docs rendering
 ** Enable Org bullets
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets :ensure t)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(use-package org-bullets
+ :ensure t
+ :hook (org-mode . org-bullets-mode)
+ :custom (org-bullets-bullet-list '("◉" "○" "󰣏" "󱀝" "󰴈" "○" "●")))
 #+end_src
 
 ** Turn off images actual width
@@ -845,13 +877,48 @@ Sometimes I want run some scripts on saving files
 So it'll be nice to run them automatically
 
 #+begin_src elisp
-(defun suzu/org-babel-run-after-save-hook ()
-    (message "Added org-babel-run-after-tangle hook")
-    (add-hook 'after-save-hook (lambda () (org-babel-ref-resolve "run-after-save")))
+(defun suzu/run-after-tangle-hook ()
+    (add-hook 'org-bable-tangle-finished-hook (lambda () (org-babel-ref-resolve "run-after-save")))
 )
 
 ;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
 #+end_src
+
+** Prettify symbols
+#+begin_src elisp
+(defun suzu/org-icons ()
+   "Beautify org mode keywords."
+   (setq prettify-symbols-alist '(("TODO" . "")
+	                          ("WAIT" . "")        
+   				  ("NOPE" . "")
+				  ("DONE" . "")
+				  ("[#A]" . "")
+				  ("[#B]" . "")
+ 				  ("[#C]" . "")
+				  ("[ ]" . "")
+				  ("[X]" . "")
+				  ("[-]" . "")
+				  ("#+begin_src" . "")
+				  ("#+end_src" . "")
+				  (":PROPERTIES:" . "")
+				  (":END:" . "―")
+				  ("#+STARTUP:" . "")
+				  ("#+TITLE: " . "")
+				  ("#+RESULTS:" . "")
+				  ("#+NAME:" . "")
+				  ("#+ROAM_TAGS:" . "")
+				  ("#+FILETAGS:" . "")
+				  ("#+HTML_HEAD:" . "")
+				  ("#+SUBTITLE:" . "")
+				  ("#+AUTHOR:" . "")
+				  ("#+DESCRIPTION:" . "󰦨")
+				  (":Effort:" . "")
+				  ("SCHEDULED:" . "")
+				  ("DEADLINE:" . "")))
+   (prettify-symbols-mode))
+(add-hook 'org-mode-hook 'suzu/org-icons)
+#+end_src
+
 
 * PDF tools
 #+begin_src emacs-lisp
@@ -863,7 +930,7 @@ So it'll be nice to run them automatically
 
 * Completion
 ** Vertico
-
+Add annotations to completion
 #+begin_src elisp
 (use-package marginalia
   :ensure t
@@ -874,6 +941,7 @@ So it'll be nice to run them automatically
   (marginalia-mode))
 #+end_src
 
+Add icons
 #+begin_src elisp
 (use-package all-the-icons-completion
   :ensure t
@@ -888,9 +956,9 @@ So it'll be nice to run them automatically
 (use-package vertico
   :ensure t
   :custom
-  (vertico-count 13)                    ; Number of candidates to display
+  (vertico-count 13)
   (vertico-resize nil)
-  (vertico-cycle nil) ; Go from last to first candidate and first to last (cycle)?
+  (vertico-cycle nil)
   :config
   (vertico-mode))
 #+end_src
@@ -914,6 +982,7 @@ So it'll be nice to run them automatically
 
 * Shells and terminals
 ** Shell
+Turn off duplicating lines on execution
 #+begin_src elisp
 (setq comint-input-ignoredups t)
 #+end_src
@@ -938,6 +1007,11 @@ So it'll be nice to run them automatically
       eshell-scroll-to-bottom-on-input t
       eshell-destroy-buffer-when-process-dies t
       eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+#+end_src
+
+#+begin_src elisp
+(use-package eshell-toggle
+  :ensure t)
 #+end_src
 
 ** Vterm
@@ -1046,7 +1120,7 @@ So it'll be nice to run them automatically
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        ))
+        (rust-mode . rust-ts-mode)))
 #+end_src
 
 * Which-key
