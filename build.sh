@@ -20,6 +20,7 @@ paru -S hyprland \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
         fish fisher \
+        zsh \
         direnv \
         starship \
         tiramisu-git \
