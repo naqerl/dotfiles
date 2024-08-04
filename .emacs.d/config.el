@@ -192,10 +192,10 @@
     "h v" '(describe-variable :wk "Describe variable")
     "h M" '(info-display-manual :wk "Manual")
     "h m" '(describe-mode :wk "Describe mode")
+    "h p" '(describe-package :wk "Describe package")
     "h r r" '((lambda ()
                 (interactive)
-                (load-file "~/dotfiles/.emacs.d/init.el")
-                ) :wk "Reload emacs config"))
+                (load-file "~/dotfiles/.emacs.d/init.el")) :wk "Reload emacs config"))
 
   (suzu/leader-keys
     "m" '(:ignore t :wk "Org")
@@ -237,11 +237,6 @@
     "s F" '(slack-search-from-files :wk "Find file"))
   )
 
-;; (require 'catppuccin-theme)
-;; (load-theme 'catppuccin :no-confirm)
-;; (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
-;; (catppuccin-reload)
-
 (setq modus-themes-mode-line '(borderless 3d)
       modus-themes-region '(bg-only)
       modus-themes-org-blocks 'gray-background
@@ -250,10 +245,10 @@
       modus-themes-italic-constructs t
       modus-themes-paren-match '(bold)
       modus-themes-syntax '(green-strings yellow-comments)
-      modus-themes-headings
-      '((1 . (rainbow 1.5))
+      modus-themes-headings '((0 . (rainbow 1.9))
+        (1 . (rainbow 1.5))
         (2 . (rainbow 1.3))
-        (3 . (rainbow bold 1.2))
+        (3 . (rainbow 1.2))
         (t . (semilight 1.1 ))))
 (load-theme 'modus-vivendi :no-confirm)
 
@@ -305,16 +300,23 @@
 (use-package corfu
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-auto nil)                 ;; Enable auto completion
   (corfu-auto-delay 1)
   (corfu-auto-prefix 2)
-  :bind (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous))
+  (corfu-popupinfo-mode t)
   :init
   (global-corfu-mode))
+
+(defun corfu-enable-always-in-minibuffer ()
+  "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+  (unless (or (bound-and-true-p mct--active)
+              (bound-and-true-p vertico--input)
+              (eq (current-local-map) read-passwd-map))
+    ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+    (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                corfu-popupinfo-delay nil)
+    (corfu-mode 1)))
+(add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
 
 (use-package emacs
   :init
@@ -478,6 +480,7 @@
 (add-hook 'rust-mode-hook 'suzu/rust-mode)
 
 (defun suzu/python-mode()
+  (add-hook 'before-save-hook 'python-sort-imports nil t)
   (eglot-ensure))
 
 (use-package python
@@ -780,7 +783,7 @@
     (setq sign
           (if (= (user-uid) 0)
               (with-face "\n#" 'eshell-git-prompt-multiline-sign-face)
-            (with-face "\nλ" 'eshell-git-prompt-multiline-sign-face)))
+            (with-face "\n" 'eshell-git-prompt-multiline-sign-face)))
     (setq command (with-face " " 'eshell-git-prompt-multiline-command-face))
 
     ;; Build prompt
@@ -794,6 +797,8 @@
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'consult-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
+  (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
+  (add-hook 'evil-normal-state-entry-hook '(lambda () (setq display-line-numbers t)) nil t)
   (visual-line-mode)
   (evil-normalize-keymaps))
 
@@ -897,6 +902,7 @@
 (use-package tldr :ensure t)
 
 (add-to-list 'default-frame-alist '(alpha-background . 60))
+(add-to-list 'corfu--frame-parameters '(alpha-background . 100))
 
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
@@ -1010,3 +1016,6 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
+
+(use-package enwc
+:custom (enwc-default-backend BACKEND-SYMBOL))
