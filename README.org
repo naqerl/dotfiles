@@ -12,7 +12,7 @@ All of them saved to the =build.sh= file
 ** Screenshots
 
 #+ATTR_ORG: :width 700
-[[./img/demo.png]]
+[[./img/demo-emacs.png]]
 
 ** Setup
 *** Fail fast
