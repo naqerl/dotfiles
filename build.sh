@@ -2,9 +2,11 @@ set -e
 
 git pull origin main
 
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+rustup default stable
+
 if [[ -z $(command -v paru) ]]; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    source "$HOME/.cargo/env"
     sudo pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
     cd paru

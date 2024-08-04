@@ -25,14 +25,19 @@ set -e
 git pull origin main
 #+end_src
 
+*** Rust
+#+begin_src shell
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+rustup default stable
+#+end_src
+
 *** Package manager
 
 I use arch btw and prefer [[https://github.com/Morganamilo/paru][paru]] as my main package manager
 
 #+begin_src shell
 if [[ -z $(command -v paru) ]]; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    source "$HOME/.cargo/env"
     sudo pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
     cd paru
