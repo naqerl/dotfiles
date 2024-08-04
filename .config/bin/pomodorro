@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+declare -A options=(
+    ["Work"]='port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=52&color=red"'
+    ["Relax"]='port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=17&color=green"'
+    ["Stop"]='port=$(cat /tmp/timer-port); curl "http://localhost:$port/stop"'
+)
+
+# Use fzf to select an option
+selected=$(printf "%s\n" "${!options[@]}" | fzf --prompt="Action: ")
+
+# Check if a valid option was selected
+if [[ -n "$selected" && -n "${options[$selected]}" ]]; then
+    # Execute the command associated with the selected option
+    eval "${options[$selected]}"
+else
+    echo "No valid option selected."
+fi

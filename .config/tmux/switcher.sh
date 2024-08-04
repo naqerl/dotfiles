@@ -21,8 +21,6 @@ select_session() {
 	--prompt '   ' \
 	--header-first \
 	--header "$header" \
-	--color=gutter:#292C3D \
-	--color=bg:#292C3D \
 	--bind "ctrl-s:change-prompt(   )+reload($LIST_SESSIONS)" \
 	--bind "ctrl-o:change-prompt(   )+reload($LIST_PROJECTS $PROJECTS_BASE_DIR)" \
 	--bind "ctrl-l:change-prompt(   )+reload($LIST_LAYOUTS)" \

@@ -39,10 +39,12 @@ return {
 
 					-- Ensure the servers above are installed
 					local mason_lspconfig = require('mason-lspconfig')
+					local util = require('lspconfig/util')
 
 					local servers = {
 						clangd = {},
-						pyright = {},
+						pyright = {
+						},
 						bashls = {},
 						tsserver = {},
 						lua_ls = {
@@ -80,13 +82,13 @@ return {
 						-- vim.lsp.inlay_hint.enable(bufnr, true)
 						-- end
 
-						if vim.bo.filetype == 'python' then
-							local pyproject_path = vim.fn.findfile('pyproject.toml',
-								vim.fn.getcwd() .. '/**')
-							if pyproject_path ~= '' then
-								require('venv-selector').retrieve_from_cache()
-							end
-						end
+						-- if vim.bo.filetype == 'python' then
+						-- 	local pyproject_path = vim.fn.findfile('pyproject.toml',
+						-- 		vim.fn.getcwd() .. '/**')
+						-- 	if pyproject_path ~= '' then
+						-- 		require('venv-selector').retrieve_from_cache()
+						-- 	end
+						-- end
 
 						local nmap = function(keys, func, desc)
 							if desc then
@@ -161,6 +163,18 @@ return {
 							}
 						end,
 					}
+
+					require('lspconfig').pyright.setup({
+						on_attach = on_attach,
+						before_init = function(_, config)
+							local match = vim.fn.glob(util.path.join(config.root_dir, 'poetry.lock'))
+							if match ~= '' then
+								local venv = vim.fn.trim(vim.fn.system('poetry env info -p'))
+								config.settings.python.pythonPath = util.path.join(venv, 'bin', 'python')
+								print("Python venv path:", venv)
+							end
+						end
+					})
 				end,
 			},
 			-- Additional lua configuration, makes nvim stuff amazing!
@@ -203,8 +217,8 @@ return {
 						},
 						format_on_save = {
 							lsp_fallback = true,
-							async = false,
-							timeout_ms = 1000,
+							async = true,
+							timeout_ms = 3000,
 						},
 					})
 				end

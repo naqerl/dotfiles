@@ -9,3 +9,7 @@ image/png=feh.desktop
 application/pdf=emacsclient.desktop
 text/plain=emacsclient.desktop
 text/csv=emacsclient.desktop
+x-scheme-handler/tg=org.telegram.desktop.desktop
+
+[Added Associations]
+x-scheme-handler/tg=org.telegram.desktop.desktop;

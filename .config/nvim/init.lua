@@ -4,4 +4,4 @@ require('refactoring').setup()
 
 require('plugin_manager').setup()
 
-vim.cmd("colorscheme catppuccin")
+vim.cmd("colorscheme modus")
