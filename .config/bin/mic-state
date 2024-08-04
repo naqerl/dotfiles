@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 mic_name=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ \
     | rg 'node.nick' \
     | sed 's/.*"\(.*\)"$/\1/')

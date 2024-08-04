@@ -21,6 +21,7 @@
   - [[#chose-google-profile][Chose google profile]]
 - [[#lock-screen][Lock screen]]
 - [[#microphone-state][Microphone state]]
+- [[#toggle-second-monitor][Toggle second monitor]]
 
 * Make files executable
 Just checks all files here and makes them executable if they aren't 
@@ -382,6 +383,7 @@ swaylock \
 
 * Microphone state
 #+begin_src bash :tangle mic-state
+#!/usr/bin/env bash
 mic_name=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ \
     | rg 'node.nick' \
     | sed 's/.*"\(.*\)"$/\1/')
@@ -391,4 +393,19 @@ is_muted=$(wpctl status | rg "$mic_name" | rg -i muted)
 if [[ -n "$is_muted" ]]; then
     echo "muted"
 fi
+#+end_src
+
+* Toggle second monitor
+#+begin_src bash :tangle toggle-second-monitor
+#!/usr/bin/env bash
+monitor="eDP-1"
+second_monitor_activated=$(hyprctl monitors | rg "$monitor")
+if [[ -z "$second_monitor_activated" ]]; then
+    notify-send "Enabling $monitor monitor"
+    keyword="$monitor, 2560x1440, 2560x0, 1.6"
+else
+    notify-send "Disabling $monitor monitor"
+    keyword="$monitor, disable"
+fi
+hyprctl keyword monitor "$keyword"
 #+end_src
