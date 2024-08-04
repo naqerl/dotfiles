@@ -7,3 +7,11 @@ border-radius=5
 outer-margin=0,0,0,0
 anchor=top-center
 default-timeout=3000
+text-alignment=center
+
+[urgency=high]
+border-color=#C34043
+background-color=#C34043
+text-color=#181616
+default-timeout=0
+
