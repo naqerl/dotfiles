@@ -45,6 +45,7 @@
 
      `(lambda (result)
         "Code that runs when the async function finishes."
+        (message "Query %s finished" , uuid)
         (save-window-excursion
           (save-excursion
             (save-restriction
