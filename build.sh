@@ -36,7 +36,7 @@ paru -S hyprland \
         socat \
         pass \
         stow \
-        --needed --noconfirm
+        --needed
 
 paru -S kitty \
         qutebrowser \
@@ -54,18 +54,18 @@ paru -S kitty \
         blueman \
         spotify-wayland \
         vesktop-bin \
-        --needed --noconfirm
+        --needed
 
 paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
         ttf-opensans \
-        --needed --noconfirm
+        --needed
 
 paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme \
-        --needed --noconfirm
+        --needed
 
 if [[ "$1" == spotify ]]; then
     if [[ ! -d spotify-adblock ]]; then
@@ -103,7 +103,7 @@ cd "$HOME/dotfiles" && stow . --adopt
 
 paru -S python-pipx \
      python-poetry \
-     --needed --noconfirm
+     --needed
 
 pipx install pyright
 
@@ -112,4 +112,4 @@ rustup component add rust-analyzer
 paru -S docker \
         docker-buildx \
         docker-compose \
-        --needed --noconfirm
+        --needed
