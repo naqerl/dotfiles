@@ -92,8 +92,9 @@ if [[ "$1" == spotify ]]; then
 fi
 
 chsh -s $(which fish)
-fisher install jorgebucaran/nvm.fish
-nvm install latest
+fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
+fish -c 'fisher install jorgebucaran/nvm.fish'
+fish -c 'nvm install lts'
 
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm

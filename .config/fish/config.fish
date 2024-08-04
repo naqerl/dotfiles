@@ -22,7 +22,7 @@ if status is-interactive
         enable_transience
         direnv hook fish | source
 
-        nvm use latest 1>/dev/null
+        nvm use lts 1>/dev/null
     end
 
     alias ll 'exa --long --header --icons'
