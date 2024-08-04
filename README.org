@@ -137,7 +137,7 @@ paru -S kitty \
 [[https://typeof.net/Iosevka/) is the main font. Others were required for some apps (which are probably no longer needed][Iosevka]].
 
 #+begin_src bash
-paru -S ttf-iosevka-nerd \
+sudo paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
         ttf-opensans
@@ -148,7 +148,7 @@ paru -S ttf-iosevka-nerd \
 [[https://github.com/catppuccin/catppuccin][Catppuccin]] is my favorite theme, so set up curosr and GTK apps
 
 #+begin_src bash
-paru -S catppuccin-gtk-theme-frappe \
+sudo paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme
 #+end_src
@@ -209,7 +209,7 @@ cd "$HOME/dotfiles" && stow .
 Install package managers
 
 #+begin_src bash
-paru -S python-pipx \
+sudo paru -S python-pipx \
      python-poetry
 #+end_src
 
@@ -230,7 +230,7 @@ rustup component add rust-analyzer
 **** Docker
 
 #+begin_src bash
-paru -S docker \
+sudo paru -S docker \
         docker-buildx \
         docker-compose
 #+end_src

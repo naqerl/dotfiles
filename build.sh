@@ -49,12 +49,12 @@ paru -S kitty \
         spotify-wayland \
         vesktop-bin
 
-paru -S ttf-iosevka-nerd \
+sudo paru -S ttf-iosevka-nerd \
         ttf-iosevka-lyte-nerd-font \
         ttf-liberation \
         ttf-opensans
 
-paru -S catppuccin-gtk-theme-frappe \
+sudo paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme
 
@@ -81,13 +81,13 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 cd "$HOME/dotfiles" && stow .
 
-paru -S python-pipx \
+sudo paru -S python-pipx \
      python-poetry
 
 pipx install pyright
 
 rustup component add rust-analyzer
 
-paru -S docker \
+sudo paru -S docker \
         docker-buildx \
         docker-compose
