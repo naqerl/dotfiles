@@ -20,6 +20,7 @@ paru -S hyprland \
         xdg-desktop-portal-hyprland \
         eww-tray-wayland-git \
         fish fisher \
+        direnv \
         starship \
         tiramisu-git \
         ripgrep \
@@ -91,6 +92,8 @@ if [[ "$1" == spotify ]]; then
 fi
 
 chsh -s $(which fish)
+fisher install jorgebucaran/nvm.fish
+nvm install latest
 
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
