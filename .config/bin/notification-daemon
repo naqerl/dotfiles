@@ -2,6 +2,8 @@
 
 # How long each line stays on screen
 duration=5
+telegram_bot_token=$(pass show telegram.org/suzumenobu_bot)
+my_telegram_id=$(pass show telegram.org/idevtier_id)
 
 tiramisu -s -o '{"source": "#source", "summary": "#summary", "body": "#body", "icon": "#icon", "timeout": "#timeout"}' |
     while read -r notif; do
@@ -81,11 +83,10 @@ tiramisu -s -o '{"source": "#source", "summary": "#summary", "body": "#body", "i
         continue
       fi
 
-      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/209493779/; s/\$text/$telegram_msg $summary/")
-      COMPATION_TELEGRAM_BOT_TOKEN="7074489476:AAG3VykSn-gBFKB6gukCeH06M4OktoO-0VA"
+      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/$my_telegram_id/; s/\$text/$telegram_msg $summary/")
 
       curl -X POST \
             -H 'Content-Type: application/json' \
             -d "$body" \
-            "https://api.telegram.org/bot$COMPATION_TELEGRAM_BOT_TOKEN/sendMessage"
+            "https://api.telegram.org/bot$telegram_bot_token/sendMessage"
     done
