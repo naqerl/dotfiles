@@ -30,6 +30,7 @@
          `$HOME/.config/eww/scripts/temp`)
 
 (defvar timer69 "")
+(defvar timer_color "#ff8059")
 
 (defpoll mic_state :interval "0.5s" :initial "" `$HOME/.config/bin/mic-state`)
 
@@ -49,8 +50,7 @@
     (box :class "box" :orientation "h" :space-evenly false :hexpand false :halign "start"
             (label
             :class "fg-purple"
-            :text {" "}
-            :limit-width 2)
+            :text {" "})
             (label
             :text emacs_session
             :limit-width 50))))
@@ -145,10 +145,10 @@
              :transition "slideleft"
              :reveal {timer69 == '' ? false : true}
              :duration "500ms"
-             (box :class "timer69 box" :orientation "h" :space-evenly false :hexpand true :width "20px"
+             (box :class "box" :orientation "h" :space-evenly false :hexpand true :width "20px"
                   (space)
                   (label
-		    :class "timer69"
+                    :style {"color: " + timer_color}
                     :text {timer69}
                     :limit-width 35)
                   (space)))
@@ -191,6 +191,7 @@
                     :class "layout_alert"
                     :text "ru"
                     :tooltip "brightness")
+                  (space)
                   )))
 
 (defwidget cpu_temp_alert []
@@ -225,9 +226,7 @@
                                    :thickness 3
                                    (button
                                      :class "iconbat"
-                                     :limit-width 2
                                      :tooltip "battery on ${EWW_BATTERY.BAT0.capacity }%"
-                                     :show_truncated false
                                      :onclick "$HOME/.config/eww/scripts/pop system"
                                      " "))))
 
@@ -256,10 +255,7 @@
                                    :thickness 3
                                    (button
                                      :class "iconbat"
-                                     :limit-width 2
                                      :tooltip "Volume on ${volume_percent}%"
-                                     :show_truncated false
-                                     :wrap false
                                      " "))))
 
 (defwidget notification []
@@ -272,9 +268,7 @@
              (space)
              (label
               :class "box notification"
-              :text notification_text
-              :limit-width 35
-              )
+              :text notification_text)
              )))
 
 (defwidget monitors []
