@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+monitors_count=$(hyprctl monitors -j | jq '.[] | .id' | wc -l)
+hyprctl monitors > /home/suzu/debug
+if [[ "$monitors_count" -eq 2 ]]; then
+    hyprctl keyword monitor 'HDMI-A-1, 2560x1440, 0x0, 1.25'
+    hyprctl keyword monitor 'eDP-1, disable'
+else
+    hyprctl keyword monitor 'eDP-1, 2560x1440, 0x0, 1.6'
+fi
