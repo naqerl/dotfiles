@@ -1,0 +1,9 @@
+mic_name=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ \
+    | rg 'node.nick' \
+    | sed 's/.*"\(.*\)"$/\1/')
+
+is_muted=$(wpctl status | rg "$mic_name" | rg -i muted) 
+
+if [[ -n "$is_muted" ]]; then
+    echo "muted"
+fi

@@ -1,0 +1,394 @@
+
+#+title: Custom scripts
+#+author: suzu
+#+auto_tangle: t
+
+* Table of contents :toc:
+- [[#make-files-executable][Make files executable]]
+- [[#run-desktop][Run desktop]]
+- [[#change-wallpaper][Change wallpaper]]
+- [[#choose-project][Choose project]]
+- [[#git][Git]]
+  - [[#clone-as-worktree][Clone as worktree]]
+  - [[#cd-to-root][Cd to root]]
+  - [[#show-config][Show Config]]
+- [[#edit-image-from-clipboard][Edit image from clipboard]]
+- [[#hypr-get-first-empty-workspace][Hypr get first empty workspace]]
+- [[#notifications][Notifications]]
+- [[#open-pdf][Open pdf]]
+- [[#chrome][Chrome]]
+  - [[#run-chrome-with-profile][Run chrome with profile]]
+  - [[#chose-google-profile][Chose google profile]]
+- [[#lock-screen][Lock screen]]
+- [[#microphone-state][Microphone state]]
+
+* Make files executable
+Just checks all files here and makes them executable if they aren't 
+
+#+name: run-after-save
+#+begin_src bash
+counter=0
+
+for file in *; do
+    if [[ ! -x "$file" && "$file" != *.org && "$file" != *.json ]]; then
+        chmod +x "$file"
+        (( counter++ ))
+    fi
+done
+
+if [[ "$counter" > 0 ]]; then
+    notify-send "Updated $counter files"
+fi
+#+end_src
+
+#+RESULTS: run-after-save
+
+* Run desktop
+#+begin_src bash :tangle run-desktop
+#!/usr/bin/env bash
+set -e 
+
+data=$(grep '^Exec' "$1" \
+	   | sed 's/^Exec=//' \
+	   | sed 's/^env \(.*\)\=\"\(.*\)\"\s\(.*\)/export \1="\2"\n\3/')
+
+readarray -t lines <<< "$data"
+vars=${lines[0]}
+cmd=${lines[1]}
+
+echo "[$vars]"
+echo "[$cmd]"
+
+$vars
+$cmd
+#+end_src
+
+* Change wallpaper
+#+begin_src bash :tangle change-wallpaper
+#!/usr/bin/env bash
+base_path="$HOME/Pictures/wallpapers"
+wallpaper=$(cd "$base_path" && fd --type file | fuzzel --dmenu)
+
+if [[ -n "$wallpaper" ]]; then
+	config="\
+[eDP-1]
+path = \"$base_path/$wallpaper\"
+
+[HDMI-A-1]
+path = \"$base_path/$wallpaper\""
+	config="""preload = $base_path/$wallpaper
+
+wallpaper = eDP-1,$base_path/$wallpaper
+wallpaper = HDMI-A-1,$base_path/$wallpaper
+splash = false
+"""
+	echo "$config" > "$HOME/.config/hypr/hyprpaper.conf"
+	killall hyprpaper
+	hyprpaper
+fi
+#+end_src
+
+* Choose project
+#+begin_src bash :tangle choose-project
+#!/usr/bin/env bash
+set -e
+
+base_dir="$HOME/code"
+cd "$base_dir"
+project=$(fd --regex '^(.git|.bare)$' --type d --hidden | xargs dirname | fzf --reverse --scheme=path --query "$1")
+echo "$base_dir/$project"
+#+end_src
+
+* Git
+** Clone as worktree
+#+begin_src bash :tangle git-clone-worktree
+#!/usr/bin/env bash
+set -e 
+
+repo_url="${1:-$(wl-paste)}"
+repo_name=$(basename "$repo_url" | sed 's/\.git//')
+read -r -e -p "Enter directory name (default: $repo_name): " userInput
+dir_name=${userInput:-$repo_name}
+
+echo "$dir_name"
+mkdir -p "$dir_name"
+cd "$dir_name"
+
+if [ "$(ls -A)" ]; then
+	echo "Directory not empty"
+	exit 1
+fi
+
+git clone --bare "$repo_url" .bare
+echo "gitdir: ./.bare" > .git
+
+echo "$dir_name"
+notify-send "Repository downloaded"
+#+end_src
+
+** Cd to root
+#+begin_src bash :tangle git-cd-root
+#!/usr/bin/env bash
+start_path="$PWD"
+while :; do
+	if [[ "$PWD" == "$HOME" ]]; then
+		echo "Git root not found" 1>&2
+		echo "$start_path"
+		exit 1
+	fi
+
+	cd ..
+
+	if [[ -d .git || -f .git ]]; then
+		echo "$PWD"
+		exit 0
+	fi
+done
+#+end_src
+
+** Show Config
+#+begin_src bash git-show-config
+#!/usr/bin/env bash
+echo "Name:       $(git config user.name)"
+echo "Email:      $(git config user.email)"
+echo "GPG sign:   $(git config commit.gpgsign)"
+echo "Origin url: $(git config remote.origin.url)"
+#+end_src
+
+* Edit image from clipboard
+#+begin_src bash :tangle edit-img-from-clipboard
+#!/usr/bin/env bash
+
+set -e
+
+EDITOR="${1:-rnote}"
+IMG_PATH="$HOME/Pictures/clipboard.png"
+
+
+if type wl-paste; then
+	wl-paste > "$IMG_PATH"
+else
+	xclip -selection clipboard -t image/png -o > "$IMG_PATH"
+fi
+
+image_type=$(file "$IMG_PATH" | awk '{print $2}')
+
+if [ "$image_type" != PNG ]; then
+	notify-send "Failed to save $image_type as PNG"
+	rm "$IMG_PATH"
+	exit 1
+fi
+
+notify-send "Opening image in $EDITOR"
+$EDITOR "$IMG_PATH"
+
+rm "$IMG_PATH"
+#+end_src
+
+* Hypr get first empty workspace
+#+begin_src bash :tangle hypr-first-empty-workspace
+#!/usr/bin/env bash
+
+hyprctl workspaces -j \
+	| xq '.[].id' \
+	| sort \
+	| awk 'BEGIN { getline prev }
+	       { cur = $1; if ((cur - prev) > 1) { print prev+1; exit } prev = cur }
+	       END { if (cur == prev) { print cur+1 } }'
+#+end_src
+
+* Notifications
+#+begin_src bash :tangle notification-daemon
+#!/usr/bin/env bash
+
+
+# How long each line stays on screen
+duration=5
+
+tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "timeout": "#timeout"}' |
+    while read -r notif; do
+	app=$(echo "$notif" | xq '.source' | xargs)
+      telegram_msg=""
+
+	case "$app" in
+	    "Telegram Desktop") 
+		app=" "
+		# mpv "$HOME/.config/notification_sounds/telegram_default.mp3" >/dev/null 2>&1 &
+		;;
+	    "Slack")
+		app=" "
+		# mpv "$HOME/.config/notification_sounds/slack_default.mp3" >/dev/null 2>&1 &
+		;;
+	    "Google Chrome")
+		app=" "
+		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+		;;
+	    "Hyprshot")
+		app=" "
+		;;
+	    "notify-send")
+		app=" "
+              telegram_msg="🖥"
+		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+		;;
+	    "blueman")
+		app=" "
+		;;
+	    "Spotify")
+                app=" "
+                eww update playing_reveal_manual=f
+                sleep 1
+                eww update playing_reveal_manual=t
+                continue
+		;;
+	    "Vieb")
+		app="󰖟 "
+		;;
+	    "thunar")
+		app=" "
+              telegram_msg="Thunar:"
+		;;
+	    "Nicotine+")
+		app="󱗆 "
+              telegram_msg="Soulseek:"
+		;;
+	    "timer")
+		app="󱎫 "
+              telegram_msg="⏲"
+		;;
+	    ,*)
+		app="$app:"
+		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+		;;
+	esac
+
+	summary=$(echo "$notif" | xq '.summary' | xargs)
+	body="$app $summary"
+
+	eww update notification_text="$body"
+	mpv /usr/share/sounds/freedesktop/stereo/message.oga &
+	eww update notification_reveal=true
+	sleep "$duration"
+	eww update notification_reveal=false
+
+	if [[ -z "$telegram_msg" ]]; then
+        continue
+      fi
+
+      if [[ ! -f /tmp/idle ]]; then
+        continue
+      fi
+
+      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/209493779/; s/\$text/$telegram_msg: $summary/")
+      COMPATION_TELEGRAM_BOT_TOKEN="7074489476:AAG3VykSn-gBFKB6gukCeH06M4OktoO-0VA"
+
+      curl -X POST \
+            -H 'Content-Type: application/json' \
+            -d "$body" \
+            "https://api.telegram.org/bot$COMPATION_TELEGRAM_BOT_TOKEN/sendMessage"
+    done
+#+end_src
+
+#+begin_src json :tangle telegram_message_template.json
+{
+  "chat_id": "$chat_id",
+  "text": "$text"
+}
+#+end_src
+
+* Open pdf
+#+begin_src bash :tangle open-pdf
+#!/usr/bin/env bash
+cd "$HOME" || notify-send "Failed to cd"
+
+mapfile -t files < <(fd -e pdf | sort | uniq)
+prettified=$(for file in "${files[@]}"; do echo "$file"; done | xargs -I {} basename {} )
+
+result=$(echo "$prettified" | fuzzel --dmenu)
+if [[ -z "$result" ]]; then
+	exit 0
+fi
+
+path=$(for f in "${files[@]}"; do echo "$f"; done | rg "$result" | head -n 1)
+if [[ "$result" != "" ]]; then
+	xdg-open "$path"
+fi
+#+end_src
+
+* Chrome
+** Run chrome with profile
+#+begin_src bash :tangle run-chrome-profile
+#!/usr/bin/env bash
+
+set -e
+
+profile=$(choose-google-profile)
+
+if [[ -z "$profile" ]]; then
+	exit 1
+fi
+
+google-chrome-stable --profile-directory="$profile"
+#+end_src
+
+** Chose google profile
+#+begin_src python :tangle choose-google-profile
+#!/usr/bin/env python3
+import subprocess
+import sys
+
+name2profile = {
+    "private1": "Default",
+    "private2": "Profile 1",
+    "pixelplex": "Profile 2",
+    "bare": "Profile 4",
+}
+
+fuzzel = subprocess.Popen(
+    ["fuzzel", "--dmenu"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+)
+stdout, stderr = fuzzel.communicate(input="\n".join(name2profile.keys()).encode())
+
+status = fuzzel.wait()
+
+if status != 0:
+    subprocess.run(["notify-send", "Failed to select Google profile"])
+    sys.exit(status)
+
+name = stdout.decode("utf-8").strip()
+profile = name2profile[name]
+print(profile)
+#+end_src
+
+* Lock screen
+#+begin_src bash :tangle lock
+#!/usr/bin/env bash
+swaylock \
+	--screenshots \
+	--clock \
+	--indicator \
+	--indicator-radius 100 \
+	--indicator-thickness 7 \
+	--effect-blur 7x5 \
+	--effect-vignette 0.5:0.5 \
+	--ring-color bb00cc \
+	--key-hl-color 880033 \
+	--line-color 00000000 \
+	--inside-color 00000088 \
+	--separator-color 00000000 \
+	--grace 2 \
+	--fade-in 0.2
+#+end_src
+
+* Microphone state
+#+begin_src bash :tangle mic-state
+mic_name=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ \
+    | rg 'node.nick' \
+    | sed 's/.*"\(.*\)"$/\1/')
+
+is_muted=$(wpctl status | rg "$mic_name" | rg -i muted) 
+
+if [[ -n "$is_muted" ]]; then
+    echo "muted"
+fi
+#+end_src

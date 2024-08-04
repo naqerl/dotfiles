@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+
+# How long each line stays on screen
+duration=5
+
+tiramisu -s -o '{"source": "#source", "summary": "#summary", "icon": "#icon", "timeout": "#timeout"}' |
+    while read -r notif; do
+	app=$(echo "$notif" | xq '.source' | xargs)
+      telegram_msg=""
+
+	case "$app" in
+	    "Telegram Desktop") 
+		app=" "
+		# mpv "$HOME/.config/notification_sounds/telegram_default.mp3" >/dev/null 2>&1 &
+		;;
+	    "Slack")
+		app=" "
+		# mpv "$HOME/.config/notification_sounds/slack_default.mp3" >/dev/null 2>&1 &
+		;;
+	    "Google Chrome")
+		app=" "
+		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+		;;
+	    "Hyprshot")
+		app=" "
+		;;
+	    "notify-send")
+		app=" "
+              telegram_msg="🖥"
+		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+		;;
+	    "blueman")
+		app=" "
+		;;
+	    "Spotify")
+                app=" "
+                eww update playing_reveal_manual=f
+                sleep 1
+                eww update playing_reveal_manual=t
+                continue
+		;;
+	    "Vieb")
+		app="󰖟 "
+		;;
+	    "thunar")
+		app=" "
+              telegram_msg="Thunar:"
+		;;
+	    "Nicotine+")
+		app="󱗆 "
+              telegram_msg="Soulseek:"
+		;;
+	    "timer")
+		app="󱎫 "
+              telegram_msg="⏲"
+		;;
+	    *)
+		app="$app:"
+		mpv "$HOME/.config/notification_sounds/mixkit-interface-hint-notification-911.wav" >/dev/null 2>&1 &
+		;;
+	esac
+
+	summary=$(echo "$notif" | xq '.summary' | xargs)
+	body="$app $summary"
+
+	eww update notification_text="$body"
+	mpv /usr/share/sounds/freedesktop/stereo/message.oga &
+	eww update notification_reveal=true
+	sleep "$duration"
+	eww update notification_reveal=false
+
+	if [[ -z "$telegram_msg" ]]; then
+        continue
+      fi
+
+      if [[ ! -f /tmp/idle ]]; then
+        continue
+      fi
+
+      body=$(cat $HOME/.config/bin/telegram_message_template.json | sed "s/\$chat_id/209493779/; s/\$text/$telegram_msg: $summary/")
+      COMPATION_TELEGRAM_BOT_TOKEN="7074489476:AAG3VykSn-gBFKB6gukCeH06M4OktoO-0VA"
+
+      curl -X POST \
+            -H 'Content-Type: application/json' \
+            -d "$body" \
+            "https://api.telegram.org/bot$COMPATION_TELEGRAM_BOT_TOKEN/sendMessage"
+    done
