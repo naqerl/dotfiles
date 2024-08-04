@@ -580,6 +580,8 @@
   (org-mode . suzu/visual-fill)
   (dired-mode . suzu/visual-fill)
   (eshell-mode . suzu/visual-fill)
+  (term-mode . suzu/visual-fill)
+  (shell-mode . suzu/visual-fill)
   (prog-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 
@@ -1028,6 +1030,8 @@
   :commands (alert)
   :init
   (setq alert-default-style 'libnotify))
+
+(use-package telega)
 
 (use-package gptel
   :disabled
