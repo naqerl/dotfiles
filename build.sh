@@ -41,6 +41,7 @@ paru -S kitty \
         pavucontrol \
         networkmanager \
         blueman \
+        spotify-wayland \
         --noconfirm
 
 paru -S ttf-iosevka-nerd \
@@ -53,6 +54,13 @@ paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme \
         --noconfirm
+
+git clone https://github.com/abba23/spotify-adblock
+cd spotify-adblock
+make
+sudo make install
+cd ..
+sudo rm -r spotify-adblock
 
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
 fisher update

@@ -102,6 +102,7 @@ My personal preffered apps
 | NETworkManager | Manage networks with TUI                                                                 | https://github.com/BornToBeRoot/NETworkManager |
 | Blueman        | GTK bluetooth manager                                                                    | https://github.com/blueman-project/blueman     |
 | Emacs          | An emacs priest now                                                                      | https://www.gnu.org/software/emacs/            |
+| Spotify        | Audio streaming of chose                                                                 | https://www.spotify.com                        |
 
 #+begin_src bash
 paru -S kitty \
@@ -118,6 +119,7 @@ paru -S kitty \
         pavucontrol \
         networkmanager \
         blueman \
+        spotify-wayland \
         --noconfirm
 #+end_src
 
@@ -145,6 +147,17 @@ paru -S catppuccin-gtk-theme-frappe \
 #+end_src
 
 [[https://github.com/catppuccin/gtk][Theme source]]
+
+*** Spotify adblocker setup
+
+#+begin_src bash
+git clone https://github.com/abba23/spotify-adblock
+cd spotify-adblock
+make
+sudo make install
+cd ..
+sudo rm -r spotify-adblock
+#+end_src
 
 *** System postinsall
 
