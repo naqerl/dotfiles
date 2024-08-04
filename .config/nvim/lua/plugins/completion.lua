@@ -1,6 +1,19 @@
 return {
   { 'windwp/nvim-autopairs' },
   {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    init = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300
+    end,
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  },
+  {
     'hrsh7th/nvim-cmp',
     event = { "InsertEnter" },
     dependencies = {
@@ -85,9 +98,12 @@ return {
           ghost_text = false,
         },
         sources = {
-          { name = 'luasnip' },
           { name = 'nvim_lsp' },
+          { name = 'path' },
           { name = 'buffer' },
+        },
+        completion = {
+          completeopt = 'menu,menuone,noinsert',
         },
         formatting = {
           format = function(entry, vim_item)

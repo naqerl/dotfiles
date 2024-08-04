@@ -9,17 +9,17 @@ return {
     end,
     dependencies = {
       'tpope/vim-dadbod',
-      {
-        'kristijanhusak/vim-dadbod-completion',
-        config = function()
-          vim.cmd [[
-            augroup SqlCompletion
-              autocmd!
-              autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
-            augroup end
-          ]]
-        end
-      },
+      -- {
+      --   'kristijanhusak/vim-dadbod-completion',
+      --   config = function()
+      --     vim.cmd [[
+      --       augroup SqlCompletion
+      --         autocmd!
+      --         autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
+      --       augroup end
+      --     ]]
+      --   end
+      -- },
     }
   }
 }

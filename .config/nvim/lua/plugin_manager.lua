@@ -21,7 +21,6 @@ function M.setup()
     bootstrap_lazy()
 
     require("lazy").setup("plugins", {
-        -- Automatically check for plugin updates every four hours.
         checker = {
             enabled = true,
             notify = false,
