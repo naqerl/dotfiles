@@ -62,25 +62,29 @@ paru -S catppuccin-gtk-theme-frappe \
         catppuccin-cursors-frappe \
         papirus-icon-theme
 
-if [[ ! -d spotify-adblock ]]; then
-    git clone https://github.com/abba23/spotify-adblock
+if [[ "$1" == spotify ]]; then
+    if [[ ! -d spotify-adblock ]]; then
+        git clone https://github.com/abba23/spotify-adblock
+    fi
+
+    if [[ ! -f /usr/local/lib/spotify-adblock.so ]]; then
+        cd spotify-adblock
+        make
+        sudo make install
+        cd ..
+        sudo rm -r spotify-adblock
+    fi
 fi
 
-if [[ ! -f /usr/local/lib/spotify-adblock.so ]]; then
-    cd spotify-adblock
-    make
-    sudo make install
-    cd ..
-    sudo rm -r spotify-adblock
+if [[ "$1" == spotify ]]; then
+    bash .config/spicetify/spicetify-install.sh
+    export PATH="$PATH:$HOME/.spicetify"
+    spicetify config current_theme catppuccin
+    spicetify config color_scheme frappe
+    spicetify config inject_css 1 inject_theme_js 1 replace_colors 1 overwrite_assets 1
+    spicetify backup apply
+    sudo rm -r ~/.spicetify install.log
 fi
-
-bash .config/spicetify/spicetify-install.sh
-export PATH="$PATH:$HOME/.spicetify"
-spicetify config current_theme catppuccin
-spicetify config color_scheme frappe
-spicetify config inject_css 1 inject_theme_js 1 replace_colors 1 overwrite_assets 1
-spicetify backup apply
-sudo rm -r ~/.spicetify install.log
 
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
 fisher update
