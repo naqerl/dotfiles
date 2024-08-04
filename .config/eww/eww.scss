@@ -1,3 +1,5 @@
+@import "./base";
+
 $lightgrey: #323232;
 $darkgrey: #212121;
 $grey: #100F10;
@@ -78,14 +80,6 @@ $purple: #B6A0FF;
     color: $cyan;
 }
 
-.bg-transparent {
-    // all: unset;
-    // font-family: Iosevka Nerd Font;
-    // color: $fg;
-    // font-size: 14px;
-    background-color: rgba($red, 0.01);
-}
-
 .bg-dark {
     background-color: $darkgrey;
 }
@@ -96,6 +90,14 @@ $purple: #B6A0FF;
 
 .bg-cyan {
     background-color: $cyan;
+}
+
+.bg-cyan-07 {
+    background-color: rgba($cyan, 0.7);
+}
+
+.bg-transparent {
+    background-color: rgba(#100F10, 0.98);
 }
 
 .layout-box {
