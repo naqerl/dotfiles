@@ -1,12 +1,12 @@
 [Default Applications]
-text/html=userapp-Floorp-R4GTQ2.desktop
-x-scheme-handler/http=userapp-Floorp-R4GTQ2.desktop
-x-scheme-handler/https=userapp-Floorp-R4GTQ2.desktop
-x-scheme-handler/about=google-chrome.desktop
-x-scheme-handler/unknown=google-chrome.desktop
+text/html=microsoft-edge.desktop
+x-scheme-handler/http=microsoft-edge.desktop
+x-scheme-handler/https=microsoft-edge.desktop
+x-scheme-handler/about=microsoft-edge.desktop
+x-scheme-handler/unknown=microsoft-edge.desktop
 image/jpeg=feh.desktop
 image/png=feh.desktop
-application/pdf=emacsclient.desktop
+application/pdf=microsoft-edge.desktop
 text/plain=emacsclient.desktop
 text/csv=emacsclient.desktop
 x-scheme-handler/tg=org.telegram.desktop.desktop

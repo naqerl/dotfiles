@@ -97,6 +97,8 @@ function M.config()
 					'--type',
 					'f',
 					'--follow',
+					'--hidden',
+					'--exclude=.git',
 				},
 				wrap_results = true,
 				path_display = function(_opts, path)

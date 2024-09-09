@@ -1,1 +1,0 @@
-(#s(compilation-setup "Deploy" "cd .. && rsync 749-checknft-xorg-cookie-scraper/ -av --chown=a.semenov:a.semenov --exclude=.venv --exclude=.git ubuntu-xorg-etherscan-root:/home/a.semenov/etherscan_scraper"))
