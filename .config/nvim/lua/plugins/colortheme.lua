@@ -238,7 +238,6 @@ Kanagawa.config = function()
         WhichKeyBorder = { bg = colors.theme.ui.bg_m3, fg = colors.theme.ui.bg_m3 },
         WhichKeyFloat = { bg = colors.theme.ui.bg_m3 },
         FloatBorder = { bg = colors.theme.ui.bg_m3, fg = colors.theme.ui.bg_m3 },
-        LspInlayHint = { bg = nil, fg = colors.palette.fg_dim },
         GitSignsAdd = { bg = nil, fg = colors.palette.green },
         GitSignsAddLn = { bg = nil, fg = colors.palette.green },
         GitSignsAddNr = { bg = nil, fg = colors.palette.green },

@@ -49,7 +49,10 @@ session_was_created=0
 
 if ! tmux list-sessions | awk '{print $1}' | rg "$session_name\:\$"; then
     echo "Session wasn't created"
-    tmuxinator start "$session_name"
+    if ! tmuxinator start "$session_name"; then
+	tmux new-session -s "$session_name" -c "$session_path" -d
+	tmux switch-client -t "$session_name"
+    fi
 else
     tmux switch-client -t "$session_name"
 fi

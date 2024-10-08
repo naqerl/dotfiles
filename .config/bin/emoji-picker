@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
+set -ex
+FZF=/home/suzu/.config/bin/wfzf
 
-notify-send "Starting emoji picker"
 if ! command -v emoji-fzf &> /dev/null
 then
     echo "emoji-fzf could not be found, installing..."
     cargo install --git https://github.com/mvertescher/emoji-fzf.git --force
 fi
 
-notify-send "Installation checked"
-
-emoji=$(emoji-fzf preview | wfzf --preview 'emoji-fzf get {1}' | emoji-fzf get)
+emoji=$(emoji-fzf preview | $FZF --preview 'emoji-fzf get {1}' | emoji-fzf get)
 if [[ -z "$emoji" ]] 
 then
     exit 1
