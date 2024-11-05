@@ -149,4 +149,19 @@
       (setq suzu/compilation-setup-name setup-name)
       (compile (compilation-setup-command setup)))))
 
+
+(defun suzu/parse-makefile (filename)
+  "Parse the Makefile located at FILENAME and return an association list."
+  (with-temp-buffer
+    (insert-file-contents filename)
+    (makefile-pickup-targets)
+    makefile-target-table))
+
+(defun suzu/makefile-compile ()
+  (interactive)
+  (let* ((default-directory (project-root (project-current)))
+         (targets (suzu/parse-makefile "Makefile"))
+         (target (completing-read "Make target: " targets)))
+    (compile (format "make %s" target))))
+
 (provide 'suzu-project)
