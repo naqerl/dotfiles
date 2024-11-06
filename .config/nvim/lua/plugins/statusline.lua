@@ -69,6 +69,14 @@ M.config = function()
           },
           spinner_symbols = { '', '', '', '', '', '', '', '', '', '', '', '', '', '' },
         },
+        {
+          '%='
+        },
+        {
+          function()
+            return vim.fn.fnamemodify(vim.fn.getcwd(), ':t')
+          end
+        }
       },
       lualine_x = {
         function()

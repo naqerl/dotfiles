@@ -3,25 +3,26 @@ fzf="$HOME/dotfiles/.config/bin/wfzf"
 
 base_path="$HOME/Pictures/wallpapers"
 wallpaper=$(cd "$base_path" && fd --type file | $fzf --bind "ctrl-s:execute(feh $base_path/{})")
+swaybg --image "$base_path/$wallpaper" --mode fill
 
-if [[ -n "$wallpaper" ]]; then
-	config="\
-[eDP-1]
-path = \"$base_path/$wallpaper\"
-
-[DP-1]
-path = \"$base_path/$wallpaper\"
-
-[HDMI-A-1]
-path = \"$base_path/$wallpaper\""
-	config="""preload = $base_path/$wallpaper
-
-wallpaper = eDP-1,$base_path/$wallpaper
-wallpaper = DP-1,$base_path/$wallpaper
-wallpaper = HDMI-A-1,$base_path/$wallpaper
-splash = false
-"""
-	echo "$config" > "$HOME/.config/hypr/hyprpaper.conf"
-	killall hyprpaper
-	hyprpaper
-fi
+# if [[ -n "$wallpaper" ]]; then
+# 	config="\
+# [eDP-1]
+# path = \"$base_path/$wallpaper\"
+#
+# [DP-1]
+# path = \"$base_path/$wallpaper\"
+#
+# [HDMI-A-1]
+# path = \"$base_path/$wallpaper\""
+# 	config="""preload = $base_path/$wallpaper
+#
+# wallpaper = eDP-1,$base_path/$wallpaper
+# wallpaper = DP-1,$base_path/$wallpaper
+# wallpaper = HDMI-A-1,$base_path/$wallpaper
+# splash = false
+# """
+# 	echo "$config" > "$HOME/.config/hypr/hyprpaper.conf"
+# 	killall hyprpaper
+# 	hyprpaper
+# fi

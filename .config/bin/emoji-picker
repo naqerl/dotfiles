@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -ex
+FZF=/home/suzu/.config/bin/wfzf
+EMOJI=/home/suzu/.cargo/bin/emoji-fzf
+
+if ! command -v $EMOJI &> /dev/null
+then
+    echo "emoji-fzf could not be found, installing..."
+    cargo install --git https://github.com/mvertescher/emoji-fzf.git --force
+fi
+
+emoji=$($EMOJI preview | $FZF --preview "$EMOJI get {1}" | $EMOJI get)
+if [[ -z "$emoji" ]] 
+then
+    exit 1
+fi
+
+wtype "$emoji"

@@ -84,6 +84,11 @@ function M.config()
 					['<C-d>'] = false,
 				},
 			},
+			borderchars = {
+				prompt = { "─", " ", " ", " ", "─", "─", " ", " " },
+				results = { " " },
+				preview = { " " },
+			},
 		},
 		pickers = {
 			find_files = {
@@ -92,6 +97,8 @@ function M.config()
 					'--type',
 					'f',
 					'--follow',
+					'--hidden',
+					'--exclude=.git',
 				},
 				wrap_results = true,
 				path_display = function(_opts, path)

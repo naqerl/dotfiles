@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
+
 PROJECTS_BASE_DIR="$HOME/code"
 LIST_SESSIONS="${1:-$HOME/.config/tmux/list_sessions.sh}"
 LIST_PROJECTS="${2:-$HOME/.config/tmux/list_projects.sh}"
@@ -47,20 +49,10 @@ session_was_created=0
 
 if ! tmux list-sessions | awk '{print $1}' | rg "$session_name\:\$"; then
     echo "Session wasn't created"
-    tmux new-session -d -s "$session_name" -c "$session_path"
-    session_was_created=1
-fi
-
-tmux switch-client -t "$session_name"
-
-# Run layout if exists
-if [[ $session_was_created == 1 ]]; then
-    base_layout_path="$HOME/.config/tmux/layouts"
-    layout=$(cd "$base_layout_path" && fd "$session_name.sh")
-
-    if [[ -z "$layout" ]]; then
-	exit 0
+    if ! tmuxinator start "$session_name"; then
+	tmux new-session -s "$session_name" -c "$session_path" -d
+	tmux switch-client -t "$session_name"
     fi
-
-    "$base_layout_path/$layout"
+else
+    tmux switch-client -t "$session_name"
 fi

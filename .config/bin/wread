@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+[ "$1" == "INSIDEWINDOW" ] || exec kitty --title=wread $0 INSIDEWINDOW $$ "$@"
+exec >/proc/$2/fd/1; shift 2;
+exec "$HOME/dotfiles/.config/bin/input" "$@" 

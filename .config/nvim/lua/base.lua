@@ -114,6 +114,10 @@ M.setup = function()
   vim.opt.fillchars = { eob = " " }
 
   vim.api.nvim_set_option("clipboard", "unnamedplus")
+
+  vim.cmd [[
+    autocmd FileType NeogitCommitMessage setlocal spell
+  ]]
 end
 
 return M

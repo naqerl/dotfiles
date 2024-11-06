@@ -1,5 +1,6 @@
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.config/bin:$PATH"
+export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -86,3 +87,22 @@ eval "$(fzf --zsh)"
 bindkey -e
 
 . "$HOME/.cargo/env"
+
+export EDITOR="nvim"
+export MANPAGER="nvim +Man!"
+export FZF_DEFAULT_OPTS=""
+alias today-written="git log --shortstat --author \"Andrey\" --since \"midnight\" | \
+  grep -E \"file[s]* changed\" | \
+  sed -E 's/changed, ([0-9]+) deletions/changed, 0 insertions(+), \1 deletions/g' | \
+  awk '{files+=\$1; inserted+=\$4; deleted+=\$6} END {print \"files changed\", files, \"lines inserted:\", inserted, \"lines deleted:\", deleted}'"
+# Load pyenv automatically by appending
+# the following to 
+# ~/.zprofile (for login shells)
+# and ~/.zshrc (for interactive shells) :
+
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# Restart your shell for the changes to take effect.
+

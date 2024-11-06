@@ -1,6 +1,6 @@
 [server]
 server = ('server.slsknet.org', 2242)
-login = suzumenobu
+login = scipunch
 passw = n4l1
 interface = 
 ctcpmsgs = False
@@ -12,14 +12,13 @@ upnp_interval = 4
 auto_connect_startup = True
 userlist = []
 banlist = []
-ignorelist = ['kysersoze81']
+ignorelist = []
 ipignorelist = {}
 ipblocklist = {}
 autojoin = ['japanese music', 'Linux', 'HOUSE MUSIC LOVERS (AG)', 'OLDSCHOOL 88-94', 'programming', 'V A P O R W A V E', 'FUNK FRANCE']
 autoaway = 15
 away = False
 private_chatrooms = False
-command_aliases = {}
 
 [transfers]
 incompletedir = ${NICOTINE_DATA_HOME}/incomplete
@@ -104,7 +103,6 @@ transfers = False
 debug_file_output = False
 roomlogsdir = ${NICOTINE_DATA_HOME}/logs/rooms
 privatelogsdir = ${NICOTINE_DATA_HOME}/logs/private
-readroomlogs = True
 readroomlines = 200
 readprivatelines = 200
 private_chats = []
@@ -120,7 +118,7 @@ download = {'user': {'visible': True, 'width': 200}, 'path': {'visible': True, '
 upload = {}
 user_browse = {'file_type': {'visible': True, 'width': 30}, 'filename': {'visible': True, 'width': 319}, 'size': {'visible': True, 'width': 100}, 'quality': {'visible': True, 'width': 150}, 'length': {'visible': True, 'width': 100}}
 buddy_list = {}
-chat_room = {'japanese music': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'Linux': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'HOUSE MUSIC LOVERS (AG)': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'OLDSCHOOL 88-94': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'programming': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'V A P O R W A V E': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'FUNK FRANCE': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}}
+chat_room = {'japanese music': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'Linux': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'HOUSE MUSIC LOVERS (AG)': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'OLDSCHOOL 88-94': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'programming': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'V A P O R W A V E': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'FUNK FRANCE': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}}
 
 [searches]
 expand_searches = True
@@ -145,7 +143,7 @@ private_search_results = True
 
 [ui]
 language = 
-dark_mode = False
+dark_mode = True
 header_bar = False
 icontheme = 
 chatme = #908E8B
@@ -161,7 +159,6 @@ usernamehotspots = True
 usernamestyle = bold
 textbg = 
 search = 
-searchq = GREY
 inputcolor = 
 spellcheck = True
 exitdialog = 1
@@ -183,7 +180,7 @@ searchfont =
 listfont = 
 browserfont = 
 transfersfont = 
-last_tab_id = search
+last_tab_id = chatrooms
 modes_visible = {'search': True, 'downloads': True, 'uploads': True, 'userbrowse': True, 'userinfo': True, 'private': True, 'userlist': True, 'chatrooms': True, 'interests': True}
 modes_order = ['search', 'downloads', 'uploads', 'userbrowse', 'userinfo', 'private', 'userlist', 'chatrooms', 'interests']
 buddylistinchatrooms = tab
@@ -202,9 +199,6 @@ maximized = True
 reverse_file_paths = True
 file_size_unit = 
 
-[private_rooms]
-rooms = {}
-
 [urls]
 protocols = {}
 
@@ -213,7 +207,6 @@ likes = ['flac', 'programming', 'electronic', 'jazz', 'vaporwave', 'arch', 'funk
 dislikes = ['private']
 
 [players]
-default = 
 npothercommand = 
 npplayer = mpris
 npformatlist = []

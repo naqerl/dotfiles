@@ -155,6 +155,6 @@ catppuccin.setup(c, "modus-vivendi", True)
 
 # config.bind("w", ":tab-next")
 # config.bind("b", ":tab-prev")
-# config.bind("M", "hint links spawn mpv {hint-url}")
+config.bind("M", "hint links spawn mpv {hint-url}")
 # config.set("auto_save.session", True)
 # config.set("colors.webpage.preferred_color_scheme", "dark")
