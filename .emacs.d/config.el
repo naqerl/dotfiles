@@ -1,5 +1,6 @@
-(setq native-comp-speed 3) ;; maximum native Elisp speed!
+(setq native-comp-speed 2) ;; maximum native Elisp speed!
 (native-compile-async "~/.emacs.d" 'recursively)
+(custom-set-variables '(warning-suppress-types '((comp))))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/scripts"))
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'package-manager)
@@ -18,45 +19,12 @@
 (use-package async :ensure t)
 (require 'ob-async-sql)
 
-(use-package evil
-  :init
-  (setq evil-want-keybinding nil)
-  (setq evil-want-window-right t)
-  (setq evil-want-C-w-delete t)
-  (setq evil-want-window-below t)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-undo-system 'undo-redo)
-  :config
-  (evil-mode 1))
-
 (use-package undo-tree :ensure t)
-
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
 
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "SPC") nil)
   (define-key evil-motion-state-map (kbd "RET") nil))
 (setq org-return-follows-link t)
-
-(defalias 'forward-evil-word 'forward-evil-symbol)
-
-(with-eval-after-load 'evil-maps
-  (define-key evil-outer-text-objects-map "w" 'evil-a-symbol)
-  (define-key evil-inner-text-objects-map "w" 'evil-inner-symbol)
-  (define-key evil-outer-text-objects-map "o" 'evil-a-word)
-  (define-key evil-inner-text-objects-map "o" 'evil-inner-word))
-
-(use-package better-jumper
-  :diminish
-  :config
-  (better-jumper-mode +1))
-
-(with-eval-after-load 'evil-maps
-  (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
-  (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward))
 
 (defun suzu/window-left ()
   (interactive)
@@ -84,160 +52,209 @@
   (define-key evil-normal-state-map (kbd "C-k") 'suzu/window-up)
   (define-key evil-normal-state-map (kbd "C-l") 'suzu/window-right))
 
-(defun suzu/split-window-vertical()
+(defun suzu/split-window-vertical ()
   (interactive)
   (split-window-right)
   (other-window 1))
 
-(defun suzu/split-window-horizontal()
+(defun suzu/split-window-horizontal ()
   (interactive)
   (split-window-below)
   (other-window 1))
 
-(use-package general
-  :config
-  (general-evil-setup)
+(defun scroll-half-down ()
+  "Scroll down half a window."
+  (interactive)
+  (scroll-down (floor (/ (window-height) 2))))
 
-  (general-define-key
-   :states 'normal
-   :prefix "g"
-   "n" '(suzu/buffer-next :wk "Next buffer")
-   "p" '(suzu/buffer-prev :wk "Previous buffer"))
+(defun scroll-half-up ()
+  "Scroll up half a window."
+  (interactive)
+  (scroll-up (floor (/ (window-height) 2))))
 
-  (general-define-key
-   :states 'normal
-   :prefix "C-w"
-   "v" '(suzu/split-window-vertical :wk "Vertical split")
-   "s" '(suzu/split-window-horizontal :wk "Horizontal split"))
+(use-package
+ general
+ :config
 
-  (general-define-key
-   :states '(normal visual insert)
-   "<f2>" '(vterm-toggle-forward :wk "Toggle vterm forward")
-   "<f3>" '(eshell-toggle :wk "Toggle eshell")
-   "<f4>" '(vterm-toggle-backward :wk "Toggle vterm backward"))
+ (general-define-key
+  :keymaps
+  '(vterm-mode-map global-map)
+  "<f2>"
+  '(vterm-toggle-forward :wk "Toggle vterm forward")
+  "<f3>"
+  '(vterm-toggle :wk "Toggle eshell")
+  "<f4>"
+  '(vterm-toggle-backward :wk "Toggle vterm backward"))
 
-  (general-define-key
-   :states '(normal visual)
-   "C-+" '(text-scale-increase :wk "Zoom in")
-   "C--" '(text-scale-decrease :wk "Zoom out")
-   "[ g" '(git-gutter:previous-hunk :wk "Prev git hunk")
-   "] g" '(git-gutter:next-hunk :wk "Next git hunk")
-   "[ d" '(flymake-goto-prev-error :wk "Prev diagnostic")
-   "] d" '(flymake-goto-next-error :wk "Next diagnostic"))
+ (general-define-key
+  "C-+"
+  '(text-scale-increase :wk "Zoom in")
+  "C--"
+  '(text-scale-decrease :wk "Zoom out"))
 
-  (general-create-definer suzu/leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix "SPC"
-    :global-prefix "C-M-SPC")
+ (general-define-key
+  :prefix "C-;"
+  "h" '(windmove-left :wk "Window move left")
+  "j" '(windmove-down :wk "Window move down")
+  "k" '(windmove-up :wk "Window move up")
+  "l" '(windmove-right :wk "Window move right"))
 
-  (suzu/leader-keys
-    "." '(ido-find-file :wk "Find file")
-    ";" '(execute-extended-command :wk "M-x")
-    "'" '(consult-ripgrep :wk "Ripgrep project symbols")
-    "i" '(consult-imenu :wk "Open imenu")
-    "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
-    "B" '(consult-project-buffer :wk "Switch buffer in perspective")
-    "s" '(persp-switch :wk "Switch perspective")
-    "S" '(persp-kill :wk "Kill perspective")
-    "l" '(persp-switch-last :wk "Switch last perspective")
-    "/" '(consult-line :wk "Search in buffer")
-    "f" '(project-find-file :wk "Find file"))
+ (general-define-key
+  :prefix "C-x"
+  "3" '((lambda ()
+          (interactive)
+          (split-window-right)
+          (windmove-right))
+        :wk "Split window right"))
+  
 
-  (suzu/leader-keys
-    "b" '(:ignore t :wk "buffer || bookmark")
-    "b I" '(ibuffer :wk "Ibuffer")
-    "b i" '(persp-ibuffer :wk "Perspective ibuffer")
-    "b s" '(consult-buffer :wk "Search buffer")
-    "b k" '(suzu/kill-current-buffer :wk "Kill this buffer")
-    "b r" '(revert-buffer :wk "Reload buffer")
-    "b m" '(bookmark-set :wk "Bookmark")
-    "b l" '(list-bookmarks :wk "Bookmarks list"))
+ (general-define-key
+  :keymaps
+  '(global-map)
+  "<f5>"
+  '((lambda ()
+      (interactive)
+      (flymake-show-buffer-diagnostics)
+      (message "Buffer diagnostics")
+      (other-window 1))
+    :wk "Open buffer diagnostics")
+  "<f6>"
+  '((lambda ()
+      (interactive)
+      (flymake-show-project-diagnostics)
+      (message "Project diagnostics")
+      (other-window 1))
+    :wk "Open project diagnostics")
+  "M-]"
+  '(flymake-goto-next-error :wk "Flymake next error")
+  "M-["
+  '(flymake-goto-prev-error :wk "Flymake prev error"))
 
-  (suzu/leader-keys
-    "e" '(:ignore t :wk "Evaluate")
-    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-    "e e" '(eval-expression :wk "Evaluate and elisp expression")
-    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-    "e r" '(eval-region :wk "Evaluate elisp in region"))
+ (general-define-key
+  "<f7>" '(org-agenda :wk "Org Agenda"))
 
-  (suzu/leader-keys
-    "g" '(:ginore t :wk "Git")
-    "g p" '((lambda () (interactive) (git-gutter:popup-hunk) (other-window 1)) :wk "Preview hunk diff")
-    "g r" '(git-gutter:revert-hunk :wk "Preview hunk diff")
-    "g w" '(magit-worktree :wk "Git worktree")
-    "g s" '(git-gutter:stage-hunk :wk "Preview hunk diff")
-    "g m n" '(smerge-next :wk "Next merge conflict")
-    "g m p" '(smerge-prev :wk "Previous merge conflict")
-    "g m u" '(smerge-keep-upper :wk "Keep upper version")
-    "g m l" '(smerge-keep-lower :wk "Keep lower version")
-    "g m a" '(smerge-keep-lower :wk "Keep both versions"))
+ (general-define-key
+  :prefix
+  "C-x"
+  "p C"
+  '(project-compile :wk "Manual project compile")
+  "p c"
+  '(suzu/makefile-compile :wk "Manual project compile")
+  "p P"
+  '(suzu/project-switch-in-new-perspective
+    :wk "Open project in new perspective"))
 
-  (suzu/leader-keys
-    "o" '(:ignore t :wk "Open")
-    "o r" '(consult-recent-file :wk "Open recent files")
-    "o E" '(dired-jump :wk "Dired jump to current")
-    "o e" '(project-dired :wk "Project root dired")
-    "o p d" '(peep-dired :wk "Peep-dired")
-    "o s" '(eshell :wk "Open eshell")
-    "o g" '(magit :wk "Open magit")
-    "o d" '((lambda () (interactive) (flymake-show-buffer-diagnostics) (message "Buffer diagnostics") (other-window 1)) :wk "Open buffer diagnostics")
-    "o D" '((lambda () (interactive) (flymake-show-project-diagnostics) (message "Project diagnostics") (other-window 1)) :wk "Open project diagnostics")
-    "o t" '(multi-vterm :wk "Open Vterm")
-    "o c" '((lambda ()
-              (interactive)
-              (persp-switch "dotfiles")
-              (project-switch-project "~/dotfiles/")) :wk "Edit emacs config"))
+ (general-define-key
+  "C-v"
+  '(scroll-half-up :wk "Scroll up")
+  "M-v"
+  '(scroll-half-down :wk "Scroll down")))
+;; (suzu/leader-keys
+;;    "." '(ido-find-file :wk "Find file")
+;;    ";" '(execute-extended-command :wk "M-x")
+;;    "'" '(consult-ripgrep :wk "Ripgrep project symbols")
+;;    "i" '(consult-imenu :wk "Open imenu")
+;;    "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
+;;    "B" '(consult-project-buffer :wk "Switch buffer in perspective")
+;;    "s" '(persp-switch :wk "Switch perspective")
+;;    "S" '(persp-kill :wk "Kill perspective")
+;;    "l" '(persp-switch-last :wk "Switch last perspective")
+;;    "/" '(consult-line :wk "Search in buffer")
+;;    "f" '(project-find-file :wk "Find file"))
 
-  (suzu/leader-keys
-    "H" '(:ignore t :wk "Help")
-    "H f" '(describe-function :wk "Describe function")
-    "H v" '(describe-variable :wk "Describe variable")
-    "H M" '(info-display-manual :wk "Manual")
-    "H m" '(describe-mode :wk "Describe mode")
-    "H p" '(describe-package :wk "Describe package")
-    "H r r" '((lambda ()
-                (interactive)
-                (load-file "~/dotfiles/.emacs.d/init.el")) :wk "Reload emacs config"))
+;; (suzu/leader-keys
+;;   "b" '(:ignore t :wk "buffer || bookmark")
+;;   "b I" '(ibuffer :wk "Ibuffer")
+;;   "b i" '(persp-ibuffer :wk "Perspective ibuffer")
+;;   "b s" '(consult-buffer :wk "Search buffer")
+;;   "b k" '(suzu/kill-current-buffer :wk "Kill this buffer")
+;;   "b r" '(revert-buffer :wk "Reload buffer")
+;;   "b m" '(bookmark-set :wk "Bookmark")
+;;   "b l" '(list-bookmarks :wk "Bookmarks list"))
 
-  (suzu/leader-keys
-    "m" '(:ignore t :wk "Org")
-    "m a" '(org-agenda :wk "Org agenda")
-    "m o" '(org-open-at-point :wk "Org open at point")
-    "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
-    "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
-    "m t" '(org-todo :wk "Org todo")
-    "m B" '(org-babel-tangle :wk "Org babel tangle")
-    "m l" '(org-insert-link :wk "Org insert link")
-    "m T" '(org-todo-list :wk "Org todo list"))
+;; (suzu/leader-keys
+;;   "e" '(:ignore t :wk "Evaluate")
+;;   "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+;;   "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+;;   "e e" '(eval-expression :wk "Evaluate and elisp expression")
+;;   "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+;;   "e r" '(eval-region :wk "Evaluate elisp in region"))
 
-  (suzu/leader-keys
-    "m b" '(:ignore t :wk "Tables")
-    "m b -" '(org-table-insert-hline :wk "Insert hline in table")
-    "m d" '(:ignore t :wk "Date/deadline")
-    "m d t" '(org-time-stamp :wk "Org time stamp")
-    "m r f" '(org-roam-node-find :wk "Org Roam find node")
-    "m r b" '(org-roam-buffer-toggle :wk "Org Roam show backlinks")
-    "m r i" '(org-roam-node-insert :wk "Org Roam insert node"))
+;; (suzu/leader-keys
+;;   "g" '(:ginore t :wk "Git")
+;;   "g p" '((lambda () (interactive) (git-gutter:popup-hunk) (other-window 1)) :wk "Preview hunk diff")
+;;   "g r" '(git-gutter:revert-hunk :wk "Preview hunk diff")
+;;   "g w" '(magit-worktree :wk "Git worktree")
+;;   "g s" '(git-gutter:stage-hunk :wk "Preview hunk diff")
+;;   "g m n" '(smerge-next :wk "Next merge conflict")
+;;   "g m p" '(smerge-prev :wk "Previous merge conflict")
+;;   "g m u" '(smerge-keep-upper :wk "Keep upper version")
+;;   "g m l" '(smerge-keep-lower :wk "Keep lower version")
+;;   "g m a" '(smerge-keep-lower :wk "Keep both versions"))
 
-  (suzu/leader-keys
-    "c a" '(eglot-code-actions :wk "Code actions")
-    "r n" '(eglot-rename :wk "Rename"))
+;; (suzu/leader-keys
+;;   "o" '(:ignore t :wk "Open")
+;;   "o r" '(consult-recent-file :wk "Open recent files")
+;;   "o E" '(dired-jump :wk "Dired jump to current")
+;;   "o e" '(project-dired :wk "Project root dired")
+;;   "o p d" '(peep-dired :wk "Peep-dired")
+;;   "o s" '(eshell :wk "Open eshell")
+;;   "o g" '(magit :wk "Open magit")
 
-  (suzu/leader-keys
-    "t" '(:ignore t :wk "Toggle")
-    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-    "t i" '(eglot-inlay-hints-mode :wk "Toggle inlay hints")
-    "t c" '(suzu/center-buffer :wk "Toggle Center buffer [deprecated]")
-    "t f" '(visual-fill-column-mode :wk "Toggle visual fill")
-    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+;;   "o t" '(multi-vterm :wk "Open Vterm")
+;;   "o c" '((lambda ()
+;;             (interactive)
+;;             (persp-switch "dotfiles")
+;;             (project-switch-project "~/dotfiles/")) :wk "Edit emacs config"))
 
-  (suzu/leader-keys
-    "p" '(:ignore t :wk "Project")
-    "p c" '(project-recompile :wk "Recompile project")
-    "p e" '(project-async-shell-command :wk "Execute shell command in project root")
-    "p C" '(suzu/project-compile :wk "Compile project"))
+;; (suzu/leader-keys
+;;   "H" '(:ignore t :wk "Help")
+;;   "H f" '(describe-function :wk "Describe function")
+;;   "H v" '(describe-variable :wk "Describe variable")
+;;   "H M" '(info-display-manual :wk "Manual")
+;;   "H m" '(describe-mode :wk "Describe mode")
+;;   "H p" '(describe-package :wk "Describe package")
+;;   "H r r" '((lambda ()
+;;               (interactive)
+;;               (load-file "~/dotfiles/.emacs.d/init.el")) :wk "Reload emacs config"))
+
+;; (suzu/leader-keys
+;;   "m" '(:ignore t :wk "Org")
+;;   "m a" '(org-agenda :wk "Org agenda")
+;;   "m o" '(org-open-at-point :wk "Org open at point")
+;;   "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
+;;   "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
+;;   "m t" '(org-todo :wk "Org todo")
+;;   "m B" '(org-babel-tangle :wk "Org babel tangle")
+;;   "m l" '(org-insert-link :wk "Org insert link")
+;;   "m T" '(org-todo-list :wk "Org todo list"))
+
+;; (suzu/leader-keys
+;;   "m b" '(:ignore t :wk "Tables")
+;;   "m b -" '(org-table-insert-hline :wk "Insert hline in table")
+;;   "m d" '(:ignore t :wk "Date/deadline")
+;;   "m d t" '(org-time-stamp :wk "Org time stamp")
+;;   "m r f" '(org-roam-node-find :wk "Org Roam find node")
+;;   "m r b" '(org-roam-buffer-toggle :wk "Org Roam show backlinks")
+;;   "m r i" '(org-roam-node-insert :wk "Org Roam insert node"))
+
+;; (suzu/leader-keys
+;;   "c a" '(eglot-code-actions :wk "Code actions")
+;;   "r n" '(eglot-rename :wk "Rename"))
+
+;; (suzu/leader-keys
+;;   "t" '(:ignore t :wk "Toggle")
+;;   "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+;;   "t i" '(eglot-inlay-hints-mode :wk "Toggle inlay hints")
+;;   "t c" '(suzu/center-buffer :wk "Toggle Center buffer [deprecated]")
+;;   "t f" '(visual-fill-column-mode :wk "Toggle visual fill")
+;;   "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+
+;; (suzu/leader-keys
+;;   "p" '(:ignore t :wk "Project")
+;;   "p c" '(recompile :wk "Recompile project")
+;;   "p e" '(project-async-shell-command :wk "Execute shell command in project root")
+;;   "p C" '(suzu/project-compile :wk "Compile project"))
 
 (setq modus-themes-mode-line '(borderless)
       modus-themes-region '(bg-only)
@@ -285,6 +302,7 @@
   (golden-ratio-auto-scale t))
 
 (use-package zen-mode
+        :disabled
   :ensure t)
 
 (use-package auth-source
@@ -305,16 +323,86 @@
   :config
   (global-git-gutter-mode +1))
 
-(use-package smerge)
+;; (use-package smerge)
 
-;; (setq-default mode-line-format nil)
-(setq-default mode-line-format nil)
+(defface my-modeline-background
+  '((t :background "#45605e" :foreground "white" :inherit bold))
+  "Face with a red background for use on the mode line.")
 
-;; (use-package doom-modeline
-;; :disabled
-;; :config
-;; (setq doom-modeline-persp-name t)
-;; :init (doom-modeline-mode 1))
+(defface my-modeline-accent-fg
+  '((t :foreground "#2fafff"))
+  "Accent face")
+
+(defun my-modeline--buffer-name ()
+  "Return `buffer-name' with spaces around it."
+  (format " %s " (buffer-name)))
+
+(defvar-local my-modeline-buffer-name
+    '(:eval
+      (when (mode-line-window-selected-p)
+        (propertize (my-modeline--buffer-name)
+                    'face
+                    'my-modeline-background)))
+  "Mode line construct to display the buffer name.")
+
+(put 'my-modeline-buffer-name 'risky-local-variable t)
+
+(defun my-modeline--major-mode-name ()
+  "Return capitalized `major-mode' as a string."
+  (when (mode-line-window-selected-p)
+    (capitalize (symbol-name major-mode))))
+
+(defvar-local my-modeline-major-mode
+    '(:eval
+      (list
+       (propertize "λ" 'face 'shadow)
+       " "
+       (propertize (my-modeline--major-mode-name) 'face 'bold)))
+  "Mode line construct to display the major mode.")
+
+(put 'my-modeline-major-mode 'risky-local-variable t)
+
+(defvar-local my-modeline-timer
+    '(:eval
+      (when (boundp 'org-timer-mode-line-string)
+        (propertize (replace-regexp-in-string "[\<\>]" "" org-timer-mode-line-string)
+                    'face
+                    'bold)))
+  "Mode line construct to display org timer.") 
+(put 'my-modeline-timer 'risky-local-variable t)
+
+(defvar-local my-modeline-lsp
+    '(:eval
+      (when eglot--managed-mode
+        (propertize " " 'face 'my-modeline-accent-fg)))
+  "Mode line construct to display LSP active status.") 
+(put 'my-modeline-lsp 'risky-local-variable t)
+
+;; Emacs 29, check the definition right below
+(mode-line-window-selected-p)
+
+(defun mode-line-window-selected-p ()
+  "Return non-nil if we're updating the mode line for the selected window.
+This function is meant to be called in `:eval' mode line
+constructs to allow altering the look of the mode line depending
+on whether the mode line s to the currently selected window
+or not."
+  (let ((window (selected-window)))
+    (or (eq window (old-selected-window))
+        (and (minibuffer-window-active-p (minibuffer-window))
+             (with-selected-window (minibuffer-window)
+               (eq window (minibuffer-selected-window)))))))
+
+
+(setq-default mode-line-format
+              '("%e"
+                my-modeline-buffer-name
+                "  "
+                my-modeline-major-mode
+                mode-line-format-right-align
+                my-modeline-lsp
+                my-modeline-timer
+                " "))
 
 (use-package all-the-icons
   :ensure t)
@@ -327,9 +415,7 @@
   corfu
   :custom
   (corfu-cycle t) ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t) ;; Enable auto completion
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 1)
+  (corfu-auto nil) ;; Enable auto completion
   (corfu-popupinfo-mode t)
   (corfu-echo-documentation 0)
   :bind
@@ -341,7 +427,7 @@
    ([tab] . corfu-next)
    ("S-TAB" . corfu-previous)
    ([backtab] . corfu-previous)
-   ("S-<return>" . corfu-insert))
+   ("C-<return>" . corfu-insert))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode))
@@ -384,8 +470,8 @@
 (use-package dired-open
   :custom ((dired-listing-switches "-agho --group-directories-first"))
   :config
-  (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
-  (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
+  ;; (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+  ;;  (EVIL-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
   (setq dired-open-extensions '(("gif" . "feh")
                                 ("jpg" . "feh")
                                 ("jpeg" . "feh")
@@ -406,8 +492,9 @@
   (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"
         elfeed-feeds (quote
                       (
-                       ("https://www.reddit.com/r/emacsporn.rss" reddit)
-                       ("https://www.gamingonlinux.com/article_rss.php" gaming linux)
+                       ("https://www.reddit.com/r/emacsporn.rss" reddit emacs)
+                       ("https://www.reddit.com/r/manga.rss" reddit manga)
+                       ("https://www.reddit.com/r/manga.rss" reddit manga)
                        ("https://hackaday.com/blog/feed/" hackaday linux)
                        ("https://opensource.com/feed" opensource linux)
                        ("https://linux.softpedia.com/backend.xml" softpedia linux)
@@ -469,143 +556,135 @@
    :prefix "g"
    "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
 
-;; (use-package
-;;  dashboard
-;;  :config
-;;  (dashboard-setup-startup-hook)
-;;  (setq initial-buffer-choice
-;;        (lambda () (get-buffer-create "*dashboard*")))
-;;  (setq dashboard-display-icons-p t)
-;;  (setq dashboard-path-max-length 10)
-;;  (setq dashboard-vertically-center-content nil)
-;;  (setq dashboard-startupify-list
-;;        '(dashboard-insert-banner
-;;          dashboard-insert-newline
-;;          dashboard-insert-banner-title
-;;          dashboard-insert-newline
-;;          ;; dashboard-insert-navigator
-;;          dashboard-insert-newline
-;;          ;; dashboard-insert-init-info
-;;          ;; dashboard-insert-items
-;;          ;; dashboard-insert-newline
-;;          dashboard-insert-footer))
-;;  :custom
-;;  (dashboard-startup-banner
-;;   (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
-;;  (dashboard-center-content t)
-;;  (dashboard-set-heading-icons t)
-;;  (dashboard-set-file-icons t))
+(defun suzu/dashboard-insert-banner ()
+  "Insert the banner at the top of the dashboard."
+  (goto-char (point-max))
+  (when-let ((banner
+              (dashboard-choose-banner dashboard-startup-banner)))
+    (let ((start (point))
+          buffer-read-only
+          text-width
+          image-spec
+          (graphic-mode (display-graphic-p)))
+      (when graphic-mode
+        (insert "\n"))
+      ;; If specified, insert a text banner.
+      (when-let ((txt (plist-get banner :text)))
+        (if (file-exists-p txt)
+            (insert-file-contents txt)
+          (save-excursion (insert txt)))
+        (unless (text-properties-at 0 txt)
+          (put-text-property
+           (point) (point-max) 'face 'dashboard-text-banner))
+        (setq text-width 0)
+        (while (not (eobp))
+          (let ((line-length
+                 (- (line-end-position) (line-beginning-position))))
+            (when (< text-width line-length)
+              (setq text-width line-length)))
+          (forward-line 1)))
+      ;; If specified, insert an image banner. When displayed in a graphical frame, this will
+      ;; replace the text banner.
+      (when-let ((img (plist-get banner :image)))
+        (let ((img-props
+               (append
+                (when (> dashboard-image-banner-max-width 0)
+                  (list :max-width dashboard-image-banner-max-width))
+                (when (> dashboard-image-banner-max-height 0)
+                  (list
+                   :max-height dashboard-image-banner-max-height))
+                dashboard-image-extra-props)))
+          (setq image-spec
+                (cond
+                 ((dashboard--image-animated-p img)
+                  (create-image img))
+                 ((dashboard--type-is-xbm-p img)
+                  (create-image img))
+                 ((image-type-available-p 'imagemagick)
+                  (apply 'create-image
+                         img
+                         'imagemagick
+                         nil
+                         img-props))
+                 (t
+                  (apply 'create-image
+                         img nil nil
+                         (when (and (fboundp 'image-transforms-p)
+                                    (memq
+                                     'scale
+                                     (funcall 'image-transforms-p)))
+                           img-props))))))
+        (add-text-properties start (point) `(display ,image-spec))
+        (when (ignore-errors
+                (image-multi-frame-p image-spec))
+          (image-animate image-spec 0 t)))
 
-(use-package dashboard
-  :ensure t
-  :custom
-  ;; Set info & center
-  (dashboard-set-init-info t)
-  (dashboard-set-navigator t)
-  (dashboard-show-shortcuts t)
-  (dashboard-center-content t)
-  (dashboard-startup-banner (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
-  (dashboard-banner-logo-title "Welcome to Emacs")
-  ;; Add icons
-  (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons nil)
-  :custom-face
-  (dashboard-banner-logo-title ((nil (:family "Fira Code Medium"
-				      :foundry "CTDB" 
-				      :height 190 
-				      :foreground "white"
-				      :weight black))))
-  (dashboard-version-info ((nil (:family "Fira Code Regular"
-			      :foundry "CTDB" 
-			      :height 190 
-			      :foreground "#878787"
-			      :weight demibold))))
-  (dashboard-init-info ((nil (:family "Fira Code Light"
-			      :foundry "CTDB" 
-			      :height 160 
-			      :foreground "#878787"
-			      :weight medium))))
-  (dashboard-heading   ((nil (:family "Cartograph CF Bold Italic"
-			      :height 200 
-			      :foreground "#FF9447"
-			      :weight demibold))))
-  (dashboard-heading-icon   ((nil (:family "Fira Code Medium"
-			      :height 220 
-			      :foreground "#FF9447"
-			      :weight medium))))
-  (dashboard-items-face ((nil (:family "Fira Code Light"
-			      :foundry "CTDB" 
-			      :height 150 
-			      :foreground "#DCE1FF"
-			      :weight bold))))
-  :config
-  (dashboard-setup-startup-hook))
+      ;; Finally, center the banner (if any).
+      (when-let*
+          ((text-align-spec
+            `(space . (:align-to (- center ,(/ text-width 2)))))
+           (image-align-spec
+            `(space . (:align-to (- center (0.5 . ,image-spec)))))
+           (prop
+            (cond
+             ;; Both an image & text banner.
+             ((and image-spec text-width)
+              ;; The quoting is intentional. This is a conditional display spec that will
+              ;; align the banner at redisplay time.
+              `((when (display-graphic-p)
+                  .
+                  ,image-align-spec)
+                (when (not (display-graphic-p))
+                  .
+                  ,text-align-spec)))
+             ;; One or the other.
+             (text-width
+              text-align-spec)
+             (image-spec
+              image-align-spec)
+             ;; No banner.
+             (t
+              nil)))
+           (prefix (propertize " " 'display prop)))
+        (add-text-properties
+         start (point)
+         `(line-prefix ,prefix wrap-prefix ,prefix)))
+      (insert "\n")
+      (add-text-properties
+       start (point)
+       '(cursor-intangible t inhibit-isearch t)))))
 
-;(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+(use-package
+ dashboard
+ :ensure t
+ :custom
+ (dashboard-set-init-info t)
+ (dashboard-set-navigator t)
+ (dashboard-show-shortcuts t)
+ (dashboard-center-content t)
+ (dashboard-startup-banner
+  (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
+ (dashboard-banner-logo-title "Welcome to Emacs")
+ (dashboard-set-heading-icons t)
+ (dashboard-set-file-icons nil)
+ (dashboard-startupify-list
+  '(suzu/dashboard-insert-banner
+    dashboard-insert-newline
+    dashboard-insert-banner-title
+    dashboard-insert-newline
+    dashboard-insert-init-info
+    dashboard-insert-newline
+    dashboard-insert-newline
+    dashboard-insert-footer
+    end-of-buffer))
+ :config (dashboard-setup-startup-hook))
 
-(defface nav-face '((nil (:family "Fira Code Medium"
-				:foundry "CTDB" 
-				:height 190 
-				:foreground "#FF628E"
-				:weight black)))
-  "Face used for no items."
-  :group 'dashboard)
-
-(defface nav-icon-face '((nil (:family "Fira Code Medium"
-				     :foundry "CTDB" 
-				     :height 190 
-				     :foreground "white"
-				     :weight black)))
-  "Face used for no items."
-  :group 'dashboard)
-
-(setq dashboard-path-style 'truncate-middle
-      dashboard-path-max-length 48)
-
-;; Format: "(icon title help action face prefix suffix)"
-(setq dashboard-navigator-buttons
-      `((("[m]" "Mail" "Check mails" (lambda () (+ 0 0))
-	  'nav-face
-	  'nav-icon-face)
-	 ("[a]" "Agenda" "Check mails" (lambda () (+ 0 0))
-	  'nav-face
-	  'nav-icon-face)
-	 ("[s]" "Scratch" "Check mails" (lambda () (+ 0 0))
-	  'nav-face
-	  'nav-icon-face))))
-
-(setq dashboard-items '((recents  . 5)))
-
-;; Ignore surrounding white space on selection
-(defun my-hl-line-range-function ()
-  (let ((beg (save-excursion
-           (back-to-indentation)
-           (point)))
-        (end (save-excursion
-           (end-of-visual-line)
-           (point))))
-    (cons beg end)))
-
-(defun selection-hl ()
-  (when (derived-mode-p  'dashboard-mode)
-	;; Activate selection highlighting
-	(setq-local hl-line-range-function #'my-hl-line-range-function)
-	(face-remap-add-relative 'highlight
-				 '(:foreground "white"
-				   :background "#4B487C"
-				   :box (:line-width (10 . 1) :color "#4B487C" :style nil)))
-	(hl-line-mode t)
-	(forward-char)
-	;; Hide cursor
-	(setq cursor-type nil)))
-
-(add-hook 'focus-in-hook
-	  (lambda () (selection-hl)))
-(add-hook 'focus-out-hook
-	  (lambda () (selection-hl)))
-
-(add-hook 'minibuffer-exit-hook
-	  (lambda () (selection-hl)))
+(add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
+(add-hook
+ 'dashboard-after-initialize-hook '(lambda () (blink-cursor-mode -1)))
+(setq-default initial-buffer-choice
+              (lambda ()
+                      (get-buffer "*dashboard*")))
 
 (use-package eldoc-box
   :config
@@ -624,30 +703,43 @@
   (setq max-mini-window-height 0)
   (setq eldoc-idle-delay 0)
   (general-define-key
-   :states '(normal visual motion)
-   :keymaps 'override
-   "K" '(eldoc-box-help-at-point :wk "Show doc")))
+   :keymap 'prog-mode-map
+   :prefix "C-h"
+   "." '(eldoc-box-help-at-point :wk "Show doc")))
 
 (defun suzu/rust-mode()
   (eglot-ensure))
 
 (use-package rust-mode
   :init
-  (setq rust-mode-treesitter-derive t)
   (setq rust-format-on-save t))
-(add-hook 'rust-mode-hook 'suzu/rust-mode)
+(add-hook 'rust-ts-mode-hook 'suzu/rust-mode)
 
 (defun suzu/python-mode()
-  (add-hook 'before-save-hook 'python-sort-imports nil t)
+  (add-hook 'before-save-hook 'python-isort-buffer)
+  (ruff-format-on-save-mode)
   (eglot-ensure))
-
+  
 (use-package python
-  :hook
-  (python-ts-mode . suzu/python-mode)
-  (python-ts-mode . python-black-on-save-mode))
-
-(use-package python-black
   :ensure t)
+
+(use-package ruff-format
+  :ensure t)
+
+(use-package python-isort
+  :ensure t)
+
+(use-package flycheck-mypy
+  :ensure t)
+
+(use-package poetry
+  :ensure t
+  :custom
+  (poetry-tracking-strategy 'project)
+  :config
+  (poetry-tracking-mode))
+
+(add-hook 'python-ts-mode-hook 'suzu/python-mode)
 
 (use-package yuck-mode
   :ensure t)
@@ -665,7 +757,25 @@
 (use-package csv-mode
   :ensure t)
 
-(use-package typescript-mode)
+(setq-default js-indent-level 2)
+
+(use-package jtsx
+  :ensure t)
+
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
+
+
+(use-package typescript-mode
+  :ensure t)
+
+(use-package web-mode
+  :ensure t)
+
+(use-package prettier-js
+  :ensure t)
+
+(add-hook 'js-ts-mode-hook 'prettier-js-mode)
 
 (use-package elisp-autofmt)
 (defun suzu/format-elisp-on-save ()
@@ -682,20 +792,37 @@
 
 (use-package elf-mode)
 
-(use-package plantuml-mode)
+(use-package plantuml-mode
+  :config
+   (setq plantuml-jar-path "/home/suzu/.local/bin/plantuml.jar")
+    (setq plantuml-default-exec-mode 'jar))
 
 (use-package yaml-mode)
 
 (use-package php-mode)
 
+(use-package nushell-ts-mode
+  :ensure t)
+
+(use-package json-mode)
+
 (setq read-process-output-max (* 1024 1024))
 
 (use-package eglot
+  :general
+  (general-define-key
+   :keymaps '(eglot-mode-map)
+   :prefix "C-c"
+   "C-a" '(eglot-code-actions :wk "Code actions")
+   "C-e" '(eglot-rename :wk "Rename")
+   "C-f" '(eglot-format :wk "Format"))
   :config
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer"))))
 
 (use-package dap-mode
+  :disabled
   :ensure t)
 
 (defvar suzu/dotenv-file-name ".env"
@@ -760,6 +887,15 @@
 
 (setq-default truncate-lines t)
 
+(setq-default history-length 25)
+(savehist-mode 1)
+
+(save-place-mode 1)
+
+(setq use-dialog-box nil)
+
+(global-auto-revert-mode 1)
+
 (use-package emojify)
 ;; :hook (after-init . global-emojify-mode)
 
@@ -771,11 +907,11 @@
   (add-to-list 'org-structure-template-alist '("sqt" . "src sql :var table=table-name"))
   (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
-(add-hook 'org-mode-hook
-  (lambda ()
-    (setq-local electric-pair-inhibit-predicate
-      `(lambda (c)
-        (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c)))))))
+;; (add-hook 'org-mode-hook
+;;   (lambda ()
+;;     (setq-local electric-pair-inhibit-predicate
+;;       `(lambda (c)
+;;         (if (char-equal c "<") t (electric-pair-inhibit-predicate c))))))
 
 (defun suzu/visual-fill ()
   (setq visual-fill-column-width 100
@@ -783,6 +919,7 @@
   (visual-fill-column-mode 1))
 
 (use-package visual-fill-column
+  :disabled
   :config
   :hook
   (org-mode . suzu/visual-fill)
@@ -846,8 +983,8 @@
   (setq org-indent-mode-turns-on-hiding-stars nil)
   (org-indent-mode)
   (suzu/org-icons)
-  (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
-  (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down)
+  ;; (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
+  ;; (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down)
   (visual-line-mode 1))
 
 (use-package org
@@ -863,8 +1000,6 @@
 
 (setq org-confirm-babel-evaluate nil)
 
-(setq-default plantuml-exec-mode "plantuml")
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((shell . t)
@@ -872,7 +1007,7 @@
    (sqlite . t)
    (emacs-lisp . t)
    (plantuml . t)
-   (restclient . t)
+   ;; (restclient . t)
    (plantuml . t)
    (awk . t)
    (sql . t)))
@@ -885,7 +1020,8 @@
 
 ;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
 
-(setq org-plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
+;; (setq org-plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
+;; (setq plantuml-exec-mode 'jar)
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 
@@ -909,8 +1045,8 @@
                  (org-present-show-cursor)
                  (org-present-read-write))))
 
-(setq org-directory "~/org-roam")
-(setq org-agenda-files '("tasks.org" "habits.org"))
+(setq org-directory "/home/suzu/notes/org")
+(setq org-agenda-files '("/home/suzu/notes/org"))
 (setq org-agenda-start-with-log-mode t)
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
@@ -1000,8 +1136,8 @@
     (ansi-color-apply-on-region (point-min) (point-max))))
 (add-hook 'compilation-filter-hook 'suzu/ansi-colorize-buffer)
 
-(evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
-(evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
+;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
+;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
 
 (setq-default compilation-max-output-line-length 5000)
 
@@ -1027,7 +1163,19 @@
   :config
   (vertico-mode))
 
-(use-package consult)
+(use-package consult
+  :general
+  (general-define-key
+   :prefix "C-x"
+   "b" '(consult-project-buffer :wk "Search buffers"))
+  (general-define-key
+   :prefix "M-g"
+   "i" '(consult-imenu :wk "Imenu"))
+  (general-define-key
+   :prefix "C-;"
+   "o" '(consult-outline :wk "Outline")
+   "i" '(consult-line :wk "Search line")
+   ";" '(consult-ripgrep :wk "Ripgrep")))
 
 (use-package rainbow-mode
   :diminish
@@ -1035,7 +1183,7 @@
   ((org-mode prog-mode) . rainbow-mode))
 
 (setq comint-input-ignoredups t)
-(setq shell-file-name "/usr/bin/fish")
+(setq shell-file-name "nu")
 
 (use-package eshell-git-prompt
   :ensure t)
@@ -1054,12 +1202,13 @@
 
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
-  (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
-  (add-hook 'evil-normal-state-entry-hook '(lambda () (display-line-numbers-mode 1) (setq display-line-numbers-type 'relative)) nil t)
+  ;; (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
+  ;; (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
+  ;; (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
+  ;; (add-hook 'evil-normal-state-entry-hook '(lambda () (display-line-numbers-mode 1) (setq display-line-numbers-type 'relative)) nil t)
   (visual-line-mode)
-  (evil-normalize-keymaps))
+  ;;(evil-normalize-keymaps)
+  )
 
 (use-package eshell
   :hook (eshell-first-time-mode . suzu/configure-eshell)
@@ -1098,34 +1247,18 @@
   (async-shell-command (format "bash -c '%s'" cmd)))
 (put 'eshell/asc 'eshell-no-numeric-conversions t)
 
-(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") '(lambda ()
-                             (interactive)
-                             (insert
-                              (completing-read "Eshell history: "
-                                                   (delete-dups
-                                                    (ring-elements eshell-history-ring))))))
-;; (add-hook 'eshell-mode-hook
-;;           (lambda ()
-;;             (local-set-key (kbd "C-r")
-;;                            )))
+;;(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") '(lambda ()
+;;                             (interactive)
+;;                             (insert
+;;                              (completing-read "Eshell history: "
+;;                                                   (delete-dups
+;;                                                    (ring-elements eshell-history-ring))))))
 
 (use-package vterm
-  :disabled
   :config
-  (setq vterm-shell "/usr/bin/bash"
+  (setq 
         vterm-buffer-name-string "vterm %s"
         vterm-max-scrollback 5000)
-  (defun get-full-list ()
-    (let ((program-list (process-lines "bash" "-c" "compgen -c"))
-          (file-directory-list (process-lines "bash" "-c" "compgen -f"))
-          (history-list (with-temp-buffer
-                          (insert-file-contents "~/.bash_history")
-                          (split-string (buffer-string) "\n" t))))
-
-      (delete-dups (append program-list file-directory-list history-list))))
-
-  (defun vterm-completion-choose-item ()
-    (completing-read "Choose: " (get-full-list) nil nil (thing-at-point 'word 'no-properties)))
 
   (defun vterm-completion ()
     (interactive)
@@ -1141,16 +1274,9 @@
     (when vterm--process
       (let* ((pid (process-id vterm--process))
              (dir (file-truename (format "/proc/%d/cwd/" pid))))
-        (setq default-directory dir))))
-
-  ;; :general
-  ;; (:states 'insert
-  ;;          :keymaps 'vterm-mode-map
-  ;;          "<tab>" 'vterm-completion)
-)
+        (setq default-directory dir)))))
 
 (use-package vterm-toggle
-  :disabled
   :after vterm
   :config
   (setq vterm-toggle-fullscreen-p nil)
@@ -1162,21 +1288,12 @@
                        (or (equal major-mode 'vterm-mode)
                            (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
                  (display-buffer-reuse-window display-buffer-at-bottom)
-                 ;;(display-buffer-reuse-window display-buffer-in-direction)
-                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                 ;;(direction . bottom)
-                 ;;(dedicated . t) ;dedicated is supported in emacs27
                  (reusable-frames . visible)
                  (window-height . 0.3))))
 
 (use-package multi-vterm
   :disabled
-  :config
-  (add-hook 'vterm-mode-hook
-            (lambda ()
-              (setq-local evil-insert-state-cursor 'box)
-              (evil-insert-state)))
-  (define-key vterm-mode-map [return]                      #'vterm-send-return))
+  :config  (define-key vterm-mode-map [return]                      #'vterm-send-return))
 
 (defun run-powershell ()
   "Run powershell"
@@ -1186,13 +1303,11 @@
                nil))
 
 (use-package sudo-edit
-  :config
-  (suzu/leader-keys
-    "o w s" '(sudo-edit :wk "Sudo edit file")))
+  :ensure t)
 
 (use-package tldr :ensure t)
 
-(add-to-list 'default-frame-alist '(alpha-background . 80))
+(add-to-list 'default-frame-alist '(alpha-background . 100))
 (add-to-list 'corfu--frame-parameters '(alpha-background . 100))
 
 (setq treesit-language-source-alist
@@ -1203,13 +1318,13 @@
         (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
         (json "https://github.com/tree-sitter/tree-sitter-json")
         (emacs-lisp "https://github.com/emacs-tree-sitter/elisp-tree-sitter")
+        (nu "https://github.com/nushell/tree-sitter-nu")        
         (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
 
 (setq treesit-font-lock-level 4)
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        (rust-ts-mode . rust-mode)
-        (typescript-ts-mode . typescript-mode)))
+        (rust-mode . rust-ts-mode)))
 
 (use-package which-key
   :diminish
@@ -1223,8 +1338,13 @@
   :init
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
-  :config
-  (persp-turn-off-modestring))
+  :general
+  (general-define-key
+   "C-z" '(perspective-map :wk "Perspective"))
+  (general-define-key
+   :prefix "C-z"
+   "l" '(persp-switch-last :wk "Last perspective")
+   "p" '(suzu/project-switch-in-new-perspective :wk "Open project in a new perspective")))
 
 (add-hook 'ibuffer-hook
           (lambda ()
@@ -1235,31 +1355,32 @@
 ;; (add-hook 'kill-emacs-hook #'persp-state-save)
 
 (use-package bufler
+  :disabled
   :ensure t)
 
 (defun suzu/update-eww-var (var value)
-  (call-process "eww" nil nil nil "update" (format "%s=%s" var value))
+  ;; (call-process "eww" nil nil nil "update" (format "%s=%s" var value))
   )
 
 (defun suzu/current-perspective ()
   (suzu/update-eww-var "emacs_session" (persp-current-name)))
 
-(add-hook 'persp-switch-hook 'suzu/current-perspective)
+;; (add-hook 'persp-switch-hook 'suzu/current-perspective)
 
 (defun suzu/current-window ()
   (suzu/update-eww-var "emacs_window_icon" (nerd-icons-icon-for-buffer))
   (suzu/update-eww-var "emacs_window" (buffer-name)))
 
-(add-hook 'window-state-change-hook 'suzu/current-window)
+;; (add-hook 'window-state-change-hook 'suzu/current-window)
 
 (defun suzu/current-buffer-saved ()
   (if (and (buffer-modified-p) (not buffer-read-only))
       (suzu/update-eww-var "emacs_buffer_modifier" " ")
       (suzu/update-eww-var "emacs_buffer_modifier" "")))
 
-(add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
-(add-hook 'window-state-change-hook 'suzu/current-buffer-saved)
-(add-hook 'after-save-hook 'suzu/current-buffer-saved)
+;; (add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
+;; (add-hook 'window-state-change-hook 'suzu/current-buffer-saved)
+;; (add-hook 'after-save-hook 'suzu/current-buffer-saved)
 
 (defun suzu/current-vcs-branch ()
   (suzu/update-eww-var "git_branch" (magit-get-current-branch)))
@@ -1272,9 +1393,9 @@
     (suzu/update-eww-var "emacs_lsp" " ")
     (suzu/update-eww-var "emacs_lsp" "")))
 
-(add-hook 'eglot-managed-mode-hook 'suzu/lsp-status)
-(add-hook 'find-file-hook 'suzu/lsp-status)
-(add-hook 'persp-switch-hook 'suzu/lsp-status)
+;; (add-hook 'eglot-managed-mode-hook 'suzu/lsp-status)
+;; (add-hook 'find-file-hook 'suzu/lsp-status)
+;; (add-hook 'persp-switch-hook 'suzu/lsp-status)
 
 (use-package slack
   :disabled
@@ -1350,8 +1471,8 @@
                     tramp-file-name-regexp))
 (setq tramp-verbose 1)
 
-(use-package restclient)
-(use-package ob-restclient)
+;; (use-package restclient)
+;; (use-package ob-restclient)
 
 (defun advise-dimmer-config-change-handler ()
   "Advise to only force process if no predicate is truthy."
@@ -1390,30 +1511,24 @@
 ;; (add-to-list 'exec-path "C:/Users/suzu/.cargo/bin")
 ;; (add-to-list 'exec-path "C:/Program Files/PostgreSQL/16/bin")
 (add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 (setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
 
 (add-to-list 'default-frame-alist '(drag-internal-border . 1))
 (add-to-list 'default-frame-alist '(internal-border-width . 5))
 
-(display-time)
-
 (use-package harpoon
-:after general
-:config
-(general-define-key
-   :states 'normal
-   "C-1" 'harpoon-go-to-1
-   "C-2" 'harpoon-go-to-2
-   "C-3" 'harpoon-go-to-3
-   "C-4" 'harpoon-go-to-4
-   "C-5" 'harpoon-go-to-5
-   "C-6" 'harpoon-go-to-6
-   "C-7" 'harpoon-go-to-7
-   "C-8" 'harpoon-go-to-8
-   "C-9" 'harpoon-go-to-9)
+:disabled)
 
-  (suzu/leader-keys
-    "h" '(:ignore t :wk "Harpoon")
-    "h a" '(harpoon-add-file :wk "Add file")
-    "h f" '(harpoon-find-file :wk "Find file")
-    "h l" '(harpoon-toggle-quick-menu :wk "Toggle quick menu")))
+(use-package drag-stuff
+  :disabled
+  :ensure t)
+
+(defun me/display-current-time ()
+  "Display the current time in the minibuffer."
+  (interactive)
+  (message (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
+
+(general-define-key
+ :keymaps '(global-map)
+ "M-t" '(me/display-current-time :wk "Display datetime"))

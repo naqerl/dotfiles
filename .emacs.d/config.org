@@ -392,6 +392,10 @@ Automatically resizes windows to fit golden ratio
   '((t :background "#45605e" :foreground "white" :inherit bold))
   "Face with a red background for use on the mode line.")
 
+(defface my-modeline-accent-fg
+  '((t :foreground "#2fafff"))
+  "Accent face")
+
 (defun my-modeline--buffer-name ()
   "Return `buffer-name' with spaces around it."
   (format " %s " (buffer-name)))
@@ -424,11 +428,18 @@ Automatically resizes windows to fit golden ratio
 (defvar-local my-modeline-timer
     '(:eval
       (when (boundp 'org-timer-mode-line-string)
-        (propertize (replace-regexp-in-string "[\<\> ]" "" org-timer-mode-line-string)
+        (propertize (replace-regexp-in-string "[\<\>]" "" org-timer-mode-line-string)
                     'face
                     'bold)))
   "Mode line construct to display org timer.") 
 (put 'my-modeline-timer 'risky-local-variable t)
+
+(defvar-local my-modeline-lsp
+    '(:eval
+      (when eglot--managed-mode
+        (propertize " " 'face 'my-modeline-accent-fg)))
+  "Mode line construct to display LSP active status.") 
+(put 'my-modeline-lsp 'risky-local-variable t)
 
 ;; Emacs 29, check the definition right below
 (mode-line-window-selected-p)
@@ -437,7 +448,7 @@ Automatically resizes windows to fit golden ratio
   "Return non-nil if we're updating the mode line for the selected window.
 This function is meant to be called in `:eval' mode line
 constructs to allow altering the look of the mode line depending
-on whether the mode line belongs to the currently selected window
+on whether the mode line s to the currently selected window
 or not."
   (let ((window (selected-window)))
     (or (eq window (old-selected-window))
@@ -452,6 +463,7 @@ or not."
                 "  "
                 my-modeline-major-mode
                 mode-line-format-right-align
+                my-modeline-lsp
                 my-modeline-timer
                 " "))
 
@@ -648,23 +660,27 @@ or not."
 (defun suzu/dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
-  (when-let ((banner (dashboard-choose-banner dashboard-startup-banner)))
+  (when-let ((banner
+              (dashboard-choose-banner dashboard-startup-banner)))
     (let ((start (point))
           buffer-read-only
           text-width
           image-spec
           (graphic-mode (display-graphic-p)))
-      (when graphic-mode (insert "\n"))
+      (when graphic-mode
+        (insert "\n"))
       ;; If specified, insert a text banner.
       (when-let ((txt (plist-get banner :text)))
         (if (file-exists-p txt)
             (insert-file-contents txt)
           (save-excursion (insert txt)))
         (unless (text-properties-at 0 txt)
-          (put-text-property (point) (point-max) 'face 'dashboard-text-banner))
+          (put-text-property
+           (point) (point-max) 'face 'dashboard-text-banner))
         (setq text-width 0)
         (while (not (eobp))
-          (let ((line-length (- (line-end-position) (line-beginning-position))))
+          (let ((line-length
+                 (- (line-end-position) (line-beginning-position))))
             (when (< text-width line-length)
               (setq text-width line-length)))
           (forward-line 1)))
@@ -672,72 +688,105 @@ or not."
       ;; replace the text banner.
       (when-let ((img (plist-get banner :image)))
         (let ((img-props
-               (append (when (> dashboard-image-banner-max-width 0)
-                         (list :max-width dashboard-image-banner-max-width))
-                       (when (> dashboard-image-banner-max-height 0)
-                         (list :max-height dashboard-image-banner-max-height))
-                       dashboard-image-extra-props)))
+               (append
+                (when (> dashboard-image-banner-max-width 0)
+                  (list :max-width dashboard-image-banner-max-width))
+                (when (> dashboard-image-banner-max-height 0)
+                  (list
+                   :max-height dashboard-image-banner-max-height))
+                dashboard-image-extra-props)))
           (setq image-spec
-                (cond ((dashboard--image-animated-p img)
-                       (create-image img))
-                      ((dashboard--type-is-xbm-p img)
-                       (create-image img))
-                      ((image-type-available-p 'imagemagick)
-                       (apply 'create-image img 'imagemagick nil img-props))
-                      (t
-                       (apply 'create-image img nil nil
-                              (when (and (fboundp 'image-transforms-p)
-                                         (memq 'scale (funcall 'image-transforms-p)))
-                                img-props))))))
+                (cond
+                 ((dashboard--image-animated-p img)
+                  (create-image img))
+                 ((dashboard--type-is-xbm-p img)
+                  (create-image img))
+                 ((image-type-available-p 'imagemagick)
+                  (apply 'create-image
+                         img
+                         'imagemagick
+                         nil
+                         img-props))
+                 (t
+                  (apply 'create-image
+                         img nil nil
+                         (when (and (fboundp 'image-transforms-p)
+                                    (memq
+                                     'scale
+                                     (funcall 'image-transforms-p)))
+                           img-props))))))
         (add-text-properties start (point) `(display ,image-spec))
-        (when (ignore-errors (image-multi-frame-p image-spec)) (image-animate image-spec 0 t)))
+        (when (ignore-errors
+                (image-multi-frame-p image-spec))
+          (image-animate image-spec 0 t)))
 
       ;; Finally, center the banner (if any).
-      (when-let* ((text-align-spec `(space . (:align-to (- center ,(/ text-width 2)))))
-                  (image-align-spec `(space . (:align-to (- center (0.5 . ,image-spec)))))
-                  (prop
-                   (cond
-                    ;; Both an image & text banner.
-                    ((and image-spec text-width)
-                     ;; The quoting is intentional. This is a conditional display spec that will
-                     ;; align the banner at redisplay time.
-                     `((when (display-graphic-p) . ,image-align-spec)
-                       (when (not (display-graphic-p)) . ,text-align-spec)))
-                    ;; One or the other.
-                    (text-width text-align-spec)
-                    (image-spec image-align-spec)
-                    ;; No banner.
-                    (t nil)))
-                  (prefix (propertize " " 'display prop)))
-        (add-text-properties start (point) `(line-prefix ,prefix wrap-prefix ,prefix)))
+      (when-let*
+          ((text-align-spec
+            `(space . (:align-to (- center ,(/ text-width 2)))))
+           (image-align-spec
+            `(space . (:align-to (- center (0.5 . ,image-spec)))))
+           (prop
+            (cond
+             ;; Both an image & text banner.
+             ((and image-spec text-width)
+              ;; The quoting is intentional. This is a conditional display spec that will
+              ;; align the banner at redisplay time.
+              `((when (display-graphic-p)
+                  .
+                  ,image-align-spec)
+                (when (not (display-graphic-p))
+                  .
+                  ,text-align-spec)))
+             ;; One or the other.
+             (text-width
+              text-align-spec)
+             (image-spec
+              image-align-spec)
+             ;; No banner.
+             (t
+              nil)))
+           (prefix (propertize " " 'display prop)))
+        (add-text-properties
+         start (point)
+         `(line-prefix ,prefix wrap-prefix ,prefix)))
       (insert "\n")
-      (add-text-properties start (point) '(cursor-intangible t inhibit-isearch t)))))
+      (add-text-properties
+       start (point)
+       '(cursor-intangible t inhibit-isearch t)))))
 
-(use-package dashboard
-  :ensure t
-  :custom
-  (dashboard-set-init-info t)
-  (dashboard-set-navigator t)
-  (dashboard-show-shortcuts t)
-  (dashboard-center-content t)
-  (dashboard-startup-banner (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
-  (dashboard-banner-logo-title "Welcome to Emacs")
-  (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons nil)
-  (dashboard-startupify-list '(suzu/dashboard-insert-banner
-                               dashboard-insert-newline
-                               dashboard-insert-banner-title
-                               dashboard-insert-newline
-                               dashboard-insert-init-info
-                               dashboard-insert-newline
-                               dashboard-insert-newline
-                               dashboard-insert-footer
-                               end-of-buffer))
-  :config
-  (dashboard-setup-startup-hook))
+(use-package
+ dashboard
+ :ensure t
+ :custom
+ (dashboard-set-init-info t)
+ (dashboard-set-navigator t)
+ (dashboard-show-shortcuts t)
+ (dashboard-center-content t)
+ (dashboard-startup-banner
+  (expand-file-name "~/.emacs.d/images/salmon-dragon.png"))
+ (dashboard-banner-logo-title "Welcome to Emacs")
+ (dashboard-set-heading-icons t)
+ (dashboard-set-file-icons nil)
+ (dashboard-startupify-list
+  '(suzu/dashboard-insert-banner
+    dashboard-insert-newline
+    dashboard-insert-banner-title
+    dashboard-insert-newline
+    dashboard-insert-init-info
+    dashboard-insert-newline
+    dashboard-insert-newline
+    dashboard-insert-footer
+    end-of-buffer))
+ :config (dashboard-setup-startup-hook))
 
 (add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
-(add-hook 'dashboard-after-initialize-hook '(lambda () (blink-cursor-mode -1)))
+(add-hook
+ 'dashboard-after-initialize-hook '(lambda () (blink-cursor-mode -1)))
+(setq-default initial-buffer-choice
+              (lambda ()
+                      (get-buffer "*dashboard*")))
+
 
 #+end_src
 
@@ -919,6 +968,10 @@ Required for better LSP docs rendering
   :ensure t)
 #+end_src
 
+*** JSON
+#+begin_src elisp
+(use-package json-mode)
+#+end_src
 ** LSP client
 Inscrease amount of data which emacs reads from the process
 #+begin_src elisp
@@ -1180,8 +1233,8 @@ Install package for loading ~.env~ & setup hooks
   (setq org-indent-mode-turns-on-hiding-stars nil)
   (org-indent-mode)
   (suzu/org-icons)
-  (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
-  (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down)
+  ;; (evil-define-key '(normal) org-mode-map (kbd "C-k") 'suzu/window-up)
+  ;; (evil-define-key '(normal) org-mode-map (kbd "C-j") 'suzu/window-down)
   (visual-line-mode 1))
 #+end_src
 
@@ -1387,8 +1440,8 @@ So it'll be nice to run them automatically
 
 *** Hotkeys
 #+begin_src elisp
-(evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
-(evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
+;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
+;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
 #+end_src
 
 *** Increase line length to hide
@@ -1488,12 +1541,13 @@ Turn off duplicating lines on execution
 #+begin_src elisp
 (defun suzu/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
-  (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
-  (add-hook 'evil-normal-state-entry-hook '(lambda () (display-line-numbers-mode 1) (setq display-line-numbers-type 'relative)) nil t)
+  ;; (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
+  ;; (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
+  ;; (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
+  ;; (add-hook 'evil-normal-state-entry-hook '(lambda () (display-line-numbers-mode 1) (setq display-line-numbers-type 'relative)) nil t)
   (visual-line-mode)
-  (evil-normalize-keymaps))
+  ;;(evil-normalize-keymaps)
+  )
 #+end_src
 
 *** Setup eshell
@@ -1551,19 +1605,19 @@ Turn off duplicating lines on execution
 *** History search
 #+begin_src elisp
 
-(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") '(lambda ()
-                             (interactive)
-                             (insert
-                              (completing-read "Eshell history: "
-                                                   (delete-dups
-                                                    (ring-elements eshell-history-ring))))))
+;;(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") '(lambda ()
+;;                             (interactive)
+;;                             (insert
+;;                              (completing-read "Eshell history: "
+;;                                                   (delete-dups
+;;                                                    (ring-elements eshell-history-ring))))))
 #+end_src
 
 ** Vterm
 #+begin_src elisp
 (use-package vterm
   :config
-  (setq vterm-shell "/usr/bin/nu"
+  (setq 
         vterm-buffer-name-string "vterm %s"
         vterm-max-scrollback 5000)
 
@@ -1699,6 +1753,7 @@ Turn off duplicating lines on execution
 ** Trying bufler
 #+begin_src elisp
 (use-package bufler
+  :disabled
   :ensure t)
 #+end_src
 
@@ -1951,6 +2006,7 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
 ** Drag
 #+begin_src elisp
 (use-package drag-stuff
+  :disabled
   :ensure t)
 #+end_src
 

@@ -18,82 +18,66 @@
  '(org-agenda-files nil)
  '(package-selected-packages
    '(alert
-     all-the-icons
      all-the-icons-completion
      all-the-icons-dired
-     async
-     better-jumper
      bufler
-     cape
      consult
      corfu
      csv-mode
-     dap-mode
      dashboard
-     diminish
+     dimmer
      dired-open
-     docker-compose-mode
-     doom-modeline
+     dockerfile-mode
      drag-stuff
      eldoc-box
-     elfeed
+     elf-mode
      elfeed-goodies
      elisp-autofmt
-     emacs-nm
      emojify
      enwc
      eshell-git-prompt
      eshell-syntax-highlighting
      eshell-toggle
-     evil-collection
      evil-nerd-commenter
      flycheck-mypy
      gcmh
      general
      git-gutter
+     go-mode
      golden-ratio
      helpful
      indent-guide
+     json-mode
      jtsx
+     load-env-vars
      magit
      marginalia
      markdown-mode
-     mu4e
-     multi-vterm
      nerd-icons-corfu
-     nushell-mode
      nushell-ts-mode
      orderless
-     org-appear
      org-auto-tangle
-     org-bullets
-     org-roam
+     org-present
      pcmpl-args
-     pdf-tools
      peep-dired
      perspective
+     php-mode
+     plantuml-mode
      poetry
      prettier-js
-     python-black
      python-isort
      rainbow-mode
+     ruff-format
      rust-mode
-     spaceline
      sqlformat
      sudo-edit
-     surround
      tldr
      toc-org
-     tree-sitter-langs
-     treesit-auto
      typescript-mode
      undo-tree
      vertico
-     visual-fill-column
-     vterm
      vterm-toggle
      web-mode
-     which-key
-     yuck-mode
-     zen-mode))
+     yaml-mode
+     yuck-mode))
  '(warning-suppress-types '((comp))))
