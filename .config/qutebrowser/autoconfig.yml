@@ -28,8 +28,10 @@ settings:
     https://discord.com: true
   content.media.audio_capture:
     https://discord.com: true
+  content.notifications.enabled:
+    https://www.youtube.com: false
   downloads.location.directory:
-    global: /home/suzu/Downloads
+    global: /home/suzumenobu/Downloads
   statusbar.position:
     global: top
   statusbar.show:
@@ -40,7 +42,7 @@ settings:
     global: never
   url.searchengines:
     global:
-      DEFAULT: https://www.google.com/search?q={}
+      DEFAULT: https://www.google.com/search?q={}&udm=14
       aw: https://wiki.archlinux.org/?search={}
       re: https://www.reddit.com/r/{}
       ub: https://www.urbandictionary.com/define.pgp?term={}
