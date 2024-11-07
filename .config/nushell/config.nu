@@ -900,4 +900,3 @@ def download-yt [url: string] {
 }
 
 source ~/.cache/carapace/init.nu
-
