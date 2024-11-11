@@ -54,6 +54,7 @@
      marginalia
      markdown-mode
      nerd-icons-corfu
+     nushell-mode
      nushell-ts-mode
      orderless
      org-auto-tangle

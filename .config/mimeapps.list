@@ -18,6 +18,7 @@ application/xhtml+xml=zen-alpha.desktop
 application/x-extension-xhtml=zen-alpha.desktop
 application/x-extension-xht=zen-alpha.desktop
 x-scheme-handler/tonsite=org.telegram.desktop.desktop
+x-scheme-handler/figma=figma-linux.desktop
 
 [Added Associations]
 x-scheme-handler/tg=org.telegram.desktop.desktop;

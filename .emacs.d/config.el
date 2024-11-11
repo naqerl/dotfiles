@@ -364,18 +364,18 @@
 
 (defvar-local my-modeline-timer
     '(:eval
-      (when (boundp 'org-timer-mode-line-string)
+      (when (and (boundp 'org-timer-mode-line-string) (mode-line-window-selected-p))
         (propertize (replace-regexp-in-string "[\<\>]" "" org-timer-mode-line-string)
                     'face
                     'bold)))
-  "Mode line construct to display org timer.") 
+  "Mode line construct to display org timer.")
 (put 'my-modeline-timer 'risky-local-variable t)
 
 (defvar-local my-modeline-lsp
     '(:eval
-      (when eglot--managed-mode
+      (when (and eglot--managed-mode (mode-line-window-selected-p))
         (propertize " " 'face 'my-modeline-accent-fg)))
-  "Mode line construct to display LSP active status.") 
+  "Mode line construct to display LSP active status.")
 (put 'my-modeline-lsp 'risky-local-variable t)
 
 ;; Emacs 29, check the definition right below
@@ -1313,7 +1313,8 @@ or not."
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
         (python "https://github.com/tree-sitter/tree-sitter-python")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
         (json "https://github.com/tree-sitter/tree-sitter-json")

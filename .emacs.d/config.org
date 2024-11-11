@@ -123,20 +123,25 @@
   '(text-scale-decrease :wk "Zoom out"))
 
  (general-define-key
-  :prefix "C-;"
-  "h" '(windmove-left :wk "Window move left")
-  "j" '(windmove-down :wk "Window move down")
-  "k" '(windmove-up :wk "Window move up")
-  "l" '(windmove-right :wk "Window move right"))
+  :prefix
+  "C-;"
+  "h"
+  '(windmove-left :wk "Window move left")
+  "j"
+  '(windmove-down :wk "Window move down")
+  "k"
+  '(windmove-up :wk "Window move up")
+  "l"
+  '(windmove-right :wk "Window move right"))
 
  (general-define-key
-  :prefix "C-x"
-  "3" '((lambda ()
-          (interactive)
-          (split-window-right)
-          (windmove-right))
-        :wk "Split window right"))
-  
+  :prefix "C-x" "3"
+  '((lambda ()
+      (interactive)
+      (split-window-right)
+      (windmove-right))
+    :wk "Split window right"))
+
 
  (general-define-key
   :keymaps
@@ -161,16 +166,16 @@
   '(flymake-goto-prev-error :wk "Flymake prev error"))
 
  (general-define-key
-  "<f7>" '(org-agenda :wk "Org Agenda"))
+  "<f7>"
+  '(org-agenda :wk "Org Agenda")
+  "<f8>"
+  '(recompile :wk "Reccompile")
+  "<f9>"
+  '(project-compile :wk "Manual project compile"))
 
  (general-define-key
-  :prefix
-  "C-x"
-  "p C"
-  '(project-compile :wk "Manual project compile")
-  "p c"
-  '(suzu/makefile-compile :wk "Manual project compile")
-  "p P"
+  :prefix "C-x" "p c"
+  '(suzu/makefile-compile :wk "Compile from project make targets") "p P"
   '(suzu/project-switch-in-new-perspective
     :wk "Open project in new perspective"))
 
@@ -427,18 +432,18 @@ Automatically resizes windows to fit golden ratio
 
 (defvar-local my-modeline-timer
     '(:eval
-      (when (boundp 'org-timer-mode-line-string)
+      (when (and (boundp 'org-timer-mode-line-string) (mode-line-window-selected-p))
         (propertize (replace-regexp-in-string "[\<\>]" "" org-timer-mode-line-string)
                     'face
                     'bold)))
-  "Mode line construct to display org timer.") 
+  "Mode line construct to display org timer.")
 (put 'my-modeline-timer 'risky-local-variable t)
 
 (defvar-local my-modeline-lsp
     '(:eval
-      (when eglot--managed-mode
+      (when (and eglot--managed-mode (mode-line-window-selected-p))
         (propertize " " 'face 'my-modeline-accent-fg)))
-  "Mode line construct to display LSP active status.") 
+  "Mode line construct to display LSP active status.")
 (put 'my-modeline-lsp 'risky-local-variable t)
 
 ;; Emacs 29, check the definition right below
@@ -961,7 +966,7 @@ Required for better LSP docs rendering
 #+begin_src elisp
 (use-package php-mode)
 #+end_src
-*** 
+
 *** Nu
 #+begin_src elisp
 (use-package nushell-ts-mode
@@ -1082,7 +1087,12 @@ Install package for loading ~.env~ & setup hooks
 (scroll-bar-mode -1)         ;; Disable the scroll bar
 (tool-bar-mode -1)           ;; Disable the tool bar
 #+end_src
-*** 
+
+*** Delete on paste
+#+begin_src elisp
+(setq-default delete-selection-mode t)
+#+end_src
+
 *** Stop wierd files creation 
 #+begin_src elisp
 (setq create-lockfiles nil)
@@ -1695,7 +1705,8 @@ Turn off duplicating lines on execution
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
         (python "https://github.com/tree-sitter/tree-sitter-python")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
         (json "https://github.com/tree-sitter/tree-sitter-json")

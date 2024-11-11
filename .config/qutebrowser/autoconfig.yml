@@ -40,10 +40,14 @@ settings:
     global: blank
   tabs.show:
     global: never
+  url.default_page:
+    global: https://suzumenobu.github.io/startpage/
   url.searchengines:
     global:
       DEFAULT: https://www.google.com/search?q={}&udm=14
       aw: https://wiki.archlinux.org/?search={}
+      gpt: https://chat.openai.com/?q={}
+      px: https://www.perplexity.ai/search/new?q={}
       re: https://www.reddit.com/r/{}
       ub: https://www.urbandictionary.com/define.pgp?term={}
       yt: https://www.youtube.com/results/?search_query={}
