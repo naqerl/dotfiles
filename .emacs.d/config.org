@@ -112,7 +112,7 @@
   "<f2>"
   '(vterm-toggle-forward :wk "Toggle vterm forward")
   "<f3>"
-  '(vterm-toggle :wk "Toggle eshell")
+  '(eshell-toggle :wk "Toggle eshell")
   "<f4>"
   '(vterm-toggle-backward :wk "Toggle vterm backward"))
 
@@ -918,10 +918,17 @@ Required for better LSP docs rendering
 *** Emacs Lisp
 
 #+begin_src elisp
-(use-package elisp-autofmt)
-(defun suzu/format-elisp-on-save ()
-  (add-hook 'before-save-hook 'elisp-autofmt-buffer nil t))
-(add-hook 'emacs-lisp-mode-hook 'suzu/format-elisp-on-save)
+(defun my/emacs-lisp-mode-hook ()
+  (general-define-key
+   :keymaps '(local)
+   :prefix
+   "C-c"
+   "C-f"
+   '(elisp-autofmt-buffer :wk "Format buffer")))
+
+(use-package
+ elisp-autofmt
+ :hook (emacs-lisp-mode-hook . my/emacs-lisp-mode-hook))
 #+end_src
 
 *** Tex 
@@ -953,7 +960,7 @@ Required for better LSP docs rendering
 #+begin_src elisp
 (use-package plantuml-mode
   :config
-   (setq plantuml-jar-path "/home/suzu/.local/bin/plantuml.jar")
+   (setq plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
     (setq plantuml-default-exec-mode 'jar))
 #+end_src
 
@@ -1061,6 +1068,7 @@ Install package for loading ~.env~ & setup hooks
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'org-mode-hook 'display-line-numbers-mode)
 (add-hook 'compilation-mode-hook 'display-line-numbers-mode)
+(add-hook 'conf-mode-hook 'display-line-numbers-mode)
 (dolist (mode '(pdf-view-mode-hook
                 term-mode-hook
                 eshell-mode-hook
@@ -1258,6 +1266,12 @@ Install package for loading ~.env~ & setup hooks
   :hook (org-mode . suzu/org-mode-hook))
               #+end_src
 
+*** Tags
+#+begin_src elisp
+(setq org-tag-alist
+      '(("project") ("idea") ("post")))
+#+end_src
+
 ** Table of contents
 #+begin_src elisp
 (use-package toc-org
@@ -1337,8 +1351,8 @@ So it'll be nice to run them automatically
 ** Agenda
 *** Base
 #+begin_src elisp
-(setq org-directory "/home/suzu/notes/org")
-(setq org-agenda-files '("/home/suzu/notes/org"))
+(setq org-directory (expand-file-name "~/notes/org"))
+(setq org-agenda-files '((expand-file-name "~/notes/org")))
 (setq org-agenda-start-with-log-mode t)
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
@@ -1400,6 +1414,20 @@ So it'll be nice to run them automatically
       (todo "CANC"
             ((org-agenda-overriding-header "Cancelled Projects")
              (org-agenda-files org-agenda-files)))))))
+#+end_src
+
+** Templates
+#+begin_src elisp
+(setq org-capture-templates
+  '(    ;; ... other templates
+
+    ("j" "Journal Entry"
+         entry (file+datetree "~/journal.org")
+         "* %?"
+         :empty-lines 1)
+
+        ;; ... other templates
+    ))
 #+end_src
 
 * PDF tools
@@ -1539,7 +1567,6 @@ Turn off duplicating lines on execution
         (gl . magit-log)
         (d  . dired)
         (o  . find-file)  
-        (clc  . eshell/clear-scrollback)  
         (oo . find-file-other-window)))
 
 (mapc (lambda (alias)
@@ -1550,14 +1577,7 @@ Turn off duplicating lines on execution
 *** Main setup function
 #+begin_src elisp
 (defun suzu/configure-eshell ()
-  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-  ;; (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-k") 'suzu/window-up)
-  ;; (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-j") 'suzu/window-down)
-  ;; (add-hook 'evil-insert-state-entry-hook '(lambda () (setq display-line-numbers nil)) nil t)
-  ;; (add-hook 'evil-normal-state-entry-hook '(lambda () (display-line-numbers-mode 1) (setq display-line-numbers-type 'relative)) nil t)
-  (visual-line-mode)
-  ;;(evil-normalize-keymaps)
-  )
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history))
 #+end_src
 
 *** Setup eshell
@@ -1614,13 +1634,20 @@ Turn off duplicating lines on execution
 
 *** History search
 #+begin_src elisp
+(defun my/eshell-history ()
+  (interactive)
+  (insert
+   (completing-read
+    "Eshell history: "
+    (delete-dups (ring-elements eshell-history-ring)))))
 
-;;(evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") '(lambda ()
-;;                             (interactive)
-;;                             (insert
-;;                              (completing-read "Eshell history: "
-;;                                                   (delete-dups
-;;                                                    (ring-elements eshell-history-ring))))))
+(general-define-key
+ :keymaps
+ '(eshell-mode-map)
+ "C-r"
+ '(my/eshell-history :wk "Search eshell history")
+ "C-l"
+ '((lambda () (interactive) (eshell/clear-scrollback)) :wk "Clear scrollback"))
 #+end_src
 
 ** Vterm

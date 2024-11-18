@@ -25,3 +25,7 @@ request/
 bookmarks
 org-roam.db
 elisp-autofmt-cache/
+history
+places
+tramp
+config.el
