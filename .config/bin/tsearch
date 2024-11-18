@@ -1,0 +1,12 @@
+#!/usr/bin/env -S nu --stdin
+
+def main [...search_params] {
+  let request = {
+    "jsonrpc": "2.0",
+    "id": 0,
+    "method": "search",
+    "params": $search_params
+  }
+  let response = http post --content-type application/json 'http://127.0.0.1:57000/' $request
+  $response | get result | from json | get result | to nuon
+}
