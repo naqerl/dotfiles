@@ -984,6 +984,7 @@ Required for better LSP docs rendering
 #+begin_src elisp
 (use-package json-mode)
 #+end_src
+
 ** LSP client
 Inscrease amount of data which emacs reads from the process
 #+begin_src elisp
@@ -1003,6 +1004,7 @@ Setup lsp client
   :config
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(jtsx-jsx-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer"))))
 #+end_src
 
@@ -1487,6 +1489,21 @@ So it'll be nice to run them automatically
 (setq-default compilation-max-output-line-length 5000)
 #+end_src
 
+** Create new from git
+#+begin_src elisp
+(require 'suzu-project)
+(defun my/new-project-from-git ()
+  (interactive)
+  (let* ((default-directory
+         (read-directory-name "Base directory: "
+                              (expand-file-name "~/code/")))
+        (clone-from (read-string "Clone from: "))
+        (project-dir-name
+         (car (my/track-new-directories
+          '(shell-command (format "git clone %s" clone-from))))))
+    (suzu/project-discover-in-directory default-directory 1)
+    (my/project-perspective-from-project (expand-file-name project-dir-name))))
+#+end_src
 * Completion
 ** Vertico
 *** Add annotations to completion
@@ -1712,8 +1729,16 @@ Turn off duplicating lines on execution
 
 * Sudo edit
 #+begin_src elisp
-(use-package sudo-edit
-  :ensure t)
+(use-package
+ sudo-edit
+ :ensure t
+ :config
+ (defun my/sudo-edit-find-file ()
+   (interactive)
+   (let ((SHELL (getenv "SHELL")))
+     (setenv "SHELL" "/usr/bin/bash")
+     (call-interactively 'sudo-edit-find-file)
+     (setenv "SHELL" SHELL))))
 #+end_src
 
 * TLDR

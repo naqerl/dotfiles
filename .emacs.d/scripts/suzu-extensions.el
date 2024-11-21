@@ -16,4 +16,33 @@
        (or (file-exists-p fullpath) (file-directory-p fullpath))))
    files))
 
+(defun my/track-new-directories (commands)
+  "Remember all directories in `default-directory`, execute COMMANDS, and return new directories created."
+  (let ((initial-dirs-set (my/list-directories)))
+
+    (eval commands)
+
+    (let ((new-dirs-set (my/list-directories))
+          result)
+
+      (maphash
+       (lambda (dir _)
+         (message "Checking dir %s" dir)
+         (unless (gethash dir initial-dirs-set)
+           (push dir result)))
+       new-dirs-set)
+
+      result)))
+
+(defun my/list-directories ()
+  (let ((initial-dirs
+         (seq-filter
+          'file-directory-p (directory-files default-directory)))
+        (initial-dirs-set (make-hash-table :test 'equal)))
+
+    (mapc
+     (lambda (dir) (puthash dir t initial-dirs-set)) initial-dirs)
+
+    initial-dirs-set))
+
 (provide 'suzu-extensions)

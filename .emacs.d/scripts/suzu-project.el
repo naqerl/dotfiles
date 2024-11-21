@@ -26,8 +26,11 @@
 (defun suzu/project-switch-in-new-perspective ()
   "Opens project in a new perspective"
   (interactive)
-  (let* ((project-dir (project-prompt-project-dir))
-         (persp-name
+  (let* ((project-dir (project-prompt-project-dir)))
+    (my/project-perspective-from-project project-dir)))
+
+(defun my/project-perspective-from-project (project-dir)
+  (let* ((persp-name
           (suzu/project--get-last-two-elements project-dir)))
     (persp-switch persp-name)
     (message project-dir)
