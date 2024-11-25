@@ -153,18 +153,22 @@
       (compile (compilation-setup-command setup)))))
 
 
-(defun suzu/parse-makefile (filename)
-  "Parse the Makefile located at FILENAME and return an association list."
-  (with-temp-buffer
-    (insert-file-contents filename)
-    (makefile-pickup-targets)
-    makefile-target-table))
+(defun my/parse-makefile ()
+  "Search for the Makefile in the default-directory and return a table of available targets."  
+  (let ((makefile (expand-file-name "Makefile")))
+    (if (file-exists-p makefile)
+        (with-temp-buffer
+          (insert-file-contents makefile)
+          (makefile-mode)
+          (makefile-pickup-targets)
+          makefile-target-table)
+      (message "No Makefile found in project root"))))
 
-(defun suzu/makefile-compile ()
+(defun my/makefile-compile ()
   (interactive)
   (let* ((default-directory (project-root (project-current)))
-         (targets (suzu/parse-makefile "Makefile"))
-         (target (completing-read "Make target: " targets)))
+         (targets (my/parse-makefile))
+         (target (completing-read "Make target: " (mapcar #'car targets))))
     (compile (format "make %s" target))))
 
 (provide 'suzu-project)

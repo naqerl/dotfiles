@@ -175,7 +175,7 @@
 
  (general-define-key
   :prefix "C-x" "p c"
-  '(suzu/makefile-compile :wk "Compile from project make targets") "p P"
+  '(my/makefile-compile :wk "Compile from project make targets") "p P"
   '(suzu/project-switch-in-new-perspective
     :wk "Open project in new perspective"))
 
