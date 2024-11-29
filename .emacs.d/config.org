@@ -112,7 +112,7 @@
   "<f2>"
   '(vterm-toggle-forward :wk "Toggle vterm forward")
   "<f3>"
-  '(eshell-toggle :wk "Toggle eshell")
+  '(vterm-toggle :wk "Toggle eshell")
   "<f4>"
   '(vterm-toggle-backward :wk "Toggle vterm backward"))
 
@@ -388,7 +388,10 @@ Automatically resizes windows to fit golden ratio
 
 *** Merging
 #+begin_src elisp
-;; (use-package smerge)
+(use-package smerge-mode
+  :ensure nil
+  :hook
+  (prog-mode . smerge-mode))
 #+end_src
 
 ** Modeline
@@ -1694,20 +1697,24 @@ Turn off duplicating lines on execution
 
 ** Vterm-toggle
 #+begin_src elisp
-(use-package vterm-toggle
-  :after vterm
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                   (let ((buffer (get-buffer buffer-or-name)))
-                     (with-current-buffer buffer
-                       (or (equal major-mode 'vterm-mode)
-                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                 (display-buffer-reuse-window display-buffer-at-bottom)
-                 (reusable-frames . visible)
-                 (window-height . 0.3))))
+(use-package
+ vterm-toggle
+ :after vterm
+ :config
+ (setq vterm-toggle-fullscreen-p nil)
+ (setq vterm-toggle-scope 'project)
+ (add-to-list
+  'display-buffer-alist
+  '((lambda (buffer-or-name _)
+      (let ((buffer (get-buffer buffer-or-name)))
+        (with-current-buffer buffer
+          (or (equal major-mode 'vterm-mode)
+              (string-prefix-p
+               vterm-buffer-name (buffer-name buffer))))))
+    (display-buffer-reuse-window display-buffer-in-side-window)
+    (reusable-frames . visible)
+    (side . top)
+    (window-height . 0.3))))
 #+end_src
 
 ** Multi vterm
@@ -1927,6 +1934,11 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
   (general-define-key
    :prefix "C-x"
    "c" '(gptel-menu :wk "GPT menu")))
+
+(use-package elysium
+  :custom
+  (elysium-window-size 0.33)
+  (elysium-window-style 'vertical))
 #+end_src
 
 * Helpful
