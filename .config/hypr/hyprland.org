@@ -4,19 +4,16 @@
 #+auto_tangle: t
 
 * Table of contents :toc:
-- [[#monitor][Monitor]]
+- [[#platform-specific-setup][Platform specific setup]]
 - [[#alisaes][Alisaes]]
   - [[#super-key][Super key]]
   - [[#emacs][Emacs]]
 - [[#startup][Startup]]
-  - [[#send-notification-on-reload][Send notification on reload]]
   - [[#ui][UI]]
-  - [[#notifications][Notifications]]
-  - [[#run-xwayland-apps-as-root][Run xwayland apps as root]]
+  - [[#run-xwayland-apps-that-require-root][Run xwayland apps that require root]]
   - [[#launch-assistant-daemon][Launch assistant daemon]]
   - [[#start-apps][Start apps]]
   - [[#idle-daemon][Idle daemon]]
-  - [[#timer][Timer]]
 - [[#workspaces][Workspaces]]
 - [[#input][Input]]
 - [[#xwayland][Xwayland]]
@@ -25,11 +22,13 @@
 - [[#animations][Animations]]
 - [[#dwindle][Dwindle]]
 - [[#master][Master]]
-- [[#gestures][Gestures]]
-- [[#mouse][Mouse]]
 - [[#debug][Debug]]
 - [[#misc][Misc]]
 - [[#window-rules][Window rules]]
+  - [[#no-gaps-for-single-window][No gaps for single window]]
+  - [[#get-rid-of-screen-share-window-from-google-chrome][Get rid of screen share window from Google Chrome]]
+  - [[#picture-in-picture-in-the-corner][Picture in picture in the corner]]
+  - [[#wfzf-in-the-center][Wfzf in the center]]
 - [[#layer-rules][Layer rules]]
 - [[#binds][Binds]]
   - [[#quit-hypland][Quit hypland]]
@@ -40,17 +39,15 @@
   - [[#audio][Audio]]
   - [[#brightness][Brightness]]
   - [[#second-monitor][Second monitor]]
-  - [[#timer-1][Timer]]
+  - [[#timer][Timer]]
+  - [[#other][Other]]
+- [[#finish][Finish]]
 
-* Monitor
+* Platform specific setup
 Currently game mode needs manual config change
 
 #+begin_src conf
-# monitor = HDMI-A-1, 2560x1440, 0x0, 1.25
-# monitor = eDP-1, disable
-exec = setup-monitors
-# monitor = HDMI-A-1, 1920x1080, 0x0, 1
-# monitor = eDP-1, 2560x1440, 2560x0, 1.6
+source = $HOME/.config/hypr/platform/current.conf 
 #+end_src
 
 * Alisaes
@@ -62,40 +59,26 @@ $mainShiftMod = SUPER SHIFT
 
 ** Emacs
 #+begin_src conf
-$emacsDaemon = emacs --daemon && notify-send "Emacs started"
-$emacsClient = emacsclient --create-frame --alternate-editor=""
+$emacs = emacsclient --create-frame --alternate-editor=""
+$terminal = $emacs -e '(vterm "nu")'
+$pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
 
 * Startup
-** Send notification on reload
-#+begin_src conf
-exec = notify-send "Hyprland config reloaded"
-#+end_src
-
 ** UI
 *** GTK theme & cursor
 #+begin_src conf
-exec-once = hyprctl setcursor Catppuccin-Frappe-Flamingo-Cursors 24
-exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'Catppuccin-Frappe-Flamingo-Cursors'
+exec-once = hyprctl setcursor Bibata-Modern-Classic 18
+exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'bibata-modern-classic'
+exec-once = gsettings set org.gnome.desktop.interface cursor-size '18'
 #+end_src
 
 *** Wallpaper
 #+begin_src conf
-exec-once = hyprpaper
+exec-once = swaybg --image $HOME/Pictures/wallpapers/my-wallpaper.png
 #+end_src
 
-*** Statusbar
-#+begin_src conf
-exec-once = eww daemon && eww open bar
-#+end_src
-
-** Notifications
-#+begin_src conf
-exec-once = $HOME/.config/bin/notification-daemon
-exec-once = batsignal # Notifies when battery is low
-#+end_src
-
-** Run xwayland apps as root
+** Run xwayland apps that require root
 It's needed for apps like gnome-disk-utility
 
 #+begin_src conf
@@ -112,19 +95,13 @@ exec-once = hyprsistant
 
 ** Start apps
 #+begin_src conf
-exec-once = hyprctl dispatch workspace 2
-exec-once = [workspace 1 silent] vieb
-exec-once = [workspace 2 silent] $emacsDaemon && $emacsClient
+exec-once = [workspace 1; silent] $emacs
+exec-once = [workspace 2; silent] zen-browser
 #+end_src
 
 ** Idle daemon
 #+begin_src conf
 exec-once = wl-idle --time 5 --file /tmp/idle
-#+end_src
-
-** Timer
-#+begin_src conf
-exec-once = timer
 #+end_src
 
 * Workspaces
@@ -147,22 +124,12 @@ input {
     kb_variant =
     kb_model =
     kb_rules =
-
     follow_mouse = 0
-
-    touchpad {
-        natural_scroll = yes
-        scroll_factor = 0.2
-	disable_while_typing = false
-    }
     kb_layout = us,ru
-    kb_options = grp:alt_shift_toggle
-
-    sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
-
+    kb_options = grp:shift_caps_toggle
+    sensitivity = 0
     follow_mouse = 1
-    mouse_refocus = false #<-- add this
-
+    mouse_refocus = false
 }
 #+end_src
 
@@ -176,11 +143,10 @@ xwayland {
 * General
 #+begin_src conf
 general {
-    cursor_inactive_timeout = 1
     gaps_in = 5
     gaps_out = 5
     border_size = 2
-    col.active_border = rgb(A6D189)
+    col.active_border = rgb(8EC3A3)
     col.inactive_border = rgb(292c3d)
     layout = dwindle
 }
@@ -189,19 +155,14 @@ general {
 * Decoration
 #+begin_src conf
 decoration {
-rounding = 5
+    rounding = 5
 
-drop_shadow = no
-shadow_range = 0
-shadow_render_power = 0
-col.shadow = rgba(181926f2)
-
-blur {
-enabled = true
-size = 8
-noise = 0.05
-passes = 3
-}
+    blur {
+        enabled = true
+        size = 8
+        noise = 0.05
+        passes = 3
+    }
 }
 #+end_src
 
@@ -235,7 +196,6 @@ dwindle {
     # force split :0 -> split follows mouse, 1 -> always split to the left (new
     # = left or top) 2 -> always split to the right (new = right or bottom)
     force_split = 2
-    no_gaps_when_only = true
 }
 #+end_src
 
@@ -243,63 +203,56 @@ dwindle {
 #+begin_src conf
 master {
     # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
-    new_is_master = true
     orientation = right
-    no_gaps_when_only = -1
-}
-#+end_src
-
-* Gestures
-#+begin_src conf
-gestures {
-    # See https://wiki.hyprland.org/Configuring/Variables/ for more
-    workspace_swipe = true
-    workspace_swipe_fingers = 4
-    workspace_swipe_cancel_ratio = 0.2
-    workspace_swipe_min_speed_to_force = 5
-    workspace_swipe_create_new = true
-}
-#+end_src
-
-* Mouse
-#+begin_src conf
-device:epic-mouse-v1 {
-    sensitivity = -0.5
 }
 #+end_src
 
 * Debug
 #+begin_src conf
 debug {
-	overlay = false
+    overlay = false
 }
 #+end_src
 
 * Misc
 #+begin_src conf
 misc {
-	disable_hyprland_logo = true
-	disable_splash_rendering = true
-	background_color = 0x000
-	focus_on_activate = true
+    disable_hyprland_logo = true
+    disable_splash_rendering = true
+    background_color = 0x000
+    focus_on_activate = false
 }
 #+end_src
 
 * Window rules
+** No gaps for single window
+#+begin_src conf
+workspace = w[tv1], gapsout:0, gapsin:0
+workspace = f[1], gapsout:0, gapsin:0
+windowrulev2 = bordersize 0, floating:0, onworkspace:w[tv1]
+windowrulev2 = rounding 0, floating:0, onworkspace:w[tv1]
+windowrulev2 = bordersize 0, floating:0, onworkspace:f[1]
+windowrulev2 = rounding 0, floating:0, onworkspace:f[1]
+#+end_src
+
+** Get rid of screen share window from Google Chrome
 #+begin_src conf
 windowrule = workspace 10 silent, title:(.*is sharing your screen.)
-windowrule = float,^(pavucontrol)$
-# windowrule = float, ^(.*chromium.*browser.*)$
-windowrule = float, title:^(emacs-run-launcher)$
+#+end_src
 
+** Picture in picture in the corner
+#+begin_src conf
 windowrule = float, title:(Picture in picture)
 windowrule = move 79% 79%, title:(Picture in picture)
 windowrule = pin, title:(Picture in picture)
 windowrule = noborder, title:(Picture in picture)
+#+end_src
 
-windowrule = workspace 5, ^(virt-manager)$
-
-windowrule = float, ^(org.telegram.desktop)$
+** Wfzf in the center
+#+begin_src conf
+windowrulev2 = float, class:(kitty),title:(wfzf)
+windowrulev2 = size 30% 30%, class:(kitty),title:(wfzf)
+windowrulev2 = center, class:(kitty),title:(wfzf)
 #+end_src
 
 * Layer rules
@@ -316,13 +269,13 @@ bind = $mainShiftMod, Q, exec, hyprctl dispatch exit
 
 ** App launchers
 #+begin_src conf
-bind = $mainMod, T, exec, kitty bash -c 'tmux new -s main || tmux a'
-bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bind = $mainMod, T, exec, kitty
+
 bind = $mainMod, B, exec, run-chrome-profile
 bind = $mainMod, SPACE, exec, fuzzel
 # bind = $mainMod, SPACE, exec, emacsclient -cF "((visibility . nil))" -e "(suzu/emacs-app-launcher)"
 bind = $mainShiftMod, P, exec, open-pdf
-bind = $mainMod, P, exec, hyprpicker -a
+bind = $mainShiftMod, P, exec, hyprpicker -abind = $mainMod, TAB, exec, eww open --toggle powermenu
 bind = $mainMod, W, exec, change-wallpaper
 bind = $mainShiftMod, W, exec, bash -c 'notify-send "Running Win10 VM"; virsh --connect qemu:///system start win10; virt-manager --connect qemu:///system --show-domain-console win10'
 bind = $mainMod, TAB, exec, eww open --toggle powermenu
@@ -333,11 +286,11 @@ bind = $mainMode, O, exec, thunar
 #+begin_src conf
 bind = $mainMod, E, submap, emacs
 submap=emacs
-bind = ,E, exec, emacsclient --create-frame --alternate-editor=""
-bind = ,S, exec, emacsclient --create-frame --alternate-editor="" --eval '(eshell)' 
-bind = ,D, exec, emacsclient --create-frame --alternate-editor="" --eval '(dired nil)'
-bind = ,F, exec, emacsclient --create-frame --alternate-editor="" --eval '(elfeed)'
-bind = ,V, exec, emacsclient --create-frame --alternate-editor="" --eval '(+vterm/here nil)'
+bind = ,E, exec, $emacs
+bind = ,S, exec, $emacs --eval '(eshell)' 
+bind = ,D, exec, $emacs --eval '(dired nil)'
+bind = ,F, exec, $emacs --eval '(elfeed)'
+bind = ,V, exec, $emacs --eval '(+vterm/here nil)'
 bind = ,R, exec, notify-send "Killing emacs" && pkill -9 emacs && $emacsDaemon && $emacsClient
 bind=,escape,submap,reset 
 
@@ -379,8 +332,8 @@ bind = $mainShiftMod, 0, movetoworkspace, 10
 
 *** First empty workspace
 #+begin_src conf
-bind = $mainMod, C, exec, hyprctl dispatch workspace $(hypr-first-empty-workspace)
-bind = $mainShiftMod, C, exec, hyprctl dispatch movetoworkspace $(hypr-first-empty-workspace)
+bind = $mainMod, C, exec, hyprctl dispatch workspace $($HOME/.config/bin/hypr-first-empty-workspace)
+bind = $mainShiftMod, C, exec, hyprctl dispatch movetoworkspace $($HOME/.config/bin/hypr-first-empty-workspace)
 #+end_src
 
 ** Windows
@@ -456,7 +409,9 @@ bind = $mainShiftMod, PRINT, exec, hyprshot -m region -o "$HOME/Pictures/Screens
 binde=, XF86AudioRaiseVolume, exec, ~/.config/eww/scripts/volume +
 binde=, XF86AudioLowerVolume, exec, ~/.config/eww/scripts/volume -
 bindl=, XF86AudioMute, exec, ~/.config/eww/scripts/volume mute
+
 bindl=, XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bind = $mainMod, M, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 bind =, XF86AudioNext, exec, playerctl next
 bind =, XF86AudioPrev, exec, playerctl previous
@@ -483,3 +438,20 @@ bind =, XF86Launch5, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://lo
 bind =, XF86Launch6, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/stop"'
 #+end_src
 
+** Other
+#+begin_src conf
+bind =, XF86Tools, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=52&color=red"'
+bind =, XF86Launch5, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/start?minutes=17&color=green"'
+bind =, XF86Launch6, exec, bash -c 'port=$(cat /tmp/timer-port); curl "http://localhost:$port/stop"'
+bind = $mainMod, W, exec, [float; size 30% 30%; center] $HOME/.config/bin/pomodorro
+bind = $mainMod, P, exec, [float; size 30% 30%; center] $HOME/.config/bin/pass-fzf
+bind = $mainShiftMod, W, exec, [float; size 30% 30%; center] $HOME/.config/bin/change-wallpaper
+bind = $mainShiftMod, E, exec, [float; size 30% 30%; center] $HOME/.config/bin/emoji-picker
+bind = $mainMod, S, exec, zsh -c '$HOME/.local/bin/neovide-session-manager switch $($HOME/.local/bin/neovide-session-manager list | $HOME/.config/bin/wfzf) || notify-send $?'
+
+#+end_src
+
+* Finish
+#+begin_src conf
+exec = notify-send "Hyprland config reloaded"
+#+end_src
