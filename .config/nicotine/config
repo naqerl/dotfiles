@@ -22,10 +22,10 @@ private_chatrooms = False
 
 [transfers]
 incompletedir = ${NICOTINE_DATA_HOME}/incomplete
-downloaddir = /home/suzu/Music
+downloaddir = /home/suzumenobu/Music
 uploaddir = ${NICOTINE_DATA_HOME}/received
 usernamesubfolders = False
-shared = [('Music', '/home/suzu/Music')]
+shared = [('Music', '/home/suzumenobu/Music')]
 buddyshared = []
 trustedshared = []
 uploadbandwidth = 50
@@ -113,19 +113,19 @@ store = True
 users = []
 
 [columns]
-file_search = {'filename': {'visible': True, 'width': 266}, 'folder': {'visible': True, 'width': 266}, 'user': {'visible': True, 'width': 136, 'sort': 'descending'}, 'country': {'visible': True, 'width': 30}, 'file_type': {'visible': True, 'width': 40}, 'speed': {'visible': True, 'width': 101}, 'in_queue': {'visible': True, 'width': 96}, 'size': {'visible': True, 'width': 85}, 'quality': {'visible': True, 'width': 150}, 'length': {'visible': True, 'width': 100}}
-download = {'user': {'visible': True, 'width': 200}, 'path': {'visible': True, 'width': 200}, 'file_type': {'visible': True, 'width': 40}, 'filename': {'visible': True, 'width': 200}, 'status': {'visible': True, 'width': 140}, 'queue_position': {'visible': True, 'width': 90}, 'percent': {'visible': True, 'width': 90}, 'size': {'visible': True, 'width': 180}, 'speed': {'visible': True, 'width': 100}, 'time_elapsed': {'visible': True, 'width': 140}, 'time_left': {'visible': True, 'width': 104}}
+file_search = {'filename': {'visible': True, 'width': 654}, 'folder': {'visible': True, 'width': 655}, 'user': {'visible': True, 'width': 136, 'sort': 'descending'}, 'country': {'visible': True, 'width': 30}, 'file_type': {'visible': True, 'width': 40}, 'speed': {'visible': True, 'width': 101}, 'in_queue': {'visible': True, 'width': 96}, 'size': {'visible': True, 'width': 85}, 'quality': {'visible': True, 'width': 150}, 'length': {'visible': True, 'width': 101}}
+download = {'user': {'visible': True, 'width': 200}, 'path': {'visible': True, 'width': 474}, 'file_type': {'visible': True, 'width': 40}, 'filename': {'visible': True, 'width': 475}, 'status': {'visible': True, 'width': 140}, 'queue_position': {'visible': True, 'width': 90}, 'percent': {'visible': True, 'width': 90}, 'size': {'visible': True, 'width': 180}, 'speed': {'visible': True, 'width': 100}, 'time_elapsed': {'visible': True, 'width': 140}, 'time_left': {'visible': True, 'width': 105}}
 upload = {}
-user_browse = {'file_type': {'visible': True, 'width': 30}, 'filename': {'visible': True, 'width': 319}, 'size': {'visible': True, 'width': 100}, 'quality': {'visible': True, 'width': 150}, 'length': {'visible': True, 'width': 100}}
+user_browse = {'file_type': {'visible': True, 'width': 30}, 'filename': {'visible': True, 'width': 700}, 'size': {'visible': True, 'width': 100}, 'quality': {'visible': True, 'width': 150}, 'length': {'visible': True, 'width': 101}}
 buddy_list = {}
-chat_room = {'japanese music': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'Linux': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'HOUSE MUSIC LOVERS (AG)': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'OLDSCHOOL 88-94': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'programming': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'V A P O R W A V E': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'FUNK FRANCE': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}}
+chat_room = {'japanese music': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 159}, 'speed': {'visible': True, 'width': 129}, 'files': {'visible': True, 'width': 125}}, 'Linux': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'HOUSE MUSIC LOVERS (AG)': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'OLDSCHOOL 88-94': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 137}, 'speed': {'visible': True, 'width': 107}, 'files': {'visible': True, 'width': 117}}, 'programming': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'V A P O R W A V E': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}, 'FUNK FRANCE': {'status': {'visible': True, 'width': 25}, 'country': {'visible': True, 'width': 30}, 'user': {'visible': True, 'width': 141}, 'speed': {'visible': True, 'width': 111}, 'files': {'visible': True, 'width': 109}}}
 
 [searches]
 expand_searches = True
 group_searches = ungrouped
 maxresults = 150
 enable_history = True
-history = ['a', '-', 'akira arasawa', 'freak revolution', 'the crux freak revolution', 'the crux']
+history = ['have some time', 'how it s going on', 'lets go', 'saturday morning', 'King Gizzard The Lizard Wizard', 'monarch of monsters', 'yo la tengo and then', 'yo la tengo', 'a', '-', 'akira arasawa', 'freak revolution', 'the crux freak revolution', 'the crux']
 enablefilters = True
 filters_visible = True
 defilter = ['', '', '', '', False, '', 'flac', '']
@@ -180,7 +180,7 @@ searchfont =
 listfont = 
 browserfont = 
 transfersfont = 
-last_tab_id = chatrooms
+last_tab_id = search
 modes_visible = {'search': True, 'downloads': True, 'uploads': True, 'userbrowse': True, 'userinfo': True, 'private': True, 'userlist': True, 'chatrooms': True, 'interests': True}
 modes_order = ['search', 'downloads', 'uploads', 'userbrowse', 'userinfo', 'private', 'userlist', 'chatrooms', 'interests']
 buddylistinchatrooms = tab
@@ -229,9 +229,9 @@ enabled = ['core_commands']
 
 [statistics]
 since_timestamp = 1708191491
-started_downloads = 28
-completed_downloads = 27
-downloaded_size = 992059408
+started_downloads = 69
+completed_downloads = 54
+downloaded_size = 2060077415
 started_uploads = 0
 completed_uploads = 0
 uploaded_size = 0
