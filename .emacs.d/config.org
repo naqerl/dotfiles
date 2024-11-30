@@ -184,6 +184,19 @@
   '(scroll-half-up :wk "Scroll up")
   "M-v"
   '(scroll-half-down :wk "Scroll down")))
+
+
+(defun my/visual-inner-WORD ()
+  "Select the inner word at point."
+  (interactive)
+  (search-backward-regexp " \\|^")
+  (forward-char)
+  (set-mark (point))
+  (search-forward-regexp " \\|$")
+  (backward-char))
+
+(general-define-key
+ :prefix "C-c" "W" '(my/visual-inner-WORD :wk "Visual inner WORD"))
 ;; (suzu/leader-keys
 ;;    "." '(ido-find-file :wk "Find file")
 ;;    ";" '(execute-extended-command :wk "M-x")
@@ -828,11 +841,10 @@ or not."
 *** Rust
 #+begin_src elisp
 (defun suzu/rust-mode()
-  (eglot-ensure))
+  (eglot-ensure)
+  (add-hook 'before-save-hook 'rust-format-buffer nil t))
 
-(use-package rust-mode
-  :init
-  (setq rust-format-on-save t))
+(use-package rust-mode)
 (add-hook 'rust-ts-mode-hook 'suzu/rust-mode)
 #+end_src
 
