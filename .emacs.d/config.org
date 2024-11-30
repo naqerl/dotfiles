@@ -1289,6 +1289,9 @@ Install package for loading ~.env~ & setup hooks
 #+begin_src elisp
 (setq org-confirm-babel-evaluate nil)
 
+(setq org-babel-default-header-args
+      '((:results . "output")))
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((shell . t)
