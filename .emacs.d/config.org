@@ -185,6 +185,9 @@
   "M-v"
   '(scroll-half-down :wk "Scroll down")))
 
+(general-define-key
+ :prefix "C-x"
+ "/" '(comment-or-uncomment-region :wk "Toggle comment region"))
 
 (defun my/visual-inner-WORD ()
   "Select the inner word at point."
@@ -304,6 +307,8 @@
 ;;   "p e" '(project-async-shell-command :wk "Execute shell command in project root")
 ;;   "p C" '(suzu/project-compile :wk "Compile project"))
 #+end_src
+
+#+RESULTS:
 
 ** Theme
 *** Modus
