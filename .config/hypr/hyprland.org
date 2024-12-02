@@ -68,11 +68,14 @@ $pass-fzf = $HOME/.config/bin/pass-fzf
 ** UI
 *** GTK theme & cursor
 #+begin_src conf
-exec-once = hyprctl setcursor GoogleDot-Black 18
+exec-once = hyprctl setcursor GoogleDot-Black 22
 exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'GoogleDot-Black'
-exec-once = gsettings set org.gnome.desktop.interface cursor-size '18'
+exec-once = gsettings set org.gnome.desktop.interface cursor-size '22'
 env = HYPRCURSOR_THEME,GoogleDot-Black
-env = HYPRCURSOR_SIZE,18
+env = HYPRCURSOR_SIZE,22
+cursor {
+    inactive_timeout = 3
+}
 #+end_src
 
 *** Wallpaper
