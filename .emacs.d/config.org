@@ -387,14 +387,14 @@ Automatically resizes windows to fit golden ratio
                 (if (string= time " 0:00:01")
                     (propertize " TIMER DONE " 'face 'my-modeline-alert-bg)
                   (propertize time 'face 'bold))))
-          (concat " " status " "))))
+          status)))
   "Mode line construct to display org timer.")
 (put 'my-modeline-timer 'risky-local-variable t)
 
 (defvar-local my-modeline-lsp
     '(:eval
       (when (and eglot--managed-mode (mode-line-window-selected-p))
-        (propertize "  " 'face 'my-modeline-accent-fg)))
+        (propertize "  " 'face 'my-modeline-accent-fg)))
   "Mode line construct to display LSP active status.")
 (put 'my-modeline-lsp 'risky-local-variable t)
 
@@ -428,6 +428,7 @@ or not."
                 my-modeline-major-mode
                 mode-line-format-right-align
                 my-persp-name
+                " "
                 my-modeline-lsp
                 my-modeline-timer))
 #+end_src
@@ -842,6 +843,12 @@ Required for better LSP docs rendering
   :ensure t)
 #+end_src
 
+Generate table of contents
+#+begin_src elisp
+(use-package markdown-toc
+  :ensure t)
+#+end_src
+
 *** CSV
 #+begin_src elisp
 (use-package csv-mode
@@ -914,10 +921,17 @@ Required for better LSP docs rendering
 #+end_src
 
 *** Plant UML
+
+#+begin_src bash
+wget 'https://github.com/plantuml/plantuml/releases/download/v1.2024.8/plantuml-gplv2-1.2024.8.jar' -o ~/.local/bin/plantuml.jar
+#+end_src
+
+#+RESULTS:
+
 #+begin_src elisp
 (use-package plantuml-mode
   :config
-   (setq plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
+   (setq org-plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
     (setq plantuml-default-exec-mode 'jar))
 #+end_src
 
@@ -1193,7 +1207,7 @@ Install package for loading ~.env~ & setup hooks
                                  (":effort:" . "")
                                  ("*" . "󰣏")
                                  ("**" . " 󱀝")
-                                 ("***" . "  ")
+                                 ("***" . "  ")
                                  ("****" . "   ")
                                  ("*****" . "    ")
                                  ("******" . "     ")
@@ -1887,6 +1901,8 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
 * GPTel
 #+begin_src elisp
 (use-package gptel :ensure t :config (setq gptel-log-level 'info)
+  :config
+  (setq gptel-default-mode 'org-mode)
   :general
   (general-define-key
    :prefix "C-x"
