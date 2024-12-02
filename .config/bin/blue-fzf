@@ -1,0 +1,31 @@
+#!/usr/bin/env nu
+use std log
+
+def main [--fzf (-f): string = /usr/bin/fzf] {
+    let connected_devices = (bluetoothctl devices Connected | awk '{print $2}');
+    let devices = (bluetoothctl devices
+        | awk '{print $2","$3}'
+        | from csv --noheaders
+        | rename mac name
+        | insert connected {|item| $item.mac in $connected_devices}
+        | sort-by connected)
+
+    let selected_device_name = ($devices
+        | each {|row| $"(if $row.connected { '' } else { ' ' } ) ($row.name)"}
+        | to text
+        | ^$fzf
+        | awk '{print $2}')
+
+    log info $"Selected device ($selected_device_name)"
+
+    let selected_device = $devices | where name == $selected_device_name | first
+
+    if ($selected_device.connected) {
+       bluetoothctl disconnect $selected_device.mac
+       notify-send $"Device ($selected_device.name) disconnected"
+    } else {
+        notify-send $"Connecting to ($selected_device.name)"
+        bluetoothctl connect $selected_device.mac
+        notify-send $"Device ($selected_device.name) connected"
+    }
+}
