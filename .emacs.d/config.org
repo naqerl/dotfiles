@@ -390,18 +390,44 @@ Automatically resizes windows to fit golden ratio
 (use-package magit
   :config
   (setq magit-status-buffer-switch-function 'switch-to-buffer)
-  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+  :general
+  (general-define-key
+   :keymaps '(override prog-mode)
+   :prefix "C-x g"
+   "o" '(magit :wk "Magit")
+   "c" '(magit-commit :wk "Commit")))
 #+end_src
 
 *** Gutter
 #+begin_src elisp
-(use-package git-gutter
-  :custom
-  (git-gutter:modified-sign " ") ;; two space
-  (git-gutter:added-sign " ")    ;; multiple character is OK
-  (git-gutter:deleted-sign " ")
-  :config
-  (global-git-gutter-mode +1))
+(use-package
+ git-gutter
+ :after magit
+ :custom
+ (git-gutter:modified-sign " ") ;; two space
+ (git-gutter:added-sign " ") ;; multiple character is OK
+ (git-gutter:deleted-sign " ")
+ :config (global-git-gutter-mode +1)
+ (defun my/stage-hunk ()
+   "Wrapper around git-gutter:stage-hunk but without confirm requirement"
+   (interactive)
+   (git-gutter:awhen
+    (git-gutter:search-here-diffinfo git-gutter:diffinfos)
+    (git-gutter:do-stage-hunk it)
+    (git-gutter:update-all-windows)
+    (message "✅ staged" (buffer-name))))
+ :general
+ (general-define-key
+  :keymaps '(override prog-mode)
+  :prefix
+  "C-x g"
+  "n"
+  '(git-gutter:next-hunk :wk "Next git hunk")
+  "p"
+  '(git-gutter:previous-hunk :wk "Previous git hunk")
+  "s"
+  '(my/stage-hunk :wk "Stage hunk")))
 #+end_src
 
 *** Merging
