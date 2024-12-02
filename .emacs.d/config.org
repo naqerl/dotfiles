@@ -142,6 +142,7 @@
       (windmove-right))
     :wk "Split window right"))
 
+ (general-define-key :prefix "C-x" "I" '(ibuffer :wk "Show iBuffer"))
 
  (general-define-key
   :keymaps
@@ -186,8 +187,8 @@
   '(scroll-half-down :wk "Scroll down")))
 
 (general-define-key
- :prefix "C-x"
- "/" '(comment-or-uncomment-region :wk "Toggle comment region"))
+ :prefix "C-x" "/"
+ '(comment-or-uncomment-region :wk "Toggle comment region"))
 
 (defun my/visual-inner-WORD ()
   "Select the inner word at point."
@@ -200,112 +201,6 @@
 
 (general-define-key
  :prefix "C-c" "W" '(my/visual-inner-WORD :wk "Visual inner WORD"))
-;; (suzu/leader-keys
-;;    "." '(ido-find-file :wk "Find file")
-;;    ";" '(execute-extended-command :wk "M-x")
-;;    "'" '(consult-ripgrep :wk "Ripgrep project symbols")
-;;    "i" '(consult-imenu :wk "Open imenu")
-;;    "P" '(suzu/project-switch-in-new-perspective :wk "Open project in new perspective")
-;;    "B" '(consult-project-buffer :wk "Switch buffer in perspective")
-;;    "s" '(persp-switch :wk "Switch perspective")
-;;    "S" '(persp-kill :wk "Kill perspective")
-;;    "l" '(persp-switch-last :wk "Switch last perspective")
-;;    "/" '(consult-line :wk "Search in buffer")
-;;    "f" '(project-find-file :wk "Find file"))
-
-;; (suzu/leader-keys
-;;   "b" '(:ignore t :wk "buffer || bookmark")
-;;   "b I" '(ibuffer :wk "Ibuffer")
-;;   "b i" '(persp-ibuffer :wk "Perspective ibuffer")
-;;   "b s" '(consult-buffer :wk "Search buffer")
-;;   "b k" '(suzu/kill-current-buffer :wk "Kill this buffer")
-;;   "b r" '(revert-buffer :wk "Reload buffer")
-;;   "b m" '(bookmark-set :wk "Bookmark")
-;;   "b l" '(list-bookmarks :wk "Bookmarks list"))
-
-;; (suzu/leader-keys
-;;   "e" '(:ignore t :wk "Evaluate")
-;;   "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-;;   "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-;;   "e e" '(eval-expression :wk "Evaluate and elisp expression")
-;;   "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-;;   "e r" '(eval-region :wk "Evaluate elisp in region"))
-
-;; (suzu/leader-keys
-;;   "g" '(:ginore t :wk "Git")
-;;   "g p" '((lambda () (interactive) (git-gutter:popup-hunk) (other-window 1)) :wk "Preview hunk diff")
-;;   "g r" '(git-gutter:revert-hunk :wk "Preview hunk diff")
-;;   "g w" '(magit-worktree :wk "Git worktree")
-;;   "g s" '(git-gutter:stage-hunk :wk "Preview hunk diff")
-;;   "g m n" '(smerge-next :wk "Next merge conflict")
-;;   "g m p" '(smerge-prev :wk "Previous merge conflict")
-;;   "g m u" '(smerge-keep-upper :wk "Keep upper version")
-;;   "g m l" '(smerge-keep-lower :wk "Keep lower version")
-;;   "g m a" '(smerge-keep-lower :wk "Keep both versions"))
-
-;; (suzu/leader-keys
-;;   "o" '(:ignore t :wk "Open")
-;;   "o r" '(consult-recent-file :wk "Open recent files")
-;;   "o E" '(dired-jump :wk "Dired jump to current")
-;;   "o e" '(project-dired :wk "Project root dired")
-;;   "o p d" '(peep-dired :wk "Peep-dired")
-;;   "o s" '(eshell :wk "Open eshell")
-;;   "o g" '(magit :wk "Open magit")
-
-;;   "o t" '(multi-vterm :wk "Open Vterm")
-;;   "o c" '((lambda ()
-;;             (interactive)
-;;             (persp-switch "dotfiles")
-;;             (project-switch-project "~/dotfiles/")) :wk "Edit emacs config"))
-
-;; (suzu/leader-keys
-;;   "H" '(:ignore t :wk "Help")
-;;   "H f" '(describe-function :wk "Describe function")
-;;   "H v" '(describe-variable :wk "Describe variable")
-;;   "H M" '(info-display-manual :wk "Manual")
-;;   "H m" '(describe-mode :wk "Describe mode")
-;;   "H p" '(describe-package :wk "Describe package")
-;;   "H r r" '((lambda ()
-;;               (interactive)
-;;               (load-file "~/dotfiles/.emacs.d/init.el")) :wk "Reload emacs config"))
-
-;; (suzu/leader-keys
-;;   "m" '(:ignore t :wk "Org")
-;;   "m a" '(org-agenda :wk "Org agenda")
-;;   "m o" '(org-open-at-point :wk "Org open at point")
-;;   "m e" '(org-babel-async-execute-sql :wk "Execute org babel src block")
-;;   "m I" '(org-toggle-inline-images :wk "Org toggle inline images")
-;;   "m t" '(org-todo :wk "Org todo")
-;;   "m B" '(org-babel-tangle :wk "Org babel tangle")
-;;   "m l" '(org-insert-link :wk "Org insert link")
-;;   "m T" '(org-todo-list :wk "Org todo list"))
-
-;; (suzu/leader-keys
-;;   "m b" '(:ignore t :wk "Tables")
-;;   "m b -" '(org-table-insert-hline :wk "Insert hline in table")
-;;   "m d" '(:ignore t :wk "Date/deadline")
-;;   "m d t" '(org-time-stamp :wk "Org time stamp")
-;;   "m r f" '(org-roam-node-find :wk "Org Roam find node")
-;;   "m r b" '(org-roam-buffer-toggle :wk "Org Roam show backlinks")
-;;   "m r i" '(org-roam-node-insert :wk "Org Roam insert node"))
-
-;; (suzu/leader-keys
-;;   "c a" '(eglot-code-actions :wk "Code actions")
-;;   "r n" '(eglot-rename :wk "Rename"))
-
-;; (suzu/leader-keys
-;;   "t" '(:ignore t :wk "Toggle")
-;;   "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-;;   "t i" '(eglot-inlay-hints-mode :wk "Toggle inlay hints")
-;;   "t c" '(suzu/center-buffer :wk "Toggle Center buffer [deprecated]")
-;;   "t f" '(visual-fill-column-mode :wk "Toggle visual fill")
-;;   "t t" '(visual-line-mode :wk "Toggle truncated lines"))
-
-;; (suzu/leader-keys
-;;   "p" '(:ignore t :wk "Project")
-;;   "p c" '(recompile :wk "Recompile project")
-;;   "p e" '(project-async-shell-command :wk "Execute shell command in project root")
-;;   "p C" '(suzu/project-compile :wk "Compile project"))
 #+end_src
 
 #+RESULTS:
