@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
-FZF=/home/suzu/.config/bin/wfzf
-EMOJI=/home/suzu/.cargo/bin/emoji-fzf
+FZF=$HOME/.config/bin/wfzf
+EMOJI=$HOME/.cargo/bin/emoji-fzf
 
 if ! command -v $EMOJI &> /dev/null
 then
