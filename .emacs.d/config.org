@@ -298,12 +298,12 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (use-package
  git-gutter
- :after magit
- :custom
+  :custom
  (git-gutter:modified-sign " ") ;; two space
  (git-gutter:added-sign " ") ;; multiple character is OK
  (git-gutter:deleted-sign " ")
- :config (global-git-gutter-mode +1)
+ :config
+ (global-git-gutter-mode +1)
  (defun my/stage-hunk ()
    "Wrapper around git-gutter:stage-hunk but without confirm requirement"
    (interactive)
@@ -787,8 +787,13 @@ or not."
   (eglot-ensure)
   (add-hook 'before-save-hook 'rust-format-buffer nil t))
 
-(use-package rust-mode)
-(add-hook 'rust-ts-mode-hook 'suzu/rust-mode)
+(use-package rust-mode
+  :config
+  (add-hook 'rust-ts-mode-hook 'suzu/rust-mode))
+
+(use-package cargo
+  :config
+  (add-hook 'rust-ts-mode-hook 'cargo-minor-mode))
 #+end_src
 
 *** Python
@@ -1114,6 +1119,16 @@ Install package for loading ~.env~ & setup hooks
 *** Update changed files automaticaaly
 #+begin_src elisp
 (global-auto-revert-mode 1)
+#+end_src
+
+*** Regex Replace
+#+begin_src elisp
+(use-package visual-regexp-steroids
+  :general
+  (general-define-key
+   :prefix "C-c"
+   "r" '(vr/replace :wk "Visual regexp replaceq")
+   "q" '(vr/replace :wk "Visual regexp query replace")))
 #+end_src
 
 ** Emoji
@@ -1911,7 +1926,11 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
 (use-package elysium
   :custom
   (elysium-window-size 0.33)
-  (elysium-window-style 'vertical))
+  (elysium-window-style 'vertical)
+  :general
+  (general-define-key
+   :prefix "C-c"
+   "p" '(elysium-query :wk "Elysium query")))
 #+end_src
 
 * Helpful
