@@ -1755,6 +1755,7 @@ Turn off duplicating lines on execution
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
         (json "https://github.com/tree-sitter/tree-sitter-json")
+        (make "https://github.com/alemuller/tree-sitter-make")
         (emacs-lisp "https://github.com/emacs-tree-sitter/elisp-tree-sitter")
         (nu "https://github.com/nushell/tree-sitter-nu")        
         (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))

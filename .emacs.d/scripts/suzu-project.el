@@ -159,16 +159,23 @@
     (if (file-exists-p makefile)
         (with-temp-buffer
           (insert-file-contents makefile)
-          (makefile-mode)
-          (makefile-pickup-targets)
-          makefile-target-table)
+          (sp/parse-makefile))
       (message "No Makefile found in project root"))))
 
 (defun my/makefile-compile ()
   (interactive)
   (let* ((default-directory (project-root (project-current)))
          (targets (my/parse-makefile))
-         (target (completing-read "Make target: " (mapcar #'car targets))))
+         (completion-extra-properties
+           '(:annotation-function
+             (lambda (k)
+               (let ((desc
+                      (alist-get k minibuffer-completion-table
+                                 nil
+                                 nil
+                                 #'string=)))
+                 (format "\t%s" desc)))))
+         (target (completing-read "Make target: " targets)))
     (compile (format "make %s" target))))
 
 (provide 'suzu-project)
