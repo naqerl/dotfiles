@@ -2,6 +2,13 @@
 #+author: Suzu
 #+description: My personal Emacs config
 #+STARTUP: inlineimages
+* Ideas
+- Open project's makefile by keybind
+- Add to makefile default language specific commands
+  - Rust: cargo, shuttle
+  - Python: poetry
+- Simulate single mode-line when multiple windows opened
+
 
 * Important programs to load first
 ** Loading scripts
@@ -2020,6 +2027,7 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
    #'corfu-frame-p))
 
 (use-package dimmer
+  :disabled
   :config
   (advice-add
    'dimmer-config-change-handler
