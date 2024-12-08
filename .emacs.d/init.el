@@ -32,3 +32,4 @@
            sudo-edit tldr toc-org typescript-mode undo-tree vertico
            vterm-toggle web-mode yaml-mode yuck-mode))
  '(warning-suppress-types '((comp))))
+(put 'downcase-region 'disabled nil)
