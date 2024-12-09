@@ -154,7 +154,7 @@
 
 
 (defun my/parse-makefile ()
-  "Search for the Makefile in the default-directory and return a table of available targets."  
+  "Search for the Makefile in the default-directory and return a table of available targets."
   (let ((makefile (expand-file-name "Makefile")))
     (if (file-exists-p makefile)
         (with-temp-buffer
@@ -166,16 +166,55 @@
   (interactive)
   (let* ((default-directory (project-root (project-current)))
          (targets (my/parse-makefile))
+         (max-target-width
+          (-reduce
+           #'max
+           (mapcar (lambda (el) (string-width (car el))) targets)))
+         (max-prerequisites-width
+          (-reduce
+           #'max
+           (mapcar
+            (lambda (el)
+              (let ((v (sp/makefile-target-prerequisites (cdr el))))
+                (if v
+                    (string-width v)
+                  0)))
+            targets)))
+         (target-column-width (+ max-target-width 4))
+         (prerequisites-column-width (+ max-prerequisites-width 4))
          (completion-extra-properties
-           '(:annotation-function
-             (lambda (k)
-               (let ((desc
+          '(:annotation-function
+            (lambda (k)
+              (let* ((target
                       (alist-get k minibuffer-completion-table
                                  nil
                                  nil
-                                 #'string=)))
-                 (format "\t%s" desc)))))
+                                 #'string=))
+                     (prerequisites
+                      (sp/makefile-target-prerequisites target))
+                     (comment (sp/makefile-target-comment target))
+                     (target-column-padding
+                      (- target-column-width
+                         (string-width
+                          (sp/makefile-target-name target))))
+                     (prerequisites-column-padding
+                      (- prerequisites-column-width
+                         (if prerequisites
+                             (string-width prerequisites)
+                           0))))
+                (s-concat
+                 (make-string target-column-padding ?\s)
+                 (propertize (if prerequisites
+                                 prerequisites
+                               "")
+                             'face 'package-status-dependency)
+                 (make-string prerequisites-column-padding ?\s)
+                 (propertize (if comment
+                                 comment
+                               "")
+                             'face 'completions-annotations))))))
          (target (completing-read "Make target: " targets)))
+    (message "Max target width %d, max prerequisites width %d" max-target-width max-prerequisites-width)
     (compile (format "make %s" target))))
 
 (provide 'suzu-project)
