@@ -20,6 +20,7 @@
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'package-manager)
 (require 'suzu-extensions)
+(require 'sp-build)
 #+end_src
 
 ** Upgrade GC
