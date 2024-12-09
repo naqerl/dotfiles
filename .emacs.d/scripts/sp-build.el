@@ -35,6 +35,7 @@ Parses it with tree-sitter and returns alist of (target . comment)"
     (dolist (node nodes)
       (let ((key (car node))
             (value (cdr node)))
+        (message "Processing key=%s with value=%s" key value)
         (cond
          ((eq key 'comment)
           (when current-target
@@ -50,10 +51,9 @@ Parses it with tree-sitter and returns alist of (target . comment)"
              current-prerequisites nil))
           (setq current-comment value))
          ((eq key 'prerequisites)
-          (message "Found prerequisite")
-          (setq current-prerequisites value))
+          (when current-target
+            (setq current-prerequisites value)))
          ((eq key 'target)
-          (message "Found target")
           (when current-target
             (push (cons
                    current-target
@@ -65,12 +65,14 @@ Parses it with tree-sitter and returns alist of (target . comment)"
             (setq
              current-prerequisites nil
              current-comment nil))
-          (when (not (string= (downcase value) ".phony"))
+          (if (string= (downcase value) ".phony")
+              (setq current-target nil)
             (setq current-target value)))
          (t
-          (message
+          (warn
            "ERROR: Unknown makefile treesit node name=%s, value=%s"
-           key value)))))
+           key
+           value)))))
     (when current-target
       (push (cons
              current-target
