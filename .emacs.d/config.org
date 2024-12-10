@@ -184,7 +184,7 @@
 
  (general-define-key
   :prefix "C-x" "p c"
-  '(my/makefile-compile :wk "Compile from project make targets") "p P"
+  '(sp-makefile-compile :wk "Compile from project make targets") "p P"
   '(suzu/project-switch-in-new-perspective
     :wk "Open project in new perspective"))
 

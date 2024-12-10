@@ -7,6 +7,6 @@ foo:
 bar: foo
 	echo "bar"
 
-# Baz target
+# Comment for the baz target
 baz: foo bar
 	echo "baz"
