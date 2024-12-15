@@ -14,7 +14,6 @@
   - [[#launch-assistant-daemon][Launch assistant daemon]]
   - [[#start-apps][Start apps]]
   - [[#idle-daemon][Idle daemon]]
-- [[#workspaces][Workspaces]]
 - [[#input][Input]]
 - [[#xwayland][Xwayland]]
 - [[#general][General]]
@@ -29,11 +28,12 @@
   - [[#get-rid-of-screen-share-window-from-google-chrome][Get rid of screen share window from Google Chrome]]
   - [[#picture-in-picture-in-the-corner][Picture in picture in the corner]]
   - [[#wfzf-in-the-center][Wfzf in the center]]
+  - [[#keep-browzer-fucking-silent][Keep browzer fucking silent]]
 - [[#layer-rules][Layer rules]]
 - [[#binds][Binds]]
   - [[#quit-hypland][Quit hypland]]
   - [[#app-launchers][App launchers]]
-  - [[#workspaces-1][Workspaces]]
+  - [[#workspaces][Workspaces]]
   - [[#windows][Windows]]
   - [[#screenshot][Screenshot]]
   - [[#audio][Audio]]
@@ -100,27 +100,13 @@ exec-once = hyprsistant
 
 ** Start apps
 #+begin_src conf
-exec-once = [workspace 1; silent] $emacs
-exec-once = [workspace 2; silent] zen-browser
+exec-once = [workspace 1 silent] $emacs
+exec-once = [workspace 2 silent] zen-browser
 #+end_src
 
 ** Idle daemon
 #+begin_src conf
 exec-once = wl-idle --time 5 --file /tmp/idle
-#+end_src
-
-* Workspaces
-#+begin_src conf
-workspace=name:1,monitor:HDMI-A-1
-workspace=name:2,monitor:HDMI-A-1
-workspace=name:3,monitor:HDMI-A-1
-workspace=name:4,monitor:HDMI-A-1
-workspace=name:5,monitor:HDMI-A-1
-workspace=name:6,monitor:eDP-1
-workspace=name:7,monitor:eDP-1
-workspace=name:8,monitor:eDP-1
-workspace=name:9,monitor:eDP-1
-workspace=name:10,monitor:eDP-1
 #+end_src
 
 * Input
@@ -182,7 +168,7 @@ animations {
     bezier = md3_accel, 0.3, 0, 0.8, 0.15
     bezier = overshot, 0.05, 0.9, 0.1, 1.05
     bezier = hyprnostretch, 0.05, 0.9, 0.1, 1.0
-    bezier = win11, 0, 1, 0, 1
+    # bezier = win11, 0, 1, 0, 1
     bezier = gnome, 0, 0.85, 0.3, 1
     bezier = funky, 0.46, 0.35, -0.2, 1.2
     bezier = linear, 1, 1, 0, 0
@@ -259,6 +245,11 @@ windowrule = noborder, title:(Picture in picture)
 windowrulev2 = float, class:(kitty),title:(wfzf)
 windowrulev2 = size 30% 30%, class:(kitty),title:(wfzf)
 windowrulev2 = center, class:(kitty),title:(wfzf)
+#+end_src
+
+** Keep browzer fucking silent
+#+begin_src conf
+windowrule = workspace 2 silent, ^(.*zen.*)$
 #+end_src
 
 * Layer rules
