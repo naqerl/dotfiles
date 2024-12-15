@@ -20,7 +20,6 @@
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'package-manager)
 (require 'suzu-extensions)
-(require 'sp-build)
 #+end_src
 
 ** Upgrade GC
@@ -181,12 +180,6 @@
   '(recompile :wk "Reccompile")
   "<f9>"
   '(project-compile :wk "Manual project compile"))
-
- (general-define-key
-  :prefix "C-x" "p c"
-  '(sp-makefile-compile :wk "Compile from project make targets") "p P"
-  '(suzu/project-switch-in-new-perspective
-    :wk "Open project in new perspective"))
 
  (general-define-key
   "C-v"
@@ -1491,6 +1484,19 @@ So it'll be nice to run them automatically
 (setq-default compilation-max-output-line-length 5000)
 #+end_src
 
+** Build from Makefile
+#+begin_src elisp
+(use-package
+ make-project
+ :vc (:url "https://github.com/scipunch/make-project")
+ :general
+ (general-define-key
+  :prefix
+  "C-x"
+  "p c"
+  '(make-project-run :wk "Compile from project Makefile targets")))
+#+end_src
+
 ** Create new from git
 #+begin_src elisp
 (require 'suzu-project)
@@ -1545,7 +1551,7 @@ So it'll be nice to run them automatically
   :general
   (general-define-key
    :prefix "C-x"
-   "b" '(consult-project-buffer :wk "Search buffers"))
+   "b" '(consult-buffer :wk "Search buffers"))
   (general-define-key
    :prefix "M-g"
    "i" '(consult-imenu :wk "Imenu"))
