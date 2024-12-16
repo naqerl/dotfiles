@@ -29,6 +29,7 @@
   - [[#picture-in-picture-in-the-corner][Picture in picture in the corner]]
   - [[#wfzf-in-the-center][Wfzf in the center]]
   - [[#keep-browzer-fucking-silent][Keep browzer fucking silent]]
+  - [[#gimp-popups][Gimp popups]]
 - [[#layer-rules][Layer rules]]
 - [[#binds][Binds]]
   - [[#quit-hypland][Quit hypland]]
@@ -252,6 +253,11 @@ windowrulev2 = center, class:(kitty),title:(wfzf)
 windowrule = workspace 2 silent, ^(.*zen.*)$
 #+end_src
 
+** Gimp popups
+#+begin_src conf
+windowrule = tile, Gimp.*
+#+end_src
+
 * Layer rules
 #+begin_src conf
 layerrule = blur, gtk-layer-shell
@@ -438,7 +444,6 @@ bind = $mainMod, P, exec, [float; size 30% 30%; center] $HOME/.config/bin/pass-f
 bind = $mainShiftMod, W, exec, [float; size 30% 30%; center] $HOME/.config/bin/change-wallpaper
 bind = $mainShiftMod, E, exec, [float; size 30% 30%; center] $HOME/.config/bin/emoji-picker
 bind = $mainMod, S, exec, zsh -c '$HOME/.local/bin/neovide-session-manager switch $($HOME/.local/bin/neovide-session-manager list | $HOME/.config/bin/wfzf) || notify-send $?'
-
 #+end_src
 
 * Finish
