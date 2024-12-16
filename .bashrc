@@ -1,16 +1,12 @@
 # If not running interactively, don't do anything
-[[ $- != *i* ]] && return
-
-if [[ "$TERM" == 'dumb' ]]; then
-    return
-fi
+[[ $- != *i* ]] && return  # I forgot, what's it doing. So just kept here 🤡
+[[ "$TERM" == 'dumb' ]] && return
 
 # Aliases setup
 alias ll="exa --long --header --icons"
 alias g="git"
 alias d="docker"
-alias gr="cd (gitroot.sh)"
-alias rm="trash"
+alias gr="cd \$(gitroot.sh)"
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
@@ -23,7 +19,7 @@ __main() {
     local minor="${BASH_VERSINFO[1]}"
 
     if ((major > 4)) || { ((major == 4)) && ((minor >= 1)); }; then
-        source <(/usr/bin/starship init bash --print-full-init)
+        source <(starship init bash --print-full-init)
     else
         source /dev/stdin <<<"$(/usr/bin/starship init bash --print-full-init)"
     fi
@@ -35,8 +31,6 @@ unset -f __main
 if [[ "$INSIDE_EMACS" = 'vterm' ]] \
     && [[ -n ${EMACS_VTERM_PATH} ]] \
     && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
-	echo "Vterm profile"
-
 	source ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
 
 	PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }"'echo -ne "\033]0;$(basename $PWD)\007"'
@@ -67,7 +61,3 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 export HISTSIZE=10000
 export HISTFILESIZE=10000
 export HISTCONTROL=ignoreboth:erasedups
-
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
