@@ -2,16 +2,12 @@
 (require 'suzu-extensions)
 
 (defvar suzu/compilation-setup-name nil)
+
 (defun suzu/project-compilation-buffer-name-function (maj-mode)
   (concat
    "*"
    (project-name (project-current))
-   "/"
-   suzu/compilation-setup-name
-   "*"))
-
-(setq compilation-buffer-name-function
-      'suzu/project-compilation-buffer-name-function)
+   "/compile*"))
 
 (defun suzu/project--get-last-two-elements (dir)
   "Get the last two elements of a path."

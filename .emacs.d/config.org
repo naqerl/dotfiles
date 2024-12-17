@@ -113,26 +113,33 @@
 (defun my/window-with-name-visible-p (name)
   "Check if a window with the given NAME is currently visible."
   (let ((buffer (get-buffer name)))
-    (if buffer
-        (with-current-buffer buffer
-          (seq-some (lambda (window) (eq (window-buffer window) (current-buffer)))
-                (window-list)))
-      nil)))
+    (when buffer
+      (seq-some
+       (lambda (window) (eq (window-buffer window) buffer))
+       (window-list)))))
 
 (defun my/next-error ()
   "Navigates to the next xref or flycheck."
   (interactive)
-  (if (seq-some #'my/window-with-name-visible-p '("*xref*" "*Occur*"))
+  (if (seq-some
+       #'my/window-with-name-visible-p
+       (append
+        '("*xref*" "*Occur*")
+        my/global-compilation-buffer-names-list))
       (next-error))
-      (flycheck-next-error))
+  (flycheck-next-error))
 
 
 (defun my/previous-error ()
-  "Navigates to the previous xref or flycheck."  
+  "Navigates to the previous xref or flycheck."
   (interactive)
-  (if (seq-some #'my/window-with-name-visible-p '("*xref*" "*Occur*"))
+  (if (seq-some
+       #'my/window-with-name-visible-p
+       (append
+        '("*xref*" "*Occur*")
+        my/global-compilation-buffer-names-list))
       (previous-error))
-      (flycheck-previous-error))
+  (flycheck-previous-error))
 
 
 (use-package
@@ -373,6 +380,8 @@ Automatically resizes windows to fit golden ratio
   '((t :background "#b52c2c" :foreground "white" :inherit bold))
   "Face with a red background for use on the mode line.")
 
+(defface my-modeline-warn-fg '((t :foreground "orange" :inherit bold))
+  "Face to show warn messages.")
 
 (defface my-modeline-accent-fg '((t :foreground "#2fafff"))
   "Accent face")
@@ -440,6 +449,16 @@ Automatically resizes windows to fit golden ratio
   "Mode line construct to display current perspective name.")
 (put 'my-persp-name 'risky-local-variable t)
 
+(defvar-local my-compilation-in-progress
+    '(:eval
+      (when (and (boundp 'compilation-in-progress)
+                 compilation-in-progress
+                 (mode-line-window-selected-p))
+        (propertize "Compiling " 'face 'my-modeline-warn-fg)))
+  "Mode line construct to display compilation process.")
+(put 'my-compilation-in-progress 'risky-local-variable t)
+
+
 ;; Emacs 29, check the definition right below
 (mode-line-window-selected-p)
 
@@ -462,6 +481,7 @@ or not."
                 "  "
                 my-modeline-major-mode
                 mode-line-format-right-align
+                my-compilation-in-progress
                 my-persp-name
                 " "
                 my-modeline-lsp
@@ -913,11 +933,16 @@ or not."
    "." '(eldoc-box-help-at-point :wk "Show doc")))
 #+end_src
 
-** Global flycheck
+** Flycheck
 #+begin_src elisp
-(use-package flycheck
-  :config
-  (setq global-flycheck-mode 1))
+(use-package
+ flycheck
+ :config
+ (setq
+  global-flycheck-mode 1
+  flycheck-standard-error-navigation nil
+  flycheck-auto-display-errors-after-checking nil
+  flycheck-display-errors-function nil))
 #+end_src
 
 ** Languages
@@ -1123,6 +1148,15 @@ Setup lsp client
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(jtsx-jsx-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer"))))
+#+end_src
+
+** Use flycheck with eglot instead flymake
+#+begin_src elisp
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
 #+end_src
 
 ** DAP mode
@@ -1613,10 +1647,27 @@ So it'll be nice to run them automatically
 *** Ansi colors
 #+begin_src elisp
 (use-package ansi-color)
+
+
 (defun suzu/ansi-colorize-buffer ()
   (let ((buffer-read-only nil))
     (ansi-color-apply-on-region (point-min) (point-max))))
 (add-hook 'compilation-filter-hook 'suzu/ansi-colorize-buffer)
+
+
+#+end_src
+
+*** Remember all compilation buffer names
+#+begin_src elisp
+(defvar my/global-compilation-buffer-names-list nil
+  "List of names of each compilation buffer")
+
+(defun my/compilation-hook (process)
+  (unless (member
+           (buffer-name) my/global-compilation-buffer-names-list)
+    (push (buffer-name) my/global-compilation-buffer-names-list)))
+
+(add-hook 'compilation-start-hook 'my/compilation-hook)
 #+end_src
 
 *** Hotkeys
@@ -1628,6 +1679,12 @@ So it'll be nice to run them automatically
 *** Increase line length to hide
 #+begin_src elisp
 (setq-default compilation-max-output-line-length 5000)
+#+end_src
+
+*** Special buffer name
+#+begin_src elisp
+(setq compilation-buffer-name-function
+      'suzu/project-compilation-buffer-name-function)
 #+end_src
 
 ** Build from Makefile
@@ -1658,6 +1715,7 @@ So it'll be nice to run them automatically
     (suzu/project-discover-in-directory default-directory 1)
     (my/project-perspective-from-project (expand-file-name project-dir-name))))
 #+end_src
+
 * Completion
 ** Vertico
 *** Add annotations to completion
