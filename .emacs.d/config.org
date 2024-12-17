@@ -1215,6 +1215,16 @@ Install package for loading ~.env~ & setup hooks
 (tool-bar-mode -1)           ;; Disable the tool bar
 #+end_src
 
+*** Pulse current line
+#+begin_src elisp
+(use-package pulsar
+  :general
+  (general-define-key
+   :prefix "C-x"
+   :keymaps '(global)
+   "l" '(pulsar-pulse-line-cyan :wk "Pulse current line")))
+#+end_src
+
 *** Delete on paste
 #+begin_src elisp
 (setq-default delete-selection-mode t)

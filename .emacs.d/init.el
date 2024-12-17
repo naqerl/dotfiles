@@ -38,8 +38,8 @@
  '(org-agenda-files nil)
  '(package-selected-packages
    '(base16-theme doom-themes flatland-theme flychek grayscale-theme
-                  kuronami kuronami-theme make-project sublime-themes
-                  tao-theme))
+                  kuronami kuronami-theme make-project pulsar
+                  sublime-themes tao-theme))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project"
                    :branch "main")))
