@@ -110,6 +110,31 @@
   (interactive)
   (scroll-up (floor (/ (window-height) 2))))
 
+(defun my/window-with-name-visible-p (name)
+  "Check if a window with the given NAME is currently visible."
+  (let ((buffer (get-buffer name)))
+    (if buffer
+        (with-current-buffer buffer
+          (seq-some (lambda (window) (eq (window-buffer window) (current-buffer)))
+                (window-list)))
+      nil)))
+
+(defun my/next-error ()
+  "Navigates to the next xref or flycheck."
+  (interactive)
+  (if (seq-some #'my/window-with-name-visible-p '("*xref*" "*Occur*"))
+      (next-error))
+      (flycheck-next-error))
+
+
+(defun my/previous-error ()
+  "Navigates to the previous xref or flycheck."  
+  (interactive)
+  (if (seq-some #'my/window-with-name-visible-p '("*xref*" "*Occur*"))
+      (previous-error))
+      (flycheck-previous-error))
+
+
 (use-package
  general
  :config
@@ -152,27 +177,21 @@
 
  (general-define-key :prefix "C-x" "I" '(ibuffer :wk "Show iBuffer"))
 
+
  (general-define-key
   :keymaps
   '(global-map)
   "<f5>"
   '((lambda ()
       (interactive)
-      (flymake-show-buffer-diagnostics)
+      (flycheck-list-errors)
       (message "Buffer diagnostics")
       (other-window 1))
     :wk "Open buffer diagnostics")
-  "<f6>"
-  '((lambda ()
-      (interactive)
-      (flymake-show-project-diagnostics)
-      (message "Project diagnostics")
-      (other-window 1))
-    :wk "Open project diagnostics")
   "M-]"
-  '(flymake-goto-next-error :wk "Flymake next error")
+  '(my/next-error :wk "Go to next error")
   "M-["
-  '(flymake-goto-prev-error :wk "Flymake prev error"))
+  '(my/previous-error :wk "Go to prev error"))
 
  (general-define-key
   "<f7>"
@@ -239,12 +258,7 @@
 #+end_src
 
 #+begin_src elisp
-(use-package tao-theme)
-(use-package kuronami-theme)
 (use-package base16-theme)
-(use-package flatland-theme)
-(use-package sublime-themes)
-(use-package doom-themes)
 (use-package grayscale-theme)
 #+end_src
 
@@ -897,6 +911,13 @@ or not."
    :keymap 'prog-mode-map
    :prefix "C-h"
    "." '(eldoc-box-help-at-point :wk "Show doc")))
+#+end_src
+
+** Global flycheck
+#+begin_src elisp
+(use-package flycheck
+  :config
+  (setq global-flycheck-mode 1))
 #+end_src
 
 ** Languages

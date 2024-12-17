@@ -37,8 +37,9 @@
  '(enwc-wireless-device "wlan0")
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(base16-theme doom-themes flatland-theme grayscale-theme kuronami
-                  kuronami-theme make-project sublime-themes tao-theme))
+   '(base16-theme doom-themes flatland-theme flychek grayscale-theme
+                  kuronami kuronami-theme make-project sublime-themes
+                  tao-theme))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project"
                    :branch "main")))
