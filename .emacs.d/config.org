@@ -454,7 +454,7 @@ Automatically resizes windows to fit golden ratio
       (when (and (boundp 'compilation-in-progress)
                  compilation-in-progress
                  (mode-line-window-selected-p))
-        (propertize "Compiling " 'face 'my-modeline-warn-fg)))
+        (propertize "󱁤  " 'face 'my-modeline-warn-fg)))
   "Mode line construct to display compilation process.")
 (put 'my-compilation-in-progress 'risky-local-variable t)
 
@@ -480,10 +480,11 @@ or not."
                 my-modeline-buffer-name
                 "  "
                 my-modeline-major-mode
+
                 mode-line-format-right-align
-                my-compilation-in-progress
                 my-persp-name
                 " "
+                my-compilation-in-progress
                 my-modeline-lsp
                 my-modeline-timer))
 #+end_src
