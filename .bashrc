@@ -3,29 +3,19 @@
 [[ "$TERM" == 'dumb' ]] && return
 
 # Aliases setup
-alias ll="exa --long --header --icons"
+alias ls="exa --long --header --icons"
 alias g="git"
 alias d="docker"
 alias gr="cd \$(gitroot.sh)"
-alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 # Env setup
 . "$HOME/.cargo/env"
 
-# Promt setup
-__main() {
-    local major="${BASH_VERSINFO[0]}"
-    local minor="${BASH_VERSINFO[1]}"
-
-    if ((major > 4)) || { ((major == 4)) && ((minor >= 1)); }; then
-        source <(starship init bash --print-full-init)
-    else
-        source /dev/stdin <<<"$(/usr/bin/starship init bash --print-full-init)"
-    fi
-}
-__main
-unset -f __main
+eval -- "$(/home/suzumenobu/.cargo/bin/starship init bash --print-full-init)"
+# Use bash-completion, if available
+[[ -f /usr/share/bash-completion/bash_completion ]] && \
+    . /usr/share/bash-completion/bash_completion
 
 # Emacs vterm setup
 if [[ "$INSIDE_EMACS" = 'vterm' ]] \
