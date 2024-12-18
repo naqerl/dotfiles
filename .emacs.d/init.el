@@ -16,7 +16,8 @@
  ;; If there is more than one, they won't work right.
  '(auth-source-save-behavior nil)
  '(custom-safe-themes
-   '("f700bc979515153bef7a52ca46a62c0aa519950cc06d539df4f3d38828944a2c"
+   '("2f9cff368c07d280a7a766e9f04a0053a17bb74f775504dc49421d1fda2a0797"
+     "f700bc979515153bef7a52ca46a62c0aa519950cc06d539df4f3d38828944a2c"
      "6d55be90dc8c7b3027b0ea5bc4cc50c6352e2e4f03823eee58ac23ece8237139"
      "45333f79e4a7fdeff9924d5b6658f84fb468ef38f749455e5b58ba4154782007"
      "1f292969fc19ba45fbc6542ed54e58ab5ad3dbe41b70d8cb2d1f85c22d07e518"
@@ -37,10 +38,22 @@
  '(enwc-wireless-device "wlan0")
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(base16-theme doom-themes flatland-theme flycheck-eglot
-                  flycheck-pos-tip flychek grayscale-theme kuronami
-                  kuronami-theme make-project pulsar sublime-themes
-                  tao-theme))
+   '(alert all-the-icons-completion all-the-icons-dired base16-theme
+           cargo consult corfu csv-mode dashboard dired-open
+           dockerfile-mode doom-themes eldoc-box elf-mode
+           elfeed-goodies elisp-autofmt elysium emojify enwc
+           eshell-git-prompt eshell-syntax-highlighting eshell-toggle
+           evil-nerd-commenter flatland-theme flycheck-pos-tip gcmh
+           general git-gutter go-mode golden-ratio grayscale-theme
+           helpful indent-guide json-mode jtsx kuronami-theme
+           load-env-vars magit make-project marginalia markdown-toc
+           nerd-icons-corfu nushell-ts-mode orderless org-auto-tangle
+           org-present pcmpl-args peep-dired perspective pet php-mode
+           plantuml-mode poetry prettier-js pulsar rainbow-mode
+           ruff-format rust-mode sqlformat sublime-themes sudo-edit
+           tao-theme tldr toc-org typescript-mode undo-tree vertico
+           visual-regexp-steroids vterm-toggle web-mode with-editor
+           yaml-mode yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project"
                    :branch "main")))
