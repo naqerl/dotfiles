@@ -61,31 +61,7 @@
 
 *** Better window navigation
 #+begin_src elisp
-(defun suzu/window-left ()
-  (interactive)
-  (evil-window-left 1)
-  (golden-ratio))
-
-(defun suzu/window-down ()
-  (interactive)
-  (evil-window-down 1)
-  (golden-ratio))
-
-(defun suzu/window-up ()
-  (interactive)
-  (evil-window-up 1)
-  (golden-ratio))
-
-(defun suzu/window-right ()
-  (interactive)
-  (evil-window-right 1)
-  (golden-ratio))
-
-(with-eval-after-load 'evil-maps
-  (define-key evil-normal-state-map (kbd "C-h") 'suzu/window-left)
-  (define-key evil-normal-state-map (kbd "C-j") 'suzu/window-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'suzu/window-up)
-  (define-key evil-normal-state-map (kbd "C-l") 'suzu/window-right))
+(winner-mode +1) ;; Allows to restores layout after maximizing
 #+end_src
 
 ** General keybindings
