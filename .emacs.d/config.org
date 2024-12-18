@@ -1876,8 +1876,7 @@ Turn off duplicating lines on execution
                vterm-buffer-name (buffer-name buffer))))))
     (display-buffer-reuse-window display-buffer-in-side-window)
     (reusable-frames . visible)
-    (side . top)
-    (window-height . 0.3))))
+    (side . top))))
 #+end_src
 
 ** Multi vterm
