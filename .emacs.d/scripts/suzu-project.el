@@ -1,16 +1,21 @@
+;;; suzu-project --- My personal project extensions ;; -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Simple functions to improve projet behaviour
+
+;;; Code:
 (require 'project)
 (require 'suzu-extensions)
+(require 'perspective)
 
 (defvar suzu/compilation-setup-name nil)
 
-(defun suzu/project-compilation-buffer-name-function (maj-mode)
-  (concat
-   "*"
-   (project-name (project-current))
-   "/compile*"))
+(defun suzu/project-compilation-buffer-name-function (_)
+  "Creates unique compilation buffer name based on the current perspective."
+  (concat "*" (project-name (project-current)) "/compile*"))
 
 (defun suzu/project--get-last-two-elements (dir)
-  "Get the last two elements of a path."
+  "Get the last two elements of a DIR."
   (let* ((dir-components (split-string dir "\/" t))
          (last-two (last dir-components 2))
          (result
@@ -20,27 +25,27 @@
     (mapconcat 'identity result "/")))
 
 (defun suzu/project-switch-in-new-perspective ()
-  "Opens project in a new perspective"
+  "Opens project in a new perspective."
   (interactive)
-  (let* ((project-dir (project-prompt-project-dir)))
+  (let ((project-dir (project-prompt-project-dir)))
     (my/project-perspective-from-project project-dir)))
 
 (defun my/project-perspective-from-project (project-dir)
-  (let* ((persp-name
-          (suzu/project--get-last-two-elements project-dir)))
-    (persp-switch persp-name)
-    (message project-dir)
-    (project-switch-project project-dir)))
+  "Creates new perspective for the given PROJECT-DIR."
+  (persp-switch (suzu/project--get-last-two-elements project-dir))
+  (message project-dir)
+  (setq-local project-current-directory-override project-dir)
+  (project-find-file))
 
 (defun suzu/project-discover-in-directory (directory &optional depth)
-  "Recursively searches projects under given directroy.
-   Default depth is 6
-   Returns number of total found projects"
+  "Recursively searches projects under given DIRECTORY.
+Default DEPTH is 6
+Returns number of total found projects"
   (interactive (list (read-directory-name "Base search path: ")))
   (or depth (setq depth 6))
 
   (when (not (file-directory-p directory))
-    (error "Base path should be a directory."))
+    (error "Base path should be a directory"))
 
   (message "Searching projects in %s" directory)
 
@@ -64,9 +69,10 @@
 (cl-defstruct compilation-setup name command)
 (defvar suzu/compilation-setup-base-path
   (expand-file-name "projects-setup" user-emacs-directory)
-  "Directory path for saving project compilation setup")
+  "Directory path for saving project compilation setup.")
 
 (defun suzu/project--init-setup-if-needed (project-setup-path)
+  "DEPRECATED Creates init setup for project in PROJECT-SETUP-PATH"
   (when (not (file-directory-p suzu/compilation-setup-base-path))
     (message "Creating directory %s" suzu/compilation-setup-base-path)
     (make-directory suzu/compilation-setup-base-path))
@@ -75,6 +81,7 @@
     (write-region "()" nil project-setup-path)))
 
 (defun suzu/project--read-project-setup (project-setup-path)
+  "Reads project setup from PROJECT-SETUP-PATH"
   (with-temp-buffer
     (insert-file-contents project-setup-path)
     (cl-assert (eq (point) (point-min)))
