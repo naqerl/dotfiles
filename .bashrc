@@ -12,7 +12,7 @@ alias grep='grep --color=auto'
 # Env setup
 . "$HOME/.cargo/env"
 
-eval -- "$(/home/suzumenobu/.cargo/bin/starship init bash --print-full-init)"
+eval -- "$($HOME/.cargo/bin/starship init bash --print-full-init)"
 # Use bash-completion, if available
 [[ -f /usr/share/bash-completion/bash_completion ]] && \
     . /usr/share/bash-completion/bash_completion
