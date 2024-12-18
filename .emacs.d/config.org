@@ -264,7 +264,10 @@
 
 #+begin_src elisp
 (use-package base16-theme)
-(use-package grayscale-theme)
+(use-package grayscale-theme
+  :config
+  (require 'grayscale-vterm)
+  (set-face-attribute 'org-block nil :background (plist-get grayscale-theme-colors :bg+1))
 #+end_src
 
 *** Current
