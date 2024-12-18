@@ -952,7 +952,6 @@ or not."
 *** Python
 #+begin_src elisp
 (defun suzu/python-mode()
-  (add-hook 'before-save-hook 'python-isort-buffer)
   (ruff-format-on-save-mode)
   (eglot-ensure))
   
@@ -960,20 +959,15 @@ or not."
   :ensure t)
 
 (use-package ruff-format
-  :ensure t)
-
-(use-package python-isort
-  :ensure t)
-
-(use-package flycheck-mypy
-  :ensure t)
+  :config
+  (setq ruff-format-command "ruff check --fix --select I"))
 
 (use-package poetry
   :ensure t
   :custom
   (poetry-tracking-strategy 'project)
   :config
-  (poetry-tracking-mode))
+  (poetry-tracking-mode +1))
 
 (add-hook 'python-ts-mode-hook 'suzu/python-mode)
 #+end_src
