@@ -2261,9 +2261,10 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
 * UX
 ** Occur
 #+begin_src elisp
-(add-to-list 'display-buffer-alist
-             '("\\*Occur\\*"
-               (display-buffer-reuse-window)
-              (dedicated . t)
-              (body-function . (lambda (window) (select-window window)))))
+(add-to-list
+ 'display-buffer-alist
+ '("\\*Occur\\*"
+   (display-buffer-reuse-window)
+   (dedicated . t)
+   (body-function . (lambda (window) (select-window window)))))
 #+end_src
