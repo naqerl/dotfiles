@@ -243,7 +243,7 @@
 (use-package grayscale-theme
   :config
   (require 'grayscale-vterm)
-  (set-face-attribute 'org-block nil :background (plist-get grayscale-theme-colors :bg+1))
+  (set-face-attribute 'org-block nil :background (plist-get grayscale-theme-colors :bg+1)))
 #+end_src
 
 *** Current
