@@ -20,7 +20,7 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/scripts"))
 (add-to-list 'load-path "~/dotfiles/.emacs.d/themes")
 (require 'package-manager)
-(require my-extensions)
+(require 'my-extensions)
 #+end_src
 
 ** Upgrade GC
@@ -37,11 +37,9 @@
 
 ** Continue loading scripts
 #+begin_src elisp
-(require 'pyright-write)
-(require 'suzu-buffer)
-(require 'suzu-project)
-
-(use-package async :ensure t)
+(require 'project-persp)
+(require 'project-git)
+(use-package async)
 (require 'ob-async-sql)
 #+end_src
 
@@ -102,8 +100,8 @@
        (append
         '("*xref*" "*Occur*")
         my/global-compilation-buffer-names-list))
-      (next-error))
-  (flymake-goto-next-error))
+      (next-error)
+  (flymake-goto-next-error)))
 
 (defun my/previous-error ()
   "Navigates to the previous xref or flymake."
@@ -113,8 +111,8 @@
        (append
         '("*xref*" "*Occur*")
         my/global-compilation-buffer-names-list))
-      (previous-error))
-  (flymake-goto-prev-error))
+      (previous-error)
+  (flymake-goto-prev-error)))
 
 (use-package
  general
@@ -1596,7 +1594,7 @@ So it'll be nice to run them automatically
 * Project
 ** Register not only ~.git~ dirs
 #+begin_src elisp
-(defun suzu/dir-contains-project-marker (dir)
+(defun my/dir-contains-project-marker (dir)
   "Checks if `.project' file is present in directory at DIR path."
   (let ((project-marker-path (file-name-concat dir ".project")))
     (when (file-exists-p project-marker-path)
@@ -1604,7 +1602,7 @@ So it'll be nice to run them automatically
 
 (customize-set-variable 'project-find-functions
                         (list #'project-try-vc
-                              #'suzu/dir-contains-project-marker))
+                              #'my/dir-contains-project-marker))
 #+end_src
 
 ** Compilation
@@ -1662,22 +1660,6 @@ So it'll be nice to run them automatically
   "C-x"
   "p c"
   '(make-project-run :wk "Compile from project Makefile targets")))
-#+end_src
-
-** Create new from git
-#+begin_src elisp
-(require 'suzu-project)
-(defun my/new-project-from-git ()
-  (interactive)
-  (let* ((default-directory
-         (read-directory-name "Base directory: "
-                              (expand-file-name "~/code/")))
-        (clone-from (read-string "Clone from: "))
-        (project-dir-name
-         (car (my/track-new-directories
-          '(shell-command (format "git clone %s" clone-from))))))
-    (suzu/project-discover-in-directory default-directory 1)
-    (my/project-perspective-from-project (expand-file-name project-dir-name))))
 #+end_src
 
 * Completion
@@ -1977,7 +1959,7 @@ Turn off duplicating lines on execution
   (general-define-key
    :prefix "C-z"
    "l" '(persp-switch-last :wk "Last perspective")
-   "p" '(persp-project-switch :wk "Open project in a new perspective")))
+   "p" '(project-persp-switch :wk "Open project in a new perspective")))
 #+end_src
 
 ** Group buffers in ibuffer by perspective

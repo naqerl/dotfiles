@@ -22,7 +22,7 @@
        (or (file-exists-p fullpath) (file-directory-p fullpath))))
    files-and-dirs))
 
-(defun my/track-new-directories (&rest commands)
+(defun my/track-new-directories (commands)
   "Returns new directories after COMMANDS."
   (let ((initial-dirs-set (my/list-directories)))
     (eval commands)

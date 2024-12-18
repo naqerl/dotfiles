@@ -428,10 +428,11 @@ This function is meant to be called by `after-change-functions'."
 	 ;; Otherwise, only set properties on modified area.
 	 (org-indent-add-properties beg end))))))
 
-(provide 'suzu-org-indent)
+
 
 ;; Local variables:
 ;; generated-autoload-file: "org-loaddefs.el"
 ;; End:
 
-;;; org-indent.el ends here
+(provide 'suzu-org-indent)
+;;; suzu-org-indent.el ends here

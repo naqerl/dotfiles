@@ -1,31 +1,32 @@
-;;; persp-project --- Make perspective and project be friends ;; -*- lexical-binding: t; -*-
+;;; project-persp --- Make perspective and project be friends ;; -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Simple functions to add interations between perspective and project
 
 ;;; Code:
 (require 'project)
-(require 'suzu-extensions)
+(require 'my-extensions)
 (require 'perspective)
 
-(defun persp-project-compilation-buffer-name-function (_)
+(defun project-persp-compilation-buffer-name-function (_)
   "Creates unique compilation buffer name based on the current perspective."
   (concat "*" (project-name (project-current)) "/compile*"))
 
-(defun persp-project-switch ()
-  "Opens project in a new perspective."
+(defun project-persp-switch (&optional project-dir)
+  "Opens project in a new perspective.
+If PROJECT-DIR not specified then prompts for it"
   (interactive)
-  (let ((project-dir (project-prompt-project-dir)))
-    (persp-project--switch project-dir)))
+  (let ((project-dir (or project-dir (project-prompt-project-dir))))
+    (project-persp--switch project-dir)))
 
-(defun persp-project--switch (project-dir)
+(defun project-persp--switch (project-dir)
   "Creates new perspective for the given PROJECT-DIR."
-  (persp-switch (persp-project--get-last-two-elements project-dir))
+  (persp-switch (project-persp--get-last-two-elements project-dir))
   (message project-dir)
   (setq-local project-current-directory-override project-dir)
   (project-find-file))
 
-(defun persp-project--get-last-two-elements (dir)
+(defun project-persp--get-last-two-elements (dir)
   "Get the last two elements of a DIR."
   (let* ((dir-components (split-string dir "\/" t))
          (last-two (last dir-components 2))
@@ -35,7 +36,7 @@
             last-two)))
     (mapconcat 'identity result "/")))
 
-(defun persp-project-discover-in-directory (directory &optional depth)
+(defun project-persp-discover (directory &optional depth)
   "Recursively searches projects under given DIRECTORY.
 Default DEPTH is 6
 Returns number of total found projects"
@@ -55,11 +56,9 @@ Returns number of total found projects"
             (when (file-directory-p dir)
               (setq projects-found
                     (+ projects-found
-                       (persp-project-discover-in-directory
-                        dir
-                        (1- depth))))))))
+                       (project-persp-discover dir (1- depth))))))))
     (message "Total projects found: %s" projects-found)
     projects-found))
 
-(provide 'persp-project)
-;;; persp-project.el ends here
+(provide 'project-persp)
+;;; project-persp.el ends here
