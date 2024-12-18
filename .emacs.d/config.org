@@ -119,7 +119,7 @@
        (window-list)))))
 
 (defun my/next-error ()
-  "Navigates to the next xref or flycheck."
+  "Navigates to the next xref or flymake."
   (interactive)
   (if (seq-some
        #'my/window-with-name-visible-p
@@ -127,11 +127,10 @@
         '("*xref*" "*Occur*")
         my/global-compilation-buffer-names-list))
       (next-error))
-  (flycheck-next-error))
-
+  (flymake-goto-next-error))
 
 (defun my/previous-error ()
-  "Navigates to the previous xref or flycheck."
+  "Navigates to the previous xref or flymake."
   (interactive)
   (if (seq-some
        #'my/window-with-name-visible-p
@@ -139,8 +138,7 @@
         '("*xref*" "*Occur*")
         my/global-compilation-buffer-names-list))
       (previous-error))
-  (flycheck-previous-error))
-
+  (flymake-goto-prev-error))
 
 (use-package
  general
@@ -191,7 +189,7 @@
   "<f5>"
   '((lambda ()
       (interactive)
-      (flycheck-list-errors)
+      (flymake-show-buffer-diagnostics)
       (message "Buffer diagnostics")
       (other-window 1))
     :wk "Open buffer diagnostics")
@@ -934,18 +932,6 @@ or not."
    "." '(eldoc-box-help-at-point :wk "Show doc")))
 #+end_src
 
-** Flycheck
-#+begin_src elisp
-(use-package
- flycheck
- :config
- (setq
-  global-flycheck-mode 1
-  flycheck-standard-error-navigation nil
-  flycheck-auto-display-errors-after-checking nil
-  flycheck-display-errors-function nil))
-#+end_src
-
 ** Languages
 
 *** Rust
@@ -1055,6 +1041,7 @@ Generate table of contents
 
 #+begin_src elisp
 (defun my/emacs-lisp-mode-hook ()
+  (flymake-mode)
   (general-define-key
    :keymaps '(local)
    :prefix
@@ -1065,6 +1052,8 @@ Generate table of contents
 (use-package
  elisp-autofmt
  :hook (emacs-lisp-mode-hook . my/emacs-lisp-mode-hook))
+
+(setq elisp-flymake-byte-compile-load-path load-path)
 #+end_src
 
 *** Tex 
@@ -1149,15 +1138,6 @@ Setup lsp client
   (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(jtsx-jsx-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer"))))
-#+end_src
-
-** Use flycheck with eglot instead flymake
-#+begin_src elisp
-(use-package flycheck-eglot
-  :ensure t
-  :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode 1))
 #+end_src
 
 ** DAP mode
