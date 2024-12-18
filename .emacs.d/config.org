@@ -240,15 +240,20 @@
 
 #+begin_src elisp
 (use-package base16-theme)
-(use-package grayscale-theme
-  :config
-  (require 'grayscale-vterm)
-  (set-face-attribute 'org-block nil :background (plist-get grayscale-theme-colors :bg+1)))
+(use-package
+ grayscale-theme
+ :after (vterm)
+ :config
+ (require 'grayscale-vterm)
+ (set-face-attribute
+  'org-block nil
+  :background (plist-get grayscale-theme-colors :bg+1)))
 #+end_src
 
 *** Current
 #+begin_src elisp
 (load-theme 'grayscale :no-confirm)
+
 #+end_src
 
 *** Line numbers width
@@ -528,7 +533,11 @@ or not."
   (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
   ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
   (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
-  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode))
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (defun my/dabbrev-select-buffer (other-buffer)
+    (message "Checking %s for completion" other-buffer)
+    (get-buffer-window other-buffer))
+  (setq dabbrev-friend-buffer-function #'my/dabbrev-select-buffer))
 #+end_src
 
 *** Orderless
@@ -1343,7 +1352,7 @@ Install package for loading ~.env~ & setup hooks
                                  ("[ ]" . "")
                                  ("[X]" . "")
                                  ("[-]" . "")
-                                 ("#+begin_src" . "")
+                                 ("#+begin_src" . "")
                                  ("#+end_src" . "")
                                  (":properties:" . "")
                                  (":PROPERTIES:" . "")
@@ -1711,7 +1720,8 @@ So it'll be nice to run them automatically
   :general
   (general-define-key
    :prefix "C-x"
-   "b" '(consult-buffer :wk "Search buffers"))
+   "B" '(consult-buffer :wk "Search all buffers")
+   "b" '(consult-project-buffer :wk "Search project buffers"))
   (general-define-key
    :prefix "M-g"
    "i" '(consult-imenu :wk "Imenu"))
