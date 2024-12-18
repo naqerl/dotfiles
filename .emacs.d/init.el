@@ -47,13 +47,13 @@
            general git-gutter go-mode golden-ratio grayscale-theme
            helpful indent-guide json-mode jtsx kuronami-theme
            load-env-vars magit make-project marginalia markdown-toc
-           nerd-icons-corfu nushell-ts-mode orderless org-auto-tangle
-           org-present pcmpl-args peep-dired perspective pet php-mode
-           plantuml-mode poetry prettier-js pulsar rainbow-mode
-           ruff-format rust-mode sqlformat sublime-themes sudo-edit
-           tao-theme tldr toc-org typescript-mode undo-tree vertico
-           visual-regexp-steroids vterm-toggle web-mode with-editor
-           yaml-mode yuck-mode))
+           nerd-icons-corfu nginx-mode nushell-ts-mode orderless
+           org-auto-tangle org-present pcmpl-args peep-dired
+           perspective pet php-mode plantuml-mode poetry prettier-js
+           pulsar rainbow-mode ruff-format rust-mode sqlformat
+           sublime-themes sudo-edit tao-theme tldr toc-org
+           typescript-mode undo-tree vertico visual-regexp-steroids
+           vterm-toggle web-mode with-editor yaml-mode yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project"
                    :branch "main")))
