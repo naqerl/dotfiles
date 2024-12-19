@@ -5,6 +5,7 @@
 
 * Table of contents :toc:
 - [[#platform-specific-setup][Platform specific setup]]
+- [[#env-setup][Env setup]]
 - [[#alisaes][Alisaes]]
   - [[#super-key][Super key]]
   - [[#emacs][Emacs]]
@@ -49,6 +50,11 @@ Currently game mode needs manual config change
 
 #+begin_src conf
 source = $HOME/.config/hypr/platform/current.conf 
+#+end_src
+
+* Env setup
+#+begin_src conf
+env = PATH,$HOME/.roswell/bin:$PATH
 #+end_src
 
 * Alisaes

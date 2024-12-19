@@ -36,23 +36,18 @@ PROJECT-PATH provided as argument")
           (expand-file-name (format "%s/" project-dir-name))))
     (project-new--after-created project-path)))
 
-(defun project-new-cl-project ()
-  "Creates new project with ~ros init~."
+(defun project-new-custom ()
+  "Creates new project with custom command."
   (interactive)
   (let* ((default-directory
-          (read-directory-name "Base directory: "
+          (read-directory-name "Project path: "
                                project-git-base-path))
-         (project-new--name (read-string "Project name: "))
-         (project-path
-          (expand-file-name (format "%s/" project-new--name))))
+         (cmd (read-string "Command: ")))
+    (unless (file-exists-p default-directory)
+      (make-directory default-directory t))
     (with-temp-buffer
-      (shell-command (format
-                      "mkdir %s; cd %s; git init; make-project %s"
-                      project-new--name
-                      project-new--name
-                      project-new--name)
-                     t t))
-    (project-new--after-created project-path)))
+      (shell-command cmd t t))
+    (project-new--after-created default-directory)))
 
 (defun project-new--after-created (project-path)
   "Call after project created and pass PROJECT-PATH."

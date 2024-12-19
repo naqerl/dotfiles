@@ -1002,24 +1002,30 @@ Generate table of contents
 #+begin_src elisp
 (setq-default js-indent-level 2)
 
-(use-package jtsx
-  :ensure t)
+(use-package jtsx :ensure t)
 
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
 
 
-(use-package typescript-mode
-  :ensure t)
+(use-package typescript-mode :ensure t)
 
-(use-package web-mode
-  :ensure t)
+(defun my/web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-enable-auto-pairing t))
 
-(use-package prettier-js
-  :ensure t)
+(use-package
+ web-mode
+ :mode
+ (("\\.html?\\'" . web-mode))
+ :hook
+ (web-mode-hook . my/web-mode-hook))
+
+(use-package prettier-js :ensure t)
 
 (add-hook 'js-ts-mode-hook 'prettier-js-mode)
-
 #+end_src
 
 *** Emacs Lisp
@@ -1652,7 +1658,7 @@ So it'll be nice to run them automatically
 *** Special buffer name
 #+begin_src elisp
 (setq compilation-buffer-name-function
-      'suzu/project-compilation-buffer-name-function)
+      'project-persp-compilation-buffer-name-function)
 #+end_src
 
 ** Build from Makefile
