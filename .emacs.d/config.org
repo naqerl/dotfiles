@@ -38,7 +38,13 @@
 ** Continue loading scripts
 #+begin_src elisp
 (require 'project-persp)
-(require 'project-git)
+
+(require 'project-new)
+(defun my/project-new-created-hook (project-path)
+  (message "My project new created hook with %s" project-path)
+  (project-persp-switch project-path))
+(add-hook 'project-new-created-hook 'my/project-new-created-hook)
+
 (use-package async)
 (require 'ob-async-sql)
 #+end_src
