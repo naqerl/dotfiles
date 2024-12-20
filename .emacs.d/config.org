@@ -1879,13 +1879,6 @@ Turn off duplicating lines on execution
     (side . top))))
 #+end_src
 
-** Multi vterm
-#+begin_src elisp
-(use-package multi-vterm
-  :disabled
-  :config  (define-key vterm-mode-map [return]                      #'vterm-send-return))
-#+end_src
-
 ** Powershell
 #+begin_src elisp
 (defun run-powershell ()
@@ -1978,118 +1971,6 @@ Turn off duplicating lines on execution
               (ibuffer-do-sort-by-alphabetic))))
 #+end_src
 
-** Automatically save perspective states to file when Emacs exits
-#+begin_src elisp
-;; (add-hook 'kill-emacs-hook #'persp-state-save)
-#+end_src
-
-** Trying bufler
-#+begin_src elisp
-(use-package bufler
-  :disabled
-  :ensure t)
-#+end_src
-
-* EWW integration
-** Common
-#+begin_src elisp
-(defun suzu/update-eww-var (var value)
-  ;; (call-process "eww" nil nil nil "update" (format "%s=%s" var value))
-  )
-#+end_src
-
-** Current perspective
-#+begin_src elisp
-(defun suzu/current-perspective ()
-  (suzu/update-eww-var "emacs_session" (persp-current-name)))
-
-;; (add-hook 'persp-switch-hook 'suzu/current-perspective)
-#+end_src
-
-** Current buffer
-#+begin_src elisp
-(defun suzu/current-window ()
-  (suzu/update-eww-var "emacs_window_icon" (nerd-icons-icon-for-buffer))
-  (suzu/update-eww-var "emacs_window" (buffer-name)))
-
-;; (add-hook 'window-state-change-hook 'suzu/current-window)
-#+end_src
-
-** Buffer not saved status
-#+begin_src elisp
-(defun suzu/current-buffer-saved ()
-  (if (and (buffer-modified-p) (not buffer-read-only))
-      (suzu/update-eww-var "emacs_buffer_modifier" " ")
-      (suzu/update-eww-var "emacs_buffer_modifier" "")))
-
-;; (add-hook 'evil-normal-state-entry-hook 'suzu/current-buffer-saved)
-;; (add-hook 'window-state-change-hook 'suzu/current-buffer-saved)
-;; (add-hook 'after-save-hook 'suzu/current-buffer-saved)
-#+end_src
-
-** VCS branch
-#+begin_src elisp
-(defun suzu/current-vcs-branch ()
-  (suzu/update-eww-var "git_branch" (magit-get-current-branch)))
-
-;; (add-hook 'find-file-hook 'suzu/current-vcs-branch)
-;; (add-hook 'after-save-hook 'suzu/current-vcs-branch)
-#+end_src
-
-** LSP status
-#+begin_src elisp
-(defun suzu/lsp-status ()
-  (if (eglot-current-server)
-    (suzu/update-eww-var "emacs_lsp" " ")
-    (suzu/update-eww-var "emacs_lsp" "")))
-
-;; (add-hook 'eglot-managed-mode-hook 'suzu/lsp-status)
-;; (add-hook 'find-file-hook 'suzu/lsp-status)
-;; (add-hook 'persp-switch-hook 'suzu/lsp-status)
-#+end_src
-
-* Social
-** Slack
-#+begin_src elisp
-(use-package slack
-  :disabled
-  :ensure (:repo "https://github.com/yuya373/emacs-slack")
-  ;; :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :default t
-   :name "pixelplex"
-   :token (auth-source-pass--read-entry  "slack.com/token")
-   :cookie (auth-source-pass--read-entry  "slack.com/cookie")))
-
-(use-package alert
-  :commands (alert)
-  :init
-  (setq alert-default-style 'libnotify))
-#+end_src
-
-** Telegram
-~TDLib~ is required, build it from source on Linux:
-
-#+begin_src bash
-git clone https://github.com/tdlib/td.git
-mkdir build && cd build && cmake ../
-make -j8
-sudo make install
-#+end_src
-
-It will install headers to ~/usr/local/include~ and library itself into ~/usr/local/lib~. If you have ~TDLib~ installed in other location, don't forget to modify ~telega-server-libs-prefix~ before starting telega.
-
-For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise telega server build will fail. 
-
-#+begin_src elisp
-(use-package telega
-  :disabled)
-#+end_src
-
 * GPTel
 #+begin_src elisp
 (use-package gptel :ensure t :config (setq gptel-log-level 'info)
@@ -2121,44 +2002,6 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
   ([remap describe-key] . helpful-key))
 #+end_src
 
-* Network manager
-#+begin_src elisp
-(use-package enwc
-:custom (enwc-default-backend 'nm))
-#+end_src
-
-* App launcher
-** Main function
-#+begin_src elisp
-(defun suzu/launch-linux-app ()
-  "Select and launch a Linux application using Vertico."
-  (interactive)
-  (let* ((app (completing-read "󰅂 "
-                               (directory-files "/usr/share/applications" t "\\.desktop$")))
-         (app-filename (file-name-nondirectory app))
-         (app-name (cl-subseq app-filename 0 (- (length app-filename) 8))))
-    (if (and app (file-exists-p app))
-        (start-process "linux-app-launcher" "gtk-launch" app-name)
-      (message "Invalid application selected."))))
-#+end_src
-
-** Actual launcher
-#+begin_src elisp
-(defun suzu/emacs-app-launcher ()
-  (interactive)
-  (with-selected-frame
-      (make-frame '((name . "emacs-run-launcher")
-                    (minibuffer . only)
-                    (fullscreen . 0)
-                    (undecorated . t)
-                    (internal-border-width . 10)
-                    (width . 80)
-                    (height . 10)))
-    (unwind-protect
-        (suzu/launch-linux-app)
-        (delete-frame))))
-#+end_src
-
 * Tramp
 #+begin_src elisp
 (setq remote-file-name-inhibit-cache nil)
@@ -2169,55 +2012,9 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
 (setq tramp-verbose 1)
 #+end_src
 
-* REST client
-#+begin_src elisp
-;; (use-package restclient)
-;; (use-package ob-restclient)
-#+end_src
-
-* Dimmer
-#+begin_src elisp
-(defun advise-dimmer-config-change-handler ()
-  "Advise to only force process if no predicate is truthy."
-  (let ((ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
-                         dimmer-prevent-dimming-predicates)))
-    (unless ignore
-      (when (fboundp 'dimmer-process-all)
-        (dimmer-process-all t)))))
-
-(defun corfu-frame-p ()
-  "Check if the buffer is a corfu frame buffer."
-  (string-match-p "\\` \\*corfu" (buffer-name)))
-
-(defun dimmer-configure-corfu ()
-  "Convenience settings for corfu users."
-  (add-to-list
-   'dimmer-prevent-dimming-predicates
-   #'corfu-frame-p))
-
-(use-package dimmer
-  :disabled
-  :config
-  (advice-add
-   'dimmer-config-change-handler
-   :override 'advise-dimmer-config-change-handler)
-  (dimmer-configure-corfu)
-  (dimmer-mode t))
-#+end_src
-
 * ENV setup
 ** Path
 #+begin_src elisp
-;; (setenv "PATH"
-;;         (concat
-;;          "C:/mingw/bin" path-separator
-;;          "C:/Program Files/Git/bin" path-separator
-;;          "C:/Users/suzu/.cargo/bin" path-separator
-;;          (getenv "PATH")))
-;; (add-to-list 'exec-path "C:/MinGW/bin")
-;; (add-to-list 'exec-path "C:/Program Files/Git/bin")
-;; (add-to-list 'exec-path "C:/Users/suzu/.cargo/bin")
-;; (add-to-list 'exec-path "C:/Program Files/PostgreSQL/16/bin")
 (add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 (setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
@@ -2227,29 +2024,6 @@ For Linux users, make sure /usr/local/lib is in your ldconfig cache, otherwise t
 #+begin_src elisp
 (add-to-list 'default-frame-alist '(drag-internal-border . 1))
 (add-to-list 'default-frame-alist '(internal-border-width . 5))
-#+end_src
-
-* Harpoon
-#+begin_src elisp
-  (use-package harpoon
-  :disabled)
-#+end_src
-
-* Motions
-** Surround
-#+begin_src elisp
-(use-package surround
-  :ensure t
-  :general
-  (general-define-key
-    "M-'" '(surround-keymap :wk "Surround binds")))
-#+end_src#+end_src
-
-** Drag
-#+begin_src elisp
-(use-package drag-stuff
-  :disabled
-  :ensure t)
 #+end_src
 
 * Show current datetime

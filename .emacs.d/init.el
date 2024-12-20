@@ -51,7 +51,7 @@
            org-auto-tangle org-present pcmpl-args peep-dired
            perspective pet php-mode plantuml-mode poetry prettier-js
            pulsar rainbow-mode ruff-format rust-mode sqlformat
-           sublime-themes sudo-edit tao-theme tldr toc-org
+           sublime-themes sudo-edit surround tao-theme tldr toc-org
            typescript-mode undo-tree vertico visual-regexp-steroids
            vterm-toggle web-mode with-editor yaml-mode yuck-mode))
  '(package-vc-selected-packages
