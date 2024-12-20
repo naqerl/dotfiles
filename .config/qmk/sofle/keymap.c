@@ -52,7 +52,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 		    ),
 
   [_RAISE] = LAYOUT(
-		    _______, _______ , _______ , _______ , _______ , _______,                           QK_DYNAMIC_MACRO_RECORD_START_1,  QK_DYNAMIC_MACRO_RECORD_START_2  , QK_DYNAMIC_MACRO_RECORD_STOP,  _______ ,  _______ ,_______,
+		    QK_CLEAR_EEPROM, _______ , _______ , _______ , _______ , _______,                           QK_DYNAMIC_MACRO_RECORD_START_1,  QK_DYNAMIC_MACRO_RECORD_START_2  , QK_DYNAMIC_MACRO_RECORD_STOP,  _______ ,  _______ ,_______,
 		    _______,  KC_INS,  KC_PSCR,   KC_APP,  XXXXXXX, XXXXXXX,                        KC_PGUP, KC_PRVWD,   KC_UP, KC_NXTWD,KC_MEDIA_PLAY_PAUSE, KC_BSPC,
 		    _______, KC_LALT,  KC_LCTL,  KC_DEL,  XXXXXXX, KC_CAPS,                       KC_LEFT,  KC_DOWN, KC_UP, KC_RGHT,  KC_DEL, KC_BSPC,
 		    _______,KC_UNDO, KC_CUT, KC_COPY, KC_PASTE, XXXXXXX,  _______,       _______,  XXXXXXX, KC_LSTRT, XXXXXXX, KC_LEND,   _______, _______,
