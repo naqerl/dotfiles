@@ -55,7 +55,8 @@
            typescript-mode undo-tree vertico visual-regexp-steroids
            vterm-toggle web-mode with-editor yaml-mode yuck-mode))
  '(package-vc-selected-packages
-   '((make-project :url "https://github.com/scipunch/make-project"
+   '((vterm-toggle :url "https://github.com/scipunch/vterm-toggle")
+     (make-project :url "https://github.com/scipunch/make-project"
                    :branch "main")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
