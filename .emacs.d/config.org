@@ -141,15 +141,14 @@
   '(text-scale-decrease :wk "Zoom out"))
 
  (general-define-key
-  :prefix
-  "C-;"
-  "h"
+  :keymaps '(global)
+  "M-<left>"
   '(windmove-left :wk "Window move left")
-  "j"
+  "M-<down>"
   '(windmove-down :wk "Window move down")
-  "k"
+  "M-<up>"
   '(windmove-up :wk "Window move up")
-  "l"
+  "M-<right>"
   '(windmove-right :wk "Window move right"))
 
  (general-define-key
@@ -243,7 +242,8 @@
 #+end_src
 
 #+begin_src elisp
-(use-package base16-theme)
+(use-package base16-theme
+  :disabled)
 (use-package
  grayscale-theme
  :after (vterm)
@@ -290,8 +290,7 @@ Automatically resizes windows to fit golden ratio
 *** Zen mode
 #+begin_src elisp
 (use-package zen-mode
-        :disabled
-  :ensure t)
+  :disabled)
 #+end_src
 
 ** Auth source
@@ -322,9 +321,9 @@ Automatically resizes windows to fit golden ratio
 (use-package
  git-gutter
   :custom
- (git-gutter:modified-sign " ") ;; two space
- (git-gutter:added-sign " ") ;; multiple character is OK
- (git-gutter:deleted-sign " ")
+ (git-gutter:modified-sign "~") ;; two space
+ (git-gutter:added-sign "+") ;; multiple character is OK
+ (git-gutter:deleted-sign "-")
  :config
  (global-git-gutter-mode +1)
  (defun my/stage-hunk ()
@@ -576,8 +575,7 @@ or not."
 
 (use-package peep-dired
   :after dired
-  :hook (evil-normalize-keymaps . peep-dired-hook)
-  )
+  :hook (evil-normalize-keymaps . peep-dired-hook))
 
 (setf dired-kill-when-opening-new-dired-buffer t)
 (setq-default dired-listing-switches "-aBhl  --group-directories-first")
@@ -650,16 +648,6 @@ or not."
 (golden-ratio-mode nil))
 
 (add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
-#+end_src
-
-* Commenting lines
-#+begin_src elisp
-(use-package evil-nerd-commenter
-  :config
-  (general-define-key
-   :states 'normal
-   :prefix "g"
-   "c" '(evilnc-comment-or-uncomment-lines :wk "Comment lines")))
 #+end_src
 
 * Dashboard
@@ -1010,18 +998,30 @@ Generate table of contents
 
 (use-package typescript-mode :ensure t)
 
+
+(defun my/prettier ()
+  "Formats given file with prettier."
+  (interactive)
+  (let ((temp-file (make-temp-file "prettier-" nil ".html"))
+        (content (buffer-string)))
+    (with-temp-file temp-file
+      (insert content))
+    (shell-command (format "prettier %s" temp-file)
+                   (current-buffer)
+                   "*Prettier Error*")
+    (delete-file temp-file)))
+
 (defun my/web-mode-hook ()
   "Hooks for Web mode."
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
-  (setq web-mode-enable-auto-pairing t))
+  (setq web-mode-enable-auto-pairing t)
+  (add-hook 'before-save-hook my/tidy-html nil t))
 
 (use-package
  web-mode
- :mode
- (("\\.html?\\'" . web-mode))
- :hook
- (web-mode-hook . my/web-mode-hook))
+ :mode (("\\.html?\\'" . web-mode))
+ :hook (web-mode-hook . my/web-mode-hook))
 
 (use-package prettier-js :ensure t)
 
@@ -1119,6 +1119,7 @@ Inscrease amount of data which emacs reads from the process
 Setup lsp client
 #+begin_src elisp
 (use-package eglot
+  :disabled
   :general
   (general-define-key
    :keymaps '(eglot-mode-map)
@@ -1483,20 +1484,24 @@ So it'll be nice to run them automatically
 
 ** Present
 #+begin_src elisp
-(use-package org-present
-:config
-     (add-hook 'org-present-mode-hook
-               (lambda ()
-                 (org-present-big)
-                 (org-display-inline-images)
-                 (org-present-hide-cursor)
-                 (org-present-read-only)))
-     (add-hook 'org-present-mode-quit-hook
-               (lambda ()
-                 (org-present-small)
-                 (org-remove-inline-images)
-                 (org-present-show-cursor)
-                 (org-present-read-write))))
+(use-package
+ org-present
+ :disabled
+ :config
+ (add-hook
+  'org-present-mode-hook
+  (lambda ()
+    (org-present-big)
+    (org-display-inline-images)
+    (org-present-hide-cursor)
+    (org-present-read-only)))
+ (add-hook
+  'org-present-mode-quit-hook
+  (lambda ()
+    (org-present-small)
+    (org-remove-inline-images)
+    (org-present-show-cursor)
+    (org-present-read-write))))
 #+end_src
 
 ** Agenda
@@ -1621,7 +1626,6 @@ So it'll be nice to run them automatically
 *** Ansi colors
 #+begin_src elisp
 (use-package ansi-color)
-
 
 (defun suzu/ansi-colorize-buffer ()
   (let ((buffer-read-only nil))
