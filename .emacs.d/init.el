@@ -30,24 +30,7 @@
  '(enwc-wired-device "wlan0")
  '(enwc-wireless-device "wlan0")
  '(org-agenda-files nil)
- '(package-selected-packages
-   '(alert all-the-icons-completion all-the-icons-dired base16-theme
-           cargo consult consult-yasnippet corfu csv-mode dashboard
-           dired-open dockerfile-mode doom-themes eldoc-box elf-mode
-           elfeed-goodies elisp-autofmt elysium emojify enwc
-           eshell-git-prompt eshell-syntax-highlighting eshell-toggle
-           evil-nerd-commenter flatland-theme flycheck-pos-tip gcmh
-           general git-gutter go-mode golden-ratio grayscale-theme
-           helpful indent-guide json-mode jtsx kuronami-theme
-           load-env-vars magit make-project marginalia markdown-toc
-           nerd-icons-corfu nginx-mode nushell-ts-mode orderless
-           org-auto-tangle org-present pcmpl-args peep-dired
-           perspective pet php-mode plantuml-mode poetry prettier-js
-           pulsar rainbow-mode ruff-format rust-mode sqlformat
-           sublime-themes sudo-edit surround tao-theme tldr toc-org
-           typescript-mode undo-tree vertico visual-regexp-steroids
-           vterm-toggle web-mode with-editor yaml-mode yasnippet
-           yuck-mode))
+ '(package-selected-packages '(rust-docs))
  '(package-vc-selected-packages
    '((vterm-toggle :url "https://github.com/scipunch/vterm-toggle")
      (make-project :url "https://github.com/scipunch/make-project"
@@ -61,7 +44,7 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:background nil))))
  '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
- '(font-lock-keyword-face ((t (:inherit bold :foreground "#BEC3C6" :slant italic :weight bold))))
+ '(font-lock-keyword-face ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
  '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
  '(my-modeline-background ((t (:inherit bold :background "#5f509f" :foreground "white"))))
  '(org-hide ((t nil))))

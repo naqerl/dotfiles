@@ -107,7 +107,7 @@
         '("*xref*" "*Occur*")
         my/global-compilation-buffer-names-list))
       (next-error)
-  (flymake-goto-next-error)))
+    (flymake-goto-next-error)))
 
 (defun my/previous-error ()
   "Navigates to the previous xref or flymake."
@@ -118,7 +118,7 @@
         '("*xref*" "*Occur*")
         my/global-compilation-buffer-names-list))
       (previous-error)
-  (flymake-goto-prev-error)))
+    (flymake-goto-prev-error)))
 
 (use-package
  general
@@ -141,7 +141,8 @@
   '(text-scale-decrease :wk "Zoom out"))
 
  (general-define-key
-  :keymaps '(global)
+  :keymaps
+  '(global)
   "M-<left>"
   '(windmove-left :wk "Window move left")
   "M-<down>"
@@ -206,6 +207,9 @@
 
 (general-define-key
  :prefix "C-c" "W" '(my/visual-inner-WORD :wk "Visual inner WORD"))
+
+(general-define-key
+ :prefix "C-;" "d" '(duplicate-line :wk "Duplicate line"))
 #+end_src
 
 #+RESULTS:
@@ -779,8 +783,6 @@ or not."
  :config (dashboard-setup-startup-hook))
 
 (add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
-(add-hook
- 'dashboard-after-initialize-hook '(lambda () (blink-cursor-mode -1)))
 (setq-default initial-buffer-choice
               (lambda () (get-buffer "*dashboard*")))
 #+end_src
@@ -931,6 +933,9 @@ or not."
 (use-package cargo
   :config
   (add-hook 'rust-ts-mode-hook 'cargo-minor-mode))
+
+(use-package rust-docs
+  :vc (:url "https://github.com/scipunch/rust-docs"))
 #+end_src
 
 *** Python
@@ -2104,4 +2109,14 @@ The resize pertains to the maximum and minimum values"
     (display-buffer-reuse-mode-window display-buffer-below-selected)
     (dedicated . t)
     (body-function . my-window-select-fit-size)))
+#+end_src
+
+* Free keys
+#+begin_src elisp
+(use-package free-keys
+  :vc (:url "https://github.com/Fuco1/free-keys"))
+#+end_src
+
+#+begin_src elisp
+(blink-cursor-mode t)
 #+end_src
