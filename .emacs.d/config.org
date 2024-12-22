@@ -242,16 +242,21 @@
 #+end_src
 
 #+begin_src elisp
-(use-package base16-theme
-  :disabled)
+(use-package base16-theme :disabled)
 (use-package
  grayscale-theme
  :after (vterm)
- :config
- (require 'grayscale-vterm)
+ :config (require 'grayscale-vterm)
  (set-face-attribute
   'org-block nil
-  :background (plist-get grayscale-theme-colors :bg+1)))
+  :background
+  (plist-get grayscale-theme-colors :bg+1))
+ (custom-set-faces
+  '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
+  '(font-lock-keyword-face
+    ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
+  '(font-lock-string-face
+    ((t (:inherit italic :foreground "#738678"))))))
 #+end_src
 
 *** Current
@@ -916,7 +921,6 @@ or not."
 *** Rust
 #+begin_src elisp
 (defun suzu/rust-mode()
-  (eglot-ensure)
   (add-hook 'before-save-hook 'rust-format-buffer nil t))
 
 (use-package rust-mode
@@ -1006,9 +1010,13 @@ Generate table of contents
         (content (buffer-string)))
     (with-temp-file temp-file
       (insert content))
-    (shell-command (format "prettier %s" temp-file)
-                   (current-buffer)
-                   "*Prettier Error*")
+    (save-excursion
+      (shell-command-on-region
+       (point-min) (point-max)
+       (format
+        "prettier %s"
+        temp-file)
+       (current-buffer) t "*Prettier Error*" t))
     (delete-file temp-file)))
 
 (defun my/web-mode-hook ()
@@ -1016,7 +1024,7 @@ Generate table of contents
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-enable-auto-pairing t)
-  (add-hook 'before-save-hook my/tidy-html nil t))
+  (add-hook 'before-save-hook 'my/prettier nil t))
 
 (use-package
  web-mode
@@ -1119,7 +1127,6 @@ Inscrease amount of data which emacs reads from the process
 Setup lsp client
 #+begin_src elisp
 (use-package eglot
-  :disabled
   :general
   (general-define-key
    :keymaps '(eglot-mode-map)
@@ -1128,10 +1135,11 @@ Setup lsp client
    "C-e" '(eglot-rename :wk "Rename")
    "C-f" '(eglot-format :wk "Format"))
   :config
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
-  (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(jtsx-jsx-mode . ("typescript-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer"))))
+  ;; (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyright-langserver" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(js-ts-mode . ("typescript-language-server" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(jtsx-jsx-mode . ("typescript-language-server" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(rust-ts-mode . ("rust-analyzer")))
+  )
 #+end_src
 
 ** DAP mode
