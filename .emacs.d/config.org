@@ -47,7 +47,6 @@
 
 (use-package async)
 (require 'ob-async-sql)
-(require 'prot)
 #+end_src
 
 ** Load evil mode
@@ -289,12 +288,9 @@ Automatically resizes windows to fit golden ratio
  :init (golden-ratio-mode 1)
  :config
  (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
- (defun my/occur-buffer-visible-p ()
-   (my/window-with-name-visible-p "*Occur*"))
  :custom
  (golden-ratio-auto-scale t)
- (golden-ratio-exclude-buffer-names '("*Occur*"))
- (golden-ratio-inhibit-functions '(my/occur-buffer-visible-p)))
+ (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*")))
 #+end_src
 
 *** Zen mode
@@ -2076,12 +2072,36 @@ Turn off duplicating lines on execution
 
 (use-package
  emacs
- :bind ("M-s r" . my/occur-regions)
- :config
- (add-to-list
+ :bind ("M-s r" . my/occur-regions))
+#+end_src
+
+* Display buffer alist
+** Helpers
+#+begin_src elisp
+(defun my-window-select-fit-size (window)
+  "Select WINDOW and resize it.
+The resize pertains to the maximum and minimum values"
+  (select-window window)
+  (fit-window-to-buffer
+   window (floor (frame-height) 4) 10 (floor (frame-width) 4) 20))
+#+end_src
+
+** Occur
+#+begin_src elisp
+(add-to-list
   'display-buffer-alist
   '("\\*Occur\\*"
     (display-buffer-reuse-mode-window display-buffer-below-selected)
     (dedicated . t)
-    (body-function . prot-window-select-fit-size))))
+    (body-function . my-window-select-fit-size)))
+#+end_src
+
+** Xref
+#+begin_src elisp
+(add-to-list
+  'display-buffer-alist
+  '("\\*xref\\*"
+    (display-buffer-reuse-mode-window display-buffer-below-selected)
+    (dedicated . t)
+    (body-function . my-window-select-fit-size)))
 #+end_src
