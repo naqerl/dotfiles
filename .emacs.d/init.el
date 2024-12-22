@@ -1,14 +1,7 @@
 (setq vc-follow-symlinks t)
 (org-babel-load-file
  (expand-file-name "config.org" user-emacs-directory))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil))))
- '(my-modeline-background ((t (:inherit bold :background "#5f509f" :foreground "white"))))
- '(org-hide ((t nil))))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -39,8 +32,8 @@
  '(org-agenda-files nil)
  '(package-selected-packages
    '(alert all-the-icons-completion all-the-icons-dired base16-theme
-           cargo consult corfu csv-mode dashboard dired-open
-           dockerfile-mode doom-themes eldoc-box elf-mode
+           cargo consult consult-yasnippet corfu csv-mode dashboard
+           dired-open dockerfile-mode doom-themes eldoc-box elf-mode
            elfeed-goodies elisp-autofmt elysium emojify enwc
            eshell-git-prompt eshell-syntax-highlighting eshell-toggle
            evil-nerd-commenter flatland-theme flycheck-pos-tip gcmh
@@ -53,10 +46,22 @@
            pulsar rainbow-mode ruff-format rust-mode sqlformat
            sublime-themes sudo-edit surround tao-theme tldr toc-org
            typescript-mode undo-tree vertico visual-regexp-steroids
-           vterm-toggle web-mode with-editor yaml-mode yuck-mode))
+           vterm-toggle web-mode with-editor yaml-mode yasnippet
+           yuck-mode))
  '(package-vc-selected-packages
    '((vterm-toggle :url "https://github.com/scipunch/vterm-toggle")
      (make-project :url "https://github.com/scipunch/make-project"
                    :branch "main")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil))))
+ '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
+ '(font-lock-keyword-face ((t (:inherit bold :foreground "#BEC3C6" :slant italic :weight bold))))
+ '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
+ '(my-modeline-background ((t (:inherit bold :background "#5f509f" :foreground "white"))))
+ '(org-hide ((t nil))))

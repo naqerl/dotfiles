@@ -2061,3 +2061,15 @@ Turn off duplicating lines on execution
    (dedicated . t)
    (body-function . (lambda (window) (select-window window)))))
 #+end_src
+
+* Snippets
+#+begin_src elisp
+(use-package
+ yasnippet
+ :config
+ (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+ (yas-global-mode 1))
+(use-package consult-yasnippet
+  :after yasnippet
+  :bind ("M-p" . consult-yasnippet))
+#+end_src

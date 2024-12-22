@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: region
+# key: region
+# expand-env: ((yas-indent-line 'fixed))
+# --
+`comment-start` begin-region -- ${1:Region Name}
+
+`yas-selected-text`$0
+
+`comment-start` end-region   -- $1
