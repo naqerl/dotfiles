@@ -47,6 +47,7 @@
 
 (use-package async)
 (require 'ob-async-sql)
+(require 'prot)
 #+end_src
 
 ** Load evil mode
@@ -283,13 +284,17 @@
 *** Golden ratio
 Automatically resizes windows to fit golden ratio
 #+begin_src elisp
-(use-package golden-ratio
-  :init
-  (golden-ratio-mode 1)
-  :config
-  (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
-  :custom
-  (golden-ratio-auto-scale t))
+(use-package
+ golden-ratio
+ :init (golden-ratio-mode 1)
+ :config
+ (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
+ (defun my/occur-buffer-visible-p ()
+   (my/window-with-name-visible-p "*Occur*"))
+ :custom
+ (golden-ratio-auto-scale t)
+ (golden-ratio-exclude-buffer-names '("*Occur*"))
+ (golden-ratio-inhibit-functions '(my/occur-buffer-visible-p)))
 #+end_src
 
 *** Zen mode
@@ -2051,17 +2056,6 @@ Turn off duplicating lines on execution
 
 #+end_src
 
-* UX
-** Occur
-#+begin_src elisp
-(add-to-list
- 'display-buffer-alist
- '("\\*Occur\\*"
-   (display-buffer-reuse-window)
-   (dedicated . t)
-   (body-function . (lambda (window) (select-window window)))))
-#+end_src
-
 * Snippets
 #+begin_src elisp
 (use-package
@@ -2072,4 +2066,22 @@ Turn off duplicating lines on execution
 (use-package consult-yasnippet
   :after yasnippet
   :bind ("M-p" . consult-yasnippet))
+#+end_src
+
+* Region search
+#+begin_src elisp
+(defun my/occur-regions ()
+  (interactive)
+  (occur (format "^%s begin-region -- .*$" comment-start)))
+
+(use-package
+ emacs
+ :bind ("M-s r" . my/occur-regions)
+ :config
+ (add-to-list
+  'display-buffer-alist
+  '("\\*Occur\\*"
+    (display-buffer-reuse-mode-window display-buffer-below-selected)
+    (dedicated . t)
+    (body-function . prot-window-select-fit-size))))
 #+end_src
