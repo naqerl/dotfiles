@@ -10,7 +10,7 @@ alias gr="cd \$(gitroot.sh)"
 alias grep='grep --color=auto'
 
 # Env setup
-. "$HOME/.cargo/env"
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 eval -- "$($HOME/.cargo/bin/starship init bash --print-full-init)"
 # Use bash-completion, if available
