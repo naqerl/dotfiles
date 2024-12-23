@@ -30,7 +30,7 @@
  '(enwc-wired-device "wlan0")
  '(enwc-wireless-device "wlan0")
  '(org-agenda-files nil)
- '(package-selected-packages '(rust-docs))
+ '(package-selected-packages '(buffer-move groovy-mode jenkinsfile-mode rust-docs))
  '(package-vc-selected-packages
    '((vterm-toggle :url "https://github.com/scipunch/vterm-toggle")
      (make-project :url "https://github.com/scipunch/make-project"
@@ -47,4 +47,5 @@
  '(font-lock-keyword-face ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
  '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
  '(my-modeline-background ((t (:inherit bold :background "#5f509f" :foreground "white"))))
+ '(org-code ((t (:background "black" :foreground "azure2" :box (:line-width (1 . 1) :color "gainsboro" :style released-button)))))
  '(org-hide ((t nil))))

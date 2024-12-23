@@ -141,18 +141,6 @@
   '(text-scale-decrease :wk "Zoom out"))
 
  (general-define-key
-  :keymaps
-  '(global)
-  "M-<left>"
-  '(windmove-left :wk "Window move left")
-  "M-<down>"
-  '(windmove-down :wk "Window move down")
-  "M-<up>"
-  '(windmove-up :wk "Window move up")
-  "M-<right>"
-  '(windmove-right :wk "Window move right"))
-
- (general-define-key
   :prefix "C-x" "3"
   '((lambda ()
       (interactive)
@@ -1189,6 +1177,13 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 
+** Imenu
+#+begin_src elisp
+(use-package imenu
+  :bind
+  ("M-i" . imenu))
+#+end_src
+
 * Essential tweaks
 *** Indents
 #+begin_src elisp
@@ -1426,13 +1421,15 @@ Install package for loading ~.env~ & setup hooks
   :commands (org-capture org-agenda)
   :config
   (suzu/org-mode-setup)
-  :hook (org-mode . suzu/org-mode-hook))
+  :hook (org-mode . suzu/org-mode-hook)j
+  :bind
+  ("C-c l" . org-store-link))
 #+end_src
 
 *** Tags
 #+begin_src elisp
 (setq org-tag-alist
-      '(("project") ("idea") ("post")))
+      '(("project") ("idea") ("post") ("feature") ("improve") ("bug")))
 #+end_src
 
 ** Table of contents
@@ -2119,4 +2116,25 @@ The resize pertains to the maximum and minimum values"
 
 #+begin_src elisp
 (blink-cursor-mode t)
+#+end_src
+
+* Moving between windows and buffers
+#+begin_src elisp
+(use-package
+ buffer-move
+ :bind
+ ("<C-S-up>" . buf-move-up)
+ ("<C-S-down>" . buf-move-down)
+ ("<C-S-left>" . buf-move-left)
+ ("<C-S-right>" . buf-move-right))
+#+end_src
+
+#+begin_src elisp
+(use-package
+ emacs
+ :bind
+ ("<C-up>" . windmove-up)
+ ("<C-right>" . windmove-right)
+ ("<C-left>" . windmove-left)
+ ("<C-down>" . windmove-down))
 #+end_src
