@@ -30,7 +30,22 @@
  '(enwc-wired-device "wlan0")
  '(enwc-wireless-device "wlan0")
  '(org-agenda-files nil)
- '(package-selected-packages '(buffer-move groovy-mode jenkinsfile-mode rust-docs))
+ '(package-selected-packages
+   '(alert all-the-icons-completion all-the-icons-dired base16-theme
+           buffer-move cargo consult-yasnippet corfu csv-mode
+           dashboard dired-open dockerfile-mode eldoc-box elf-mode
+           elfeed-goodies elisp-autofmt elysium emojify enwc
+           eshell-git-prompt eshell-syntax-highlighting eshell-toggle
+           evil-nerd-commenter free-keys gcmh general git-gutter
+           go-mode golden-ratio grayscale-theme helpful indent-guide
+           json-mode jtsx load-env-vars magit make-project marginalia
+           markdown-toc nerd-icons-corfu nushell-ts-mode orderless
+           org-auto-tangle org-present pcmpl-args peep-dired
+           perspective php-mode plantuml-mode poetry prettier-js
+           pulsar rainbow-mode ruff-format rust-docs rust-mode
+           sqlformat sudo-edit tldr toc-org typescript-mode undo-tree
+           vertico visual-regexp-steroids vterm-toggle web-mode
+           yaml-mode yuck-mode))
  '(package-vc-selected-packages
    '((vterm-toggle :url "https://github.com/scipunch/vterm-toggle")
      (make-project :url "https://github.com/scipunch/make-project"

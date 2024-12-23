@@ -318,12 +318,17 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (use-package
  git-gutter
-  :custom
- (git-gutter:modified-sign "~") ;; two space
- (git-gutter:added-sign "+") ;; multiple character is OK
+ :custom
+ (git-gutter:modified-sign "~")
+ (git-gutter:added-sign "+")
  (git-gutter:deleted-sign "-")
  :config
- (global-git-gutter-mode +1)
+ (set-face-foreground
+  'git-gutter:modified (plist-get grayscale-theme-colors :yellow))
+ (set-face-foreground
+  'git-gutter:added (plist-get grayscale-theme-colors :green))
+ (set-face-foreground
+  'git-gutter:deleted (plist-get grayscale-theme-colors :red))
  (defun my/stage-hunk ()
    "Wrapper around git-gutter:stage-hunk but without confirm requirement"
    (interactive)
@@ -342,7 +347,11 @@ Automatically resizes windows to fit golden ratio
   "p"
   '(git-gutter:previous-hunk :wk "Previous git hunk")
   "s"
-  '(my/stage-hunk :wk "Stage hunk")))
+  '(my/stage-hunk :wk "Stage hunk"))
+ :hook
+ (prog-mode . git-gutter-mode)
+ (org-mode . git-gutter-mode)
+ (magit-post-refresh-hook git-gutter:update-all-windows))
 #+end_src
 
 *** Merging
