@@ -248,7 +248,9 @@
   '(font-lock-keyword-face
     ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
   '(font-lock-string-face
-    ((t (:inherit italic :foreground "#738678"))))))
+    ((t (:inherit italic :foreground "#738678"))))
+  `(org-table
+    ((t (:inherit default :foreground ,(plist-get grayscale-theme-colors :fg)))))))
 #+end_src
 
 *** Current
