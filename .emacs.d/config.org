@@ -1700,6 +1700,11 @@ So it'll be nice to run them automatically
   '(make-project-run :wk "Compile from project Makefile targets")))
 #+end_src
 
+** Follow compilation
+#+begin_src elisp
+(setq compilation-scroll-output t)
+#+end_src
+
 * Completion
 ** Vertico
 *** Add annotations to completion
@@ -2150,7 +2155,3 @@ The resize pertains to the maximum and minimum values"
  ("<C-down>" . windmove-down))
 #+end_src
 
-* Follow compilation buffer
-#+begin_src elisp
-(setq compilation-scroll-output t)
-#+end_src
