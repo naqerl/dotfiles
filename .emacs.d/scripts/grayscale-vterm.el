@@ -30,7 +30,31 @@
       :foreground ,(plist-get grayscale-theme-colors :fg))
     `(vterm-color-white
       nil
-      :foreground ,(plist-get grayscale-theme-colors :fg))))
+      :foreground ,(plist-get grayscale-theme-colors :fg))
+    `(vterm-color-bright-red
+      nil
+      :foreground
+      ,(plist-get grayscale-theme-colors :red+1))
+    `(vterm-color-bright-green
+      nil
+      :foreground
+      ,(plist-get grayscale-theme-colors :green+1))
+    `(vterm-color-bright-blue
+      nil
+      :foreground
+      ,(plist-get grayscale-theme-colors :fg-1))
+    `(vterm-color-bright-magenta
+      nil
+      :foreground
+      ,(plist-get grayscale-theme-colors :fg+1))
+    `(vterm-color-bright-yellow
+      nil
+      :foreground
+      ,(plist-get grayscale-theme-colors :fg+1))
+    `(vterm-color-bright-cyan
+      nil
+      :foreground
+      ,(plist-get grayscale-theme-colors :fg))))
 
 (dolist (config grayscale-vterm-colors)
   (apply #'set-face-attribute (eval config)))
