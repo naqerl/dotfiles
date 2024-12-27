@@ -238,7 +238,9 @@
 (use-package
  grayscale-theme
  :after (vterm)
- :config (require 'grayscale-vterm)
+ :config
+ (require 'grayscale-vterm)
+ (require 'grayscale-ansi)
  (set-face-attribute
   'org-block nil
   :background

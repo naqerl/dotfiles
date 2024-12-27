@@ -47,9 +47,8 @@
            vertico visual-regexp-steroids vterm-toggle web-mode
            yaml-mode yuck-mode))
  '(package-vc-selected-packages
-   '((vterm-toggle :url "https://github.com/scipunch/vterm-toggle")
-     (make-project :url "https://github.com/scipunch/make-project"
-                   :branch "main")))
+   '((make-project :url "https://github.com/scipunch/make-project")
+     (vterm-toggle :url "https://github.com/scipunch/vterm-toggle")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
 (custom-set-faces
