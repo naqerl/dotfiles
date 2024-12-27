@@ -2149,3 +2149,8 @@ The resize pertains to the maximum and minimum values"
  ("<C-left>" . windmove-left)
  ("<C-down>" . windmove-down))
 #+end_src
+
+* Follow compilation buffer
+#+begin_src elisp
+(setq compilation-scroll-output t)
+#+end_src
