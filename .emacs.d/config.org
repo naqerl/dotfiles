@@ -384,7 +384,13 @@ Automatically resizes windows to fit golden ratio
  (add-hook 'xwidget-webkit-mode-hook #'nano-modeline-xwidget-mode)
  (add-hook 'messages-buffer-mode-hook #'nano-modeline-message-mode)
  (add-hook 'org-capture-mode-hook #'nano-modeline-org-capture-mode)
- (add-hook 'org-agenda-mode-hook #'nano-modeline-org-agenda-mode))
+ (add-hook 'org-agenda-mode-hook #'nano-modeline-org-agenda-mode)
+ (set-face-attribute
+  'nano-modeline-status nil
+  :background
+  (plist-get grayscale-theme-colors :red-1)
+  :foreground
+  (plist-get grayscale-theme-colors :fg+1)))
 #+end_src
 
 ** All the icons
