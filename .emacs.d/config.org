@@ -47,6 +47,7 @@
 
 (use-package async)
 (require 'ob-async-sql)
+(require 'scimotions)
 #+end_src
 
 ** Load evil mode

@@ -19,7 +19,7 @@ If RIGHT-SYMBOL is nil then used LEFT-SYMBOL"
 (defvar scimotions-keymap nil
   "SciMotions keymap.")
 (define-prefix-command 'scimotions-keymap)
-(keymap-set global-map "C-c" 'scimotions-keymap)
+(keymap-set global-map "C-;" 'scimotions-keymap)
 
 (defvar scimotions--symbol-to-sexp
   '(("\"" ("\""))
