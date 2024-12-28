@@ -1089,17 +1089,17 @@ Generate table of contents
 
 *** Plant UML
 
-#+begin_src bash
-wget 'https://github.com/plantuml/plantuml/releases/download/v1.2024.8/plantuml-gplv2-1.2024.8.jar' -o ~/.local/bin/plantuml.jar
-#+end_src
-
-#+RESULTS:
-
 #+begin_src elisp
-(use-package plantuml-mode
-  :config
-   (setq org-plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
-    (setq plantuml-default-exec-mode 'jar))
+(use-package
+ plantuml-mode
+ :custom
+ (org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
+ (plantuml-default-exec-mode 'jar)
+ (plantuml-jar-path org-plantuml-jar-path)
+ (plantuml-indent-level 2)
+ (plantuml-output-type "png")
+ :hook
+ (plantuml-mode-hook . display-line-numbers-mode))
 #+end_src
 
 *** Yaml
@@ -1458,7 +1458,7 @@ Install package for loading ~.env~ & setup hooks
 (setq org-confirm-babel-evaluate nil)
 
 (setq org-babel-default-header-args
-      '((:results . "output")))
+      '((:results . "replace")))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
