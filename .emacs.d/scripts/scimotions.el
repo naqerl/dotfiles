@@ -21,7 +21,6 @@ If RIGHT-SYMBOL is nil then used LEFT-SYMBOL"
 (define-prefix-command 'scimotions-keymap)
 (keymap-set global-map "C-c" 'scimotions-keymap)
 
-
 (defvar scimotions--symbol-to-sexp
   '(("\"" ("\""))
     ("'" ("'"))
@@ -35,17 +34,6 @@ If RIGHT-SYMBOL is nil then used LEFT-SYMBOL"
    (lambda ()
      (interactive)
      (apply #'scimotions-region-inner (car (cdr item))))))
-
-;; (with-eval-after-load 'which-key
-;;   (declare-function which-key-add-keymap-based-replacements
-;;                     "which-key.el")
-;;   (when (fboundp 'which-key-add-keymap-based-replacements)
-;;     (which-key-add-keymap-based-replacements
-;;      scimotions-keymap
-;;      "\""
-;;      "Select in double quotes"
-;;      "'"
-;;      "Select in single quotes")))
 
 (provide 'scimotions)
 ;;; scimotions.el ends here
