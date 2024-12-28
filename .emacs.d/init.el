@@ -39,8 +39,8 @@
            evil-nerd-commenter free-keys gcmh general git-gutter
            go-mode golden-ratio grayscale-theme helpful indent-guide
            json-mode jtsx load-env-vars magit make-project marginalia
-           markdown-toc nerd-icons-corfu nushell-ts-mode orderless
-           org-auto-tangle org-present pcmpl-args peep-dired
+           markdown-toc nano-modeline nerd-icons-corfu nushell-ts-mode
+           orderless org-auto-tangle org-present pcmpl-args peep-dired
            perspective php-mode plantuml-mode poetry prettier-js
            pulsar rainbow-mode ruff-format rust-docs rust-mode
            sqlformat sudo-edit tldr toc-org typescript-mode undo-tree
@@ -62,4 +62,5 @@
  '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
  '(my-modeline-background ((t (:inherit bold :background "#5f509f" :foreground "white"))))
  '(org-code ((t (:background "black" :foreground "azure2" :box (:line-width (1 . 1) :color "gainsboro" :style released-button)))))
- '(org-hide ((t nil))))
+ '(org-hide ((t nil)))
+ '(org-table ((t (:inherit default :foreground "#b6b6b6")))))
