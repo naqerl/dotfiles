@@ -789,10 +789,7 @@ Automatically resizes windows to fit golden ratio
 
 
 * Dev
-** GNU Global tags
-#+begin_src elisp
-(use-package ggtags)
-#+end_src
+
 ** Common
 #+begin_src elisp
 (use-package eldoc-box
