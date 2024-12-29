@@ -21,7 +21,9 @@
       (when (mode-line-window-selected-p)
         (propertize (my-modeline--buffer-name)
                     'face
-                    'my-modeline-background)))
+                    'my-modeline-background
+                    'display
+                    '(:margin 10))))
   "Mode line construct to display the buffer name.")
 
 (put 'my-modeline-buffer-name 'risky-local-variable t)
@@ -100,8 +102,57 @@ or not."
              (with-selected-window (minibuffer-window)
                (eq window (minibuffer-selected-window)))))))
 
+(setq-default mode-line-format nil)
 
-(setq-default mode-line-format
+(defface scimodeline-hide-face
+  `((t
+     :overline "#BEC3C6"
+     :height 10
+     :font "Iosevka NF 10"
+     :box nil
+     :margin 2
+     :background ,(plist-get grayscale-theme-colors :bg)))
+  "Face with a accent background for use on the mode line.")
+
+;; Declared as var cause :line-width (1 . 0) is forbidden
+(defvar scimodeline-header-outline
+  '(:overline
+    "#BEC3C6"
+    :underline nil
+    :box (:color "#BEC3C6" :line-width (1 . 0)))
+  "Doc string.")
+
+(defun sci-box-buffer ()
+  "Doc string."
+  (interactive)
+  (set-window-margins nil 1 1)
+  (setq
+   mode-line-format
+   `((:eval ,(propertize " " 'face 'scimodeline-hide-face)))
+   fringes-outside-margins t
+   left-margin-width 1
+   right-margin-width 1
+   left-fringe-width 1
+   right-fringe-width 1)
+  (face-remap-add-relative 'mode-line-active 'scimodeline-hide-face)
+  (face-remap-add-relative 'mode-line-inactive 'scimodeline-hide-face)
+  (face-remap-add-relative
+   'header-line-active scimodeline-header-outline)
+  (face-remap-add-relative
+   'header-line-inactive scimodeline-header-outline)
+  (set-window-margins nil 1 1)
+  (when (eq (window-buffer) (current-buffer))
+    (set-window-buffer nil (current-buffer))))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6")))))
+
+(setq-default header-line-format
               '("%e"
                 my-modeline-buffer-name
                 "  "
@@ -113,3 +164,11 @@ or not."
                 my-compilation-in-progress
                 my-modeline-lsp
                 my-modeline-timer))
+(defun scimodeline-setup-minibuffer ()
+  "Removes fringes for the minibuffer."
+  (message "Entering mini buffer")
+  (set-window-fringes (minibuffer-window) 0))
+(add-hook 'minibuffer-mode-hook 'scimodeline-setup-minibuffer)
+
+
+(provide 'scimodeline)
