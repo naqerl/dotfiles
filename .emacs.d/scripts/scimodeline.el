@@ -135,6 +135,7 @@ or not."
    right-fringe-width 1)
   (face-remap-add-relative 'mode-line-active 'scimodeline-hide-face)
   (face-remap-add-relative 'mode-line-inactive 'scimodeline-hide-face)
+  (face-remap-add-relative 'header-line scimodeline-header-outline)
   (face-remap-add-relative
    'header-line-active scimodeline-header-outline)
   (face-remap-add-relative
