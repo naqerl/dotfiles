@@ -327,8 +327,7 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (use-package
  git-gutter
- :disabled
- :custom
+  :custom
  (git-gutter:modified-sign "~")
  (git-gutter:added-sign "+")
  (git-gutter:deleted-sign "-")
@@ -790,6 +789,10 @@ Automatically resizes windows to fit golden ratio
 
 
 * Dev
+** GNU Global tags
+#+begin_src elisp
+(use-package ggtags)
+#+end_src
 ** Common
 #+begin_src elisp
 (use-package eldoc-box
@@ -836,8 +839,7 @@ Automatically resizes windows to fit golden ratio
 *** Python
 #+begin_src elisp
 (defun suzu/python-mode()
-  (ruff-format-on-save-mode)
-  (eglot-ensure))
+  (ruff-format-on-save-mode))
   
 (use-package python
   :ensure t)

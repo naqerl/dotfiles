@@ -37,17 +37,18 @@
            elf-mode elfeed-goodies elisp-autofmt elysium emojify enwc
            eshell-git-prompt eshell-syntax-highlighting eshell-toggle
            evil-nerd-commenter flatland-theme flycheck-pos-tip
-           free-keys gcmh general git-gutter go-mode golden-ratio
-           grayscale-theme helpful indent-guide jenkinsfile-mode
-           json-mode jtsx kuronami-theme load-env-vars magit
-           make-project marginalia markdown-toc nerd-icons-corfu
-           nginx-mode nushell-ts-mode orderless org-auto-tangle
-           org-present pcmpl-args peep-dired perspective pet php-mode
-           plantuml-mode poetry prettier-js pulsar rainbow-mode
-           ruff-format rust-docs rust-mode sqlformat sublime-themes
-           sudo-edit surround tao-theme tldr toc-org typescript-mode
-           undo-tree vertico visual-regexp-steroids vterm-toggle
-           web-mode yaml-mode yuck-mode))
+           free-keys gcmh general ggtags git-gutter go-mode
+           golden-ratio grayscale-theme helpful indent-guide
+           jenkinsfile-mode json-mode jtsx kuronami-theme
+           load-env-vars magit make-project marginalia markdown-toc
+           nerd-icons-corfu nginx-mode nushell-ts-mode orderless
+           org-auto-tangle org-present pcmpl-args peep-dired
+           perspective pet php-mode plantuml-mode poetry prettier-js
+           pulsar rainbow-mode ruff-format rust-docs rust-mode
+           sqlformat sublime-themes sudo-edit surround tao-theme tldr
+           toc-org typescript-mode undo-tree vertico
+           visual-regexp-steroids vterm-toggle web-mode yaml-mode
+           yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")
      (vterm-toggle :url "https://github.com/scipunch/vterm-toggle")))
@@ -58,10 +59,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
  '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
  '(font-lock-keyword-face ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
  '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
+ '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
  '(org-code ((t (:background "black" :foreground "azure2" :box (:line-width (1 . 1) :color "gainsboro" :style released-button)))))
  '(org-hide ((t nil)))
- '(org-table ((t (:inherit default :foreground "#b6b6b6")))))
+ '(org-table ((t (:inherit default :foreground "#b6b6b6"))))
+ '(window-divider ((t (:foreground "#2e2e2e"))))
+ '(window-divider-first-pixel ((t (:foreground "#2e2e2e"))))
+ '(window-divider-last-pixel ((t (:foreground "#2e2e2e")))))
