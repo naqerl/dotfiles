@@ -146,6 +146,15 @@ or not."
 (setq window-divider-default-right-width 10)
 (window-divider-mode t)
 
+(defun my/display-buffer-box (window)
+  (with-current-buffer (window-buffer window)
+    (sci-box-buffer)))
+(add-to-list
+ 'display-buffer-alist
+ '(".*" (display-buffer-reuse-window
+    display-buffer-same-window)
+   (body-function . my/display-buffer-box)))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
