@@ -19,11 +19,11 @@
 (defvar-local my-modeline-buffer-name
     '(:eval
       (when (mode-line-window-selected-p)
-        (propertize (my-modeline--buffer-name)
-                    'face
-                    'my-modeline-background
-                    'display
-                    '(:margin 10))))
+        (concat
+
+         (propertize (my-modeline--buffer-name)
+                     'face
+                     'my-modeline-background))))
   "Mode line construct to display the buffer name.")
 
 (put 'my-modeline-buffer-name 'risky-local-variable t)
@@ -107,12 +107,12 @@ or not."
 (defface scimodeline-hide-face
   `((t
      :overline "#BEC3C6"
-     :height 10
-     :font "Iosevka NF 10"
+     :height 1
+     :font "Iosevka NF 7"
      :box nil
-     :margin 2
      :background ,(plist-get grayscale-theme-colors :bg)))
   "Face with a accent background for use on the mode line.")
+
 
 ;; Declared as var cause :line-width (1 . 0) is forbidden
 (defvar scimodeline-header-outline
@@ -125,13 +125,12 @@ or not."
 (defun sci-box-buffer ()
   "Doc string."
   (interactive)
-  (set-window-margins nil 1 1)
   (setq
    mode-line-format
    `((:eval ,(propertize " " 'face 'scimodeline-hide-face)))
    fringes-outside-margins t
-   left-margin-width 1
-   right-margin-width 1
+   left-margin-width 0
+   right-margin-width 0
    left-fringe-width 1
    right-fringe-width 1)
   (face-remap-add-relative 'mode-line-active 'scimodeline-hide-face)
@@ -144,26 +143,34 @@ or not."
   (when (eq (window-buffer) (current-buffer))
     (set-window-buffer nil (current-buffer))))
 
+(setq window-divider-default-right-width 10)
+(window-divider-mode t)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
 
- '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6")))))
+ '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
+ `(window-divider
+   ((t (:foreground ,(plist-get grayscale-theme-colors :bg)))))
+ `(window-divider-first-pixel
+   ((t (:foreground ,(plist-get grayscale-theme-colors :bg)))))
+ `(window-divider-last-pixel
+   ((t (:foreground ,(plist-get grayscale-theme-colors :bg))))))
+
 
 (setq-default header-line-format
-              '("%e"
-                my-modeline-buffer-name
-                "  "
-                my-modeline-major-mode
+              '("" my-modeline-buffer-name "  " my-modeline-major-mode
+                ;; mode-line-format-right-align
+                ;; my-persp-name
+                ;; " "
+                ;; my-compilation-in-progress
+                ;; my-modeline-lsp
+                ;; my-modeline-timer
+                ))
 
-                mode-line-format-right-align
-                my-persp-name
-                " "
-                my-compilation-in-progress
-                my-modeline-lsp
-                my-modeline-timer))
 (defun scimodeline-setup-minibuffer ()
   "Removes fringes for the minibuffer."
   (message "Entering mini buffer")
