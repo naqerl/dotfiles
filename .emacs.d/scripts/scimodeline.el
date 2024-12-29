@@ -144,48 +144,34 @@ or not."
   (when (eq (window-buffer) (current-buffer))
     (set-window-buffer nil (current-buffer))))
 
-(setq window-divider-default-right-width 10)
-(window-divider-mode t)
+;; (setq window-divider-default-right-width 10)
+;; (window-divider-mode t)
 
-(defun my/display-buffer-box (window)
-  (with-current-buffer (window-buffer window)
-    (sci-box-buffer)))
-(add-to-list
- 'display-buffer-alist
- '(".*" (display-buffer-reuse-window
-    display-buffer-same-window)
-   (body-function . my/display-buffer-box)))
+;; (add-hook 'prog-mode-hook 'sci-box-buffer)
+;; (add-hook 'org-mode-hook 'sci-box-buffer)
+;; (add-hook 'vterm-mode-hook 'sci-box-buffer)
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-
  '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
  `(window-divider
-   ((t (:foreground ,(plist-get grayscale-theme-colors :bg)))))
+   ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2)))))
  `(window-divider-first-pixel
-   ((t (:foreground ,(plist-get grayscale-theme-colors :bg)))))
+   ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2)))))
  `(window-divider-last-pixel
-   ((t (:foreground ,(plist-get grayscale-theme-colors :bg))))))
+   ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2))))))
 
 
-(setq-default header-line-format
-              '("" my-modeline-buffer-name "  " my-modeline-major-mode
-                ;; mode-line-format-right-align
-                ;; my-persp-name
-                ;; " "
-                ;; my-compilation-in-progress
-                ;; my-modeline-lsp
-                ;; my-modeline-timer
-                ))
-
-(defun scimodeline-setup-minibuffer ()
-  "Removes fringes for the minibuffer."
-  (message "Entering mini buffer")
-  (set-window-fringes (minibuffer-window) 0))
-(add-hook 'minibuffer-mode-hook 'scimodeline-setup-minibuffer)
+(setq-default mode-line-format
+              '(""
+                my-modeline-buffer-name
+                "  "
+                my-modeline-major-mode
+                mode--line-format-right-align
+                my-persp-name
+                " "
+                my-compilation-in-progress
+                my-modeline-lsp
+                my-modeline-timer))
 
 
 (provide 'scimodeline)

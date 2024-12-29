@@ -789,7 +789,6 @@ Automatically resizes windows to fit golden ratio
 
 
 * Dev
-
 ** Common
 #+begin_src elisp
 (use-package eldoc-box
@@ -1322,14 +1321,16 @@ Install package for loading ~.env~ & setup hooks
 
 *** Actual setup
 #+begin_src elisp
-(use-package org
-  :pin org
-  :commands (org-capture org-agenda)
-  :config
-  (suzu/org-mode-setup)
-  :hook (org-mode . suzu/org-mode-hook)j
-  :bind
-  ("C-c l" . org-store-link))
+(use-package
+ org
+ :pin org
+ :commands (org-capture org-agenda)
+ :config (suzu/org-mode-setup)
+ :hook (org-mode . suzu/org-mode-hook)
+ :bind
+ ("C-c l" . org-store-link)
+ ("M-n" . org-next-link)
+ ("M-p" . org-previous-link))
 #+end_src
 
 *** Tags
