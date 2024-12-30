@@ -126,7 +126,7 @@ Returns number of total found projects"
 
 (defun project-ext:search-comment (&optional what)
   "Searches for the WHAT comments.
-WHAT - property from `project-ext:search--comment-regexp' or any"
+WHAT - element from `project-ext:search--comment-regexp' or string any"
   (interactive)
   (let ((what
          (or what
