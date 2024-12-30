@@ -6,6 +6,17 @@
 (require 'my-extensions)
 (require 'project)
 
+; begin-region -- Keymap
+
+(defvar-keymap project-ext-keymap
+  :doc "Project ext keymap."
+  :prefix 'project-ext-keymap
+  "s" #'project-ext:search-comment)
+
+(keymap-set project-prefix-map "e" 'project-ext-keymap)
+
+; end-region   -- Keymap
+
 ; begin-region -- Create project extensions
 
 (defvar project-ext:new-created-hook nil
@@ -124,6 +135,7 @@ Returns number of total found projects"
 
 (defvar project-ext:search-comment-list '("todo" "fixme" "xxx"))
 
+;; TODO: Process comments with mentions e.g. 'TODO(scipunch): ...'
 (defun project-ext:search-comment (&optional what)
   "Searches for the WHAT comments.
 WHAT - element from `project-ext:search--comment-regexp' or string any"
