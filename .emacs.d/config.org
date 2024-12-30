@@ -37,13 +37,11 @@
 
 ** Continue loading scripts
 #+begin_src elisp
-(require 'project-persp)
-
-(require 'project-new)
+(require 'project-ext)
 (defun my/project-new-created-hook (project-path)
   (message "My project new created hook with %s" project-path)
   (project-persp-switch project-path))
-(add-hook 'project-new-created-hook 'my/project-new-created-hook)
+(add-hook 'project-ext:new-created-hook 'my/project-new-created-hook)
 
 (use-package async)
 (require 'ob-async-sql)
@@ -1580,7 +1578,7 @@ So it'll be nice to run them automatically
 *** Special buffer name
 #+begin_src elisp
 (setq compilation-buffer-name-function
-      'project-persp-compilation-buffer-name-function)
+      'project-ext:persp-compilation-buffer-name-function)
 #+end_src
 
 ** Build from Makefile
@@ -1886,7 +1884,7 @@ Turn off duplicating lines on execution
   (general-define-key
    :prefix "C-z"
    "l" '(persp-switch-last :wk "Last perspective")
-   "p" '(project-persp-switch :wk "Open project in a new perspective")))
+   "p" '(project-ext:persp-switch :wk "Open project in a new perspective")))
 #+end_src
 
 ** Group buffers in ibuffer by perspective
