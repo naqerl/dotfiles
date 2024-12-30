@@ -124,7 +124,6 @@ Returns number of total found projects"
 
 (defvar project-ext:search-comment-list '("todo" "fixme" "xxx"))
 
-
 (defun project-ext:search-comment (&optional what)
   "Searches for the WHAT comments.
 WHAT - property from `project-ext:search--comment-regexp' or any"
