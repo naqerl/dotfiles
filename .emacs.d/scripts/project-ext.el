@@ -120,5 +120,30 @@ Returns number of total found projects"
       projects-found)))
 ; end-region   -- Project perspective extensions
 
+; begin-region -- Project search extensions
+
+(defvar project-ext:search-comment-list '("todo" "fixme" "xxx"))
+
+
+(defun project-ext:search-comment (&optional what)
+  "Searches for the WHAT comments.
+WHAT - property from `project-ext:search--comment-regexp' or any"
+  (interactive)
+  (let ((what
+         (or what
+             (completing-read
+              "What: "
+              (cl-list* "any" project-ext:search-comment-list)))))
+    (project-find-regexp
+     (if (string= what "any")
+         (string-join (mapcar
+                       (lambda (el)
+                         (format "\\(%s:\\)" (upcase el)))
+                       project-ext:search-comment-list)
+                      "\\|")
+       (format "%s:" (upcase what))))))
+
+; end-region   -- Project search extensions
+
 (provide 'project-ext)
 ;;; project-ext.el ends here
