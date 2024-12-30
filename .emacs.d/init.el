@@ -32,22 +32,23 @@
  '(org-agenda-files nil)
  '(package-selected-packages
    '(alert all-the-icons-completion all-the-icons-dired base16-theme
-           buffer-move cargo consult-yasnippet corfu csv-mode
-           dashboard dired-open dockerfile-mode doom-themes eldoc-box
-           elf-mode elfeed-goodies elisp-autofmt elysium emojify enwc
-           eshell-git-prompt eshell-syntax-highlighting eshell-toggle
-           evil-nerd-commenter flatland-theme flycheck-pos-tip
-           free-keys gcmh general git-gutter go-mode golden-ratio
-           grayscale-theme helpful indent-guide jenkinsfile-mode
-           json-mode jtsx kuronami-theme load-env-vars magit
-           make-project marginalia markdown-toc nerd-icons-corfu
-           nginx-mode nushell-ts-mode orderless org-auto-tangle
-           org-present pcmpl-args peep-dired perspective pet php-mode
-           plantuml-mode poetry prettier-js pulsar rainbow-mode
-           ruff-format rust-docs rust-mode sqlformat sublime-themes
-           sudo-edit surround tao-theme tldr toc-org typescript-mode
-           undo-tree vertico visual-regexp-steroids vterm-toggle
-           web-mode yaml-mode yuck-mode))
+           better-jumper buffer-move cargo consult-yasnippet corfu
+           csv-mode dashboard dired-open dockerfile-mode doom-themes
+           eldoc-box elf-mode elfeed-goodies elisp-autofmt elysium
+           emojify enwc eshell-git-prompt eshell-syntax-highlighting
+           eshell-toggle evil-nerd-commenter flatland-theme
+           flycheck-pos-tip free-keys gcmh general git-gutter go-mode
+           golden-ratio grayscale-theme helpful indent-guide
+           jenkinsfile-mode json-mode jtsx kuronami-theme
+           load-env-vars magit make-project marginalia markdown-toc
+           nerd-icons-corfu nginx-mode nushell-ts-mode orderless
+           org-auto-tangle org-present pcmpl-args peep-dired
+           perspective pet php-mode plantuml-mode poetry prettier-js
+           pulsar rainbow-mode ruff-format rust-docs rust-mode
+           sqlformat sublime-themes sudo-edit surround tao-theme tldr
+           toc-org typescript-mode undo-tree vertico
+           visual-regexp-steroids vterm-toggle web-mode yaml-mode
+           yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")
      (vterm-toggle :url "https://github.com/scipunch/vterm-toggle")))
@@ -65,6 +66,6 @@
  '(org-code ((t (:background "black" :foreground "azure2" :box (:line-width (1 . 1) :color "gainsboro" :style released-button)))))
  '(org-hide ((t nil)))
  '(org-table ((t (:inherit default :foreground "#b6b6b6"))))
- '(window-divider ((t (:foreground "#2e2e2e"))))
- '(window-divider-first-pixel ((t (:foreground "#2e2e2e"))))
- '(window-divider-last-pixel ((t (:foreground "#2e2e2e")))))
+ '(window-divider ((t (:foreground "#424242"))))
+ '(window-divider-first-pixel ((t (:foreground "#424242"))))
+ '(window-divider-last-pixel ((t (:foreground "#424242")))))

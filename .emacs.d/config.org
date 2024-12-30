@@ -2049,3 +2049,17 @@ The resize pertains to the maximum and minimum values"
  ("<C-down>" . windmove-down))
 #+end_src
 
+* Better jumper
+#+begin_src elisp
+(use-package better-jumper
+  :config
+  (better-jumper-mode +1)
+  (defun better-better-jumper-set-jump (&rest r)
+    (better-jumper-set-jump))
+  (advice-add #'find-file :before #'better-better-jumper-set-jump)
+  (advice-add #'next-error :before #'better-better-jumper-set-jump)
+  (advice-add #'previous-error :before #'better-better-jumper-set-jump)
+  :bind
+  ("C-," . better-jumper-jump-backward)
+  ("C-." . better-jumper-jump-forward))
+#+end_src
