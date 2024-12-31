@@ -122,17 +122,6 @@
 (use-package
  general
  :config
-
- (general-define-key
-  :keymaps
-  '(vterm-mode-map global-map)
-  "<f2>"
-  '(vterm-toggle-forward :wk "Toggle vterm forward")
-  "<f3>"
-  '(vterm-toggle :wk "Toggle eshell")
-  "<f4>"
-  '(vterm-toggle-backward :wk "Toggle vterm backward"))
-
  (general-define-key
   "C-+"
   '(text-scale-increase :wk "Zoom in")
