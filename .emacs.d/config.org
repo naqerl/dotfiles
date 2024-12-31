@@ -1,7 +1,6 @@
 #+title: GNU Emacs Config
-#+author: Suzu
+#+author: SciPunch
 #+description: My personal Emacs config
-#+STARTUP: inlineimages
 
 * Ideas
 - Open project's makefile by keybind
@@ -69,16 +68,6 @@
 
 ** General keybindings
 #+begin_src elisp
-(defun suzu/split-window-vertical ()
-  (interactive)
-  (split-window-right)
-  (other-window 1))
-
-(defun suzu/split-window-horizontal ()
-  (interactive)
-  (split-window-below)
-  (other-window 1))
-
 (defun scroll-half-down ()
   "Scroll down half a window."
   (interactive)
@@ -541,239 +530,6 @@ Automatically resizes windows to fit golden ratio
 (add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
 #+end_src
 
-* Dashboard
-#+begin_src elisp
-(defun suzu/dashboard-insert-banner ()
-  "Insert the banner at the top of the dashboard."
-  (goto-char (point-max))
-  (when-let ((banner
-              (dashboard-choose-banner dashboard-startup-banner)))
-    (let ((start (point))
-          buffer-read-only
-          text-width
-          image-spec
-          (graphic-mode (display-graphic-p)))
-      (when graphic-mode
-        (insert "\n"))
-      ;; If specified, insert a text banner.
-      (when-let ((txt (plist-get banner :text)))
-        (if (file-exists-p txt)
-            (insert-file-contents txt)
-          (save-excursion (insert txt)))
-        (unless (text-properties-at 0 txt)
-          (put-text-property
-           (point) (point-max) 'face 'dashboard-text-banner))
-        (setq text-width 0)
-        (while (not (eobp))
-          (let ((line-length
-                 (- (line-end-position) (line-beginning-position))))
-            (when (< text-width line-length)
-              (setq text-width line-length)))
-          (forward-line 1)))
-      ;; If specified, insert an image banner. When displayed in a graphical frame, this will
-      ;; replace the text banner.
-      (when-let ((img (plist-get banner :image)))
-        (let ((img-props
-               (append
-                (when (> dashboard-image-banner-max-width 0)
-                  (list :max-width dashboard-image-banner-max-width))
-                (when (> dashboard-image-banner-max-height 0)
-                  (list
-                   :max-height dashboard-image-banner-max-height))
-                dashboard-image-extra-props)))
-          (setq image-spec
-                (cond
-                 ((dashboard--image-animated-p img)
-                  (create-image img))
-                 ((dashboard--type-is-xbm-p img)
-                  (create-image img))
-                 ((image-type-available-p 'imagemagick)
-                  (apply 'create-image
-                         img
-                         'imagemagick
-                         nil
-                         img-props))
-                 (t
-                  (apply 'create-image
-                         img nil nil
-                         (when (and (fboundp 'image-transforms-p)
-                                    (memq
-                                     'scale
-                                     (funcall 'image-transforms-p)))
-                           img-props))))))
-        (add-text-properties start (point) `(display ,image-spec))
-        (when (ignore-errors
-                (image-multi-frame-p image-spec))
-          (image-animate image-spec 0 t)))
-
-      ;; Finally, center the banner (if any).
-      (when-let*
-          ((text-align-spec
-            `(space . (:align-to (- center ,(/ text-width 2)))))
-           (image-align-spec
-            `(space . (:align-to (- center (0.5 . ,image-spec)))))
-           (prop
-            (cond
-             ;; Both an image & text banner.
-             ((and image-spec text-width)
-              ;; The quoting is intentional. This is a conditional display spec that will
-              ;; align the banner at redisplay time.
-              `((when (display-graphic-p)
-                  .
-                  ,image-align-spec)
-                (when (not (display-graphic-p))
-                  .
-                  ,text-align-spec)))
-             ;; One or the other.
-             (text-width
-              text-align-spec)
-             (image-spec
-              image-align-spec)
-             ;; No banner.
-             (t
-              nil)))
-           (prefix (propertize " " 'display prop)))
-        (add-text-properties
-         start (point)
-         `(line-prefix ,prefix wrap-prefix ,prefix)))
-      (insert "\n")
-      (add-text-properties
-       start (point)
-       '(cursor-intangible t inhibit-isearch t)))))
-
-(use-package
- dashboard
- :ensure t
- :custom
- (dashboard-set-init-info t)
- (dashboard-set-navigator t)
- (dashboard-show-shortcuts t)
- (dashboard-center-content t)
- (dashboard-startup-banner
- (expand-file-name "~/.emacs.d/banners/anime/1.png"))
- (dashboard-set-heading-icons t)
- (dashboard-set-file-icons nil)
- (dashboard-startupify-list
-  '(suzu/dashboard-insert-banner
-    dashboard-insert-newline
-    dashboard-insert-footer
-    dashboard-insert-newline
-    dashboard-insert-init-info
-    dashboard-insert-newline
-    end-of-buffer))
- :config (dashboard-setup-startup-hook))
-
-(add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
-(setq-default initial-buffer-choice
-              (lambda () (get-buffer "*dashboard*")))
-#+end_src
-
-** Banners
-#+begin_src
-⡆⣿⣿⣦⠹⣳⣳⣕⢅⠈⢗⢕⢕⢕⢕⢕⢈⢆⠟⠋⠉⠁⠉⠉⠁⠈⠼⢐⢕
-⡝⡄⢻⢟⣿⣿⣷⣕⣕⣅⣿⣔⣕⣵⣵⣿⣿⢠⣿⢠⣮⡈⣌⠨⠅⠹⣷⡀⢱
-⡝⠁⣠⣾⠟⡉⡉⡉⠻⣦⣻⣿⣿⣿⣿⣿⣿⣿⣿⣧⠸⣿⣦⣥⣿⡇⡿⣰⢗
-⡀⢻⣿⡇⢙⠁⠴⢿⡟⣡⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣵⣵
-⣷⢄⠻⣿⣟⠿⠦⠍⠉⣡⣾⣿⣿⣿⣿⣿⣿⢸⣿⣦⠙⣿⣿⣿⣿⣿⣿⣿⣿
-
-⡗⢰⣶⣶⣦⣝⢝⢕⢕⠅⡆⢕⢕⢕⢕⢕⣴⠏⣠⡶⠛⡉⡉⡛⢶⣦⡀⠐⣕
-⡝⡵⠟⠈⢀⣀⣀⡀⠉⢿⣿⣿⣿⣿⣿⣿⣿⣼⣿⢈⡋⠴⢿⡟⣡⡇⣿⡇⡀
-⠁⢰⣿⡏⣴⣌⠈⣌⠡⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣬⣉⣉⣁⣄⢖⢕⢕
-⡻⣄⣻⣿⣌⠘⢿⣷⣥⣿⠇⣿⣿⣿⣿⣿⣿⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ 
-⡕⡑⣑⣈⣻⢗⢟⢞⢝⣻⣿⣿⣿⣿⣿⣿⣿⠸⣿⠿⠃⣿⣿⣿⣿⣿⣿⡿⠁#+end_src
-
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡒⣢⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⠃⠀⠀⠀⠉⣁⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠈⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣶⣟⣛⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⢛⣛⣷⡦⢀⣤⣶⡶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⣴⣶⣶⠂⠤⢄⣀⠀⠀⠀⠈⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠋⠉⣰⣿⣿⣿⣇⢹⡄⠀⠀⠀⣀⠀⣠⠤⠠⡄⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣀⡯⠹⢲⡄⠀⠀⠀⣿⣿⣿⣷⣤⡀⠈⣹⣶⠦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⠀⢷⠀⠀⢰⡇⠋⠀⠀⢠⠇⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠛⠒⣎⡏⠀⠀⠀⠀⣿⣿⣿⡏⠙⠛⢦⡙⠉⠀⠀⠉⠓⢦⣀⠀⠀⢀⣀⣀⣀⣀⣀⡀⠀⢠⣿⣿⣿⠟⠻⣿⣿⡇⢸⡇⠀⠀⠓⠒⣦⠀⠛⢦⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠿⠓⠂⠀⡠⠽⢦⡀⠀⠀⠀⠈⠛⢛⡉⢉⠉⠀⠀⠙⠛⠋⢛⣿⢯⡉⠛⠀⠀⠘⠈⢿⠗⢻⠀⠀⠀⠀⠛⠦⠶⠋⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣇⠀⠀⢠⠋⠀⢀⡾⢛⡆⠀⠀⠀⢉⡽⠛⠁⠈⣏⢦⠐⢶⣤⡹⣿⠒⠁⠀⠀⢀⡠⠤⢼⢣⢸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⡴⠲⢤⡀⣀⣀⠀⠀⢸⣿⡗⠀⡇⠀⣠⣾⠟⠛⠡⣾⡴⢶⡯⠀⠤⠀⠀⢸⠸⡇⠀⡙⣿⣌⠻⣤⣀⡠⠋⠀⠀⢸⡏⢠⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⡇⠀⠀⠉⠁⣸⠀⠀⠀⢿⣿⠤⣫⡾⣿⣿⢱⣀⡼⠛⢒⡿⠀⠀⠀⠀⠀⠸⡇⢳⠐⠛⠉⠻⣇⢹⢿⣟⣦⣀⣸⣍⣷⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⡴⠄⠀⢰⠚⠁⠀⠀⠀⠘⢿⣿⡿⣤⠉⠁⣠⡿⠁⠀⣼⠁⠀⠀⣀⣀⡤⠂⡇⢸⡀⠀⠀⠀⠹⡆⠀⠀⠀⢿⣿⣤⣿⣿⣿⡇⠀⠀⠀⢀⢤⡀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠸⣄⣀⣀⡼⠀⠀⠀⠀⠀⠀⣼⣿⡶⠟⠀⣴⣿⠶⢦⢰⡟⡆⠀⣀⣩⣀⠀⢰⡇⣸⡓⠄⢀⣀⡀⢿⡀⡴⠛⢶⠘⣿⣿⣿⣿⣿⡀⠀⠘⢧⣀⡕⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⠃⠀⠀⢠⣿⠷⣤⡾⣼⡇⠁⢸⣏⠁⢘⡷⢘⡗⣿⣧⠆⣿⣈⡿⢺⣇⠉⢳⠟⠀⢸⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣽⡓⠀⠠⣼⢺⡅⠀⠂⣿⡩⡧⠀⠀⠛⠶⡛⠉⠁⣿⡏⠻⣬⠄⠨⠀⠀⢻⠀⠐⡄⠂⠀⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⡄⠀⢸⣿⣿⠁⣀⣿⣟⣀⣇⠆⢠⣀⣤⣄⠀⠀⢿⣿⣶⣻⣮⡀⠀⠀⣼⠀⠀⡏⠁⠀⢸⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⣿⢿⠀⠀⣿⣿⣿⠀⣿⠟⠉⠀⢹⡄⢸⣿⣿⣿⣿⣦⣸⡟⠀⠈⢻⣷⣆⡐⣿⡂⠀⡇⠀⠀⠘⣿⣿⣿⣿⣿⠀⠀⠀⠀⢀⡶⡄⠀⠀
-⢀⣦⡀⠀⠀⠀⠠⠴⠾⠛⠋⠉⠀⣿⠀⠀⠀⣿⠁⣿⣿⠉⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠙⢿⣿⣿⠀⠀⣅⠁⠀⠀⣿⣿⣿⣿⣿⠀⠀⠀⠸⡍⣰⣧⠀⠀
-⠈⣇⠙⢦⡀⠀⠀⠀⠀⠀⠀⠀⢰⣿⠀⠀⠀⣿⠄⣿⠃⠀⠀⠀⠀⠀⢹⣿⣿⣿⠟⠛⠿⠛⢇⠀⠀⠀⠀⠀⠻⣿⠀⢸⣇⠀⠀⣼⣿⣿⣿⣿⣿⠀⠀⠀⠐⠷⠃⠉⠀⠀
-⠀⢹⡀⠀⠙⢄⠀⠀⠀⠀⠀⠀⣾⣿⠀⠀⠀⣿⣆⣿⣠⣴⣶⣶⣤⣅⡒⢻⡀⠉⠳⣾⣷⣦⣸⣭⣴⡶⢶⣤⣤⣾⠀⣸⠧⠀⣸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⢻⡷⠀⠀⠈⠳⣄⠀⠀⠀⣸⣿⣿⣀⠄⠀⣿⣷⣿⠛⣋⣉⣀⡀⠉⠉⠀⠀⠀⠀⠀⠉⠈⠉⣉⣈⡉⠉⠛⠿⡿⠆⣿⠂⢰⣿⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⣤⣳⡕⠄⠀⣦⠘⣦⠀⢠⣿⣿⣿⣿⣆⠀⠘⣿⣿⣜⠿⢳⠻⠁⠀⠀⢠⣠⢄⣀⣠⡄⠀⢚⢏⢎⣿⡿⡴⣸⣧⣾⣏⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀
-⠀⢻⡌⡛⠀⢀⣘⣿⣿⣄⣾⣿⣿⣿⣿⣿⣷⣤⣽⠟⠉⠉⠙⠒⢤⡀⠀⠘⢆⠀⠀⢠⠃⠀⠈⢈⡤⠞⠋⠉⠉⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣼⣆⠀⠀⠀⠀⠀⠀
-⠀⠀⠻⣮⣀⣺⣿⣿⣿⣟⣿⣿⣿⣿⣿⡻⢿⡿⠏⠀⠀⠀⠀⠀⠀⠙⢦⠀⠈⠑⠒⠋⠀⢀⡴⠋⠀⠀⠀⠀⠀⠀⢀⠈⠻⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀
-⠀⠀⢺⣿⣿⣿⣿⣿⣿⣿⣵⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⢸⣷⣶⣦⣤⣶⣶⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀
-⠀⠀⠀⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣍⣉⣽⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀
-⠀⠀⠀⠘⣿⣿⣿⣿⣿⢟⣱⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣖
-⠀⠀⠀⢀⣽⣿⣿⡿⣉⣸⣿⣿⣿⣿⣿⣿⣏⠻⠧⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷
-⠀⠀⣴⣿⣿⣿⣿⣿⠛⣽⣿⣿⣿⣿⣿⣿⠻⣷⣤⣀⠀⠀⠀⠀⠀⠀⢠⣿⣿⠿⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿
-⠀⠸⠿⠿⠿⠻⡿⠿⠴⠿⠿⠿⠿⢿⣿⣿⣷⣆⡉⠛⠿⢷⣶⣶⣶⣶⣿⣿⣿⣄⡊⠛⠿⢷⣶⣲⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠿⡷⠹⠿⠿⠿⠿⠿⡞
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠒⠽⠷⠶⠶⠴⠾⠿⠟⠛⠿⠟⠛⠛⠻⠲⠦⠤⠤⠤⠤⠤⠤⠶⠿⠛⠿⠟⠓⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
-⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿
-⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿
-⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿
-⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿
-⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿
-⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿
-⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿
-⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿
-⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿
-⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿
-⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿
-
-⠤⠤⠤⠤⠤⠤⢤⣄⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠤⠶⠶⠶⠦⠤⠤⠤⠤⠤⢤⣤⣀⣀⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⠄⢂⣠⣭⣭⣕⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠀⠀⠀⠤⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠉⠉⠉
-⠀⠀⢀⠜⣳⣾⡿⠛⣿⣿⣿⣦⡠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣤⣤⣤⣤⣤⣤⣤⣤⣤⣍⣀⣦⠦⠄⣀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠠⣄⣽⣿⠋⠀⡰⢿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⡿⠛⠛⡿⠿⣿⣿⣿⣿⣿⣿⣷⣶⣿⣁⣂⣤⡄⠀⠀⠀⠀⠀⠀
-⢳⣶⣼⣿⠃⠀⢀⠧⠤⢜⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⠟⠁⠀⠀⠀⡇⠀⣀⡈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠁⠐⠀⣀⠀⠀
-⠀⠙⠻⣿⠀⠀⠀⠀⠀⠀⢹⣿⣿⡝⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡿⠋⠀⠀⠀⠀⠠⠃⠁⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⡿⠋⠀⠀
-⠀⠀⠀⠙⡄⠀⠀⠀⠀⠀⢸⣿⣿⡃⢼⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡏⠉⠉⠻⣿⡿⠋⠀⠀⠀⠀
-⠀⠀⠀⠀⢰⠀⠀⠰⡒⠊⠻⠿⠋⠐⡼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⠀⠀⠀⠀⣿⠇⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠸⣇⡀⠀⠑⢄⠀⠀⠀⡠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢖⠠⠤⠤⠔⠙⠻⠿⠋⠱⡑⢄⠀⢠⠟⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠈⠉⠒⠒⠻⠶⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠡⢀⡵⠃⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠦⣀⠀⠀⠀⠀⠀⢀⣤⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠙⠛⠓⠒⠲⠿⢍⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⠟⠻⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠀⠀⠈⠻⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣶⣦⡀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⡇⠀⠀⠀⠀⠈⠙⢷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠾⠋⠁⢸⣿⡇⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⡇⠀⠀⠀⠀⠀⠀⠀⠙⢷⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠛⠁⠀⠀⠀⣿⣼⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡏⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠛⠁⠀⠀⠀⠀⠀⣸⡿⣿⠂⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⣿⠀⠀⠀⠀⠀⠶⠶⠶⠶⠶⠶⠿⠷⠶⠶⠤⣤⣤⣀⣀⡀⢀⣤⡾⠛⠁⠀⠀⠀⠀⠀⠀⠀⢠⣿⢣⡟⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⣽⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡷⣸⠇⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⢣⡿⠁⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣼⠃⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠇⠀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡏⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣿⣿⡾⠛⠉⣉⣽⣿⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⠶⠛⢛⣿⣿⣷⣶⣤⣀⠀⠀⠀⠀⠀⠀⢸⣿⡀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⢰⣾⠛⢉⣵⡟⣃⣤⣶⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⣠⣾⠏⣡⣴⣾⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⢈⡹⣇⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠙⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣰⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠶⠖⠲⠾⣿⣿⣦⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⣠⣴⡾⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠀⠀⠀⠀⠀⠈⠙⢿⣄⠀⠀⠀⠀
-⠀⠀⣿⡛⠉⠁⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢷⣄⠀⠀
-⠀⠀⣾⣷⣦⣀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣧⠀
-⠀⡀⠈⠻⢿⣿⣿⣷⠆⠀⠙⠻⠿⣿⣿⡿⢿⣿⠋⠀⠀⠀⣴⠇⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡆
-⠀⠻⣟⠛⠛⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠿⣿⣆⣀⣠⣼⢿⣧⠀⠀⠀⢀⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⠿⣛⠹⣮⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣷
-⠀⠀⠈⠻⢦⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⢩⠿⠻⣯⢻⣷⣶⣿⡿⠋⠀⠀⠀⠉⠉⠉⠉⠁⠀⣐⣭⣾⡿⠋⢻⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿
-⠀⠀⠀⢀⣰⣿⣻⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⡿⠛⣍⠡⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡟
-⠀⠀⠀⠛⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡿⠁
-⠀⠀⠀⢐⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠀⠀
-⠀⠀⠀⣼⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡾⠃⠀⠀⠀
-⠀⠀⠀⣸⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣶⡟⠀⠀⠀⠀⠀
-⠀⠀⣰⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠛⠀⠀⠀⠀⠀⠀
-⢠⣾⢿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⡏⠀⠀⠀⠀⠀⠀⠀
-⠀⣰⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣿⠀⠀⠀⠀⠀⠀⠀⠀
-⣾⢿⣾⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠛⠀⠀⠀⠀⠀⠀⠀⠀
-⢀⣾⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
-
-
-
-
 
 * Dev
 ** Common
@@ -1082,7 +838,474 @@ Install package for loading ~.env~ & setup hooks
   ("M-i" . imenu))
 #+end_src
 
-* Essential tweaks
+** Project
+** Register not only ~.git~ dirs
+#+begin_src elisp
+(defun my/dir-contains-project-marker (dir)
+  "Checks if `.project' file is present in directory at DIR path."
+  (let ((project-marker-path (file-name-concat dir ".project")))
+    (when (file-exists-p project-marker-path)
+       dir)))
+
+(customize-set-variable 'project-find-functions
+                        (list #'project-try-vc
+                              #'my/dir-contains-project-marker))
+#+end_src
+
+** Compilation
+*** Ansi colors
+#+begin_src elisp
+(use-package ansi-color)
+
+(defun suzu/ansi-colorize-buffer ()
+  (let ((buffer-read-only nil))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+(add-hook 'compilation-filter-hook 'suzu/ansi-colorize-buffer)
+
+
+#+end_src
+
+*** Remember all compilation buffer names
+#+begin_src elisp
+(defvar my/global-compilation-buffer-names-list nil
+  "List of names of each compilation buffer")
+
+(defun my/compilation-hook (process)
+  (unless (member
+           (buffer-name) my/global-compilation-buffer-names-list)
+    (push (buffer-name) my/global-compilation-buffer-names-list)))
+
+(add-hook 'compilation-start-hook 'my/compilation-hook)
+#+end_src
+
+*** Hotkeys
+#+begin_src elisp
+;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
+;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
+#+end_src
+
+*** Increase line length to hide
+#+begin_src elisp
+(setq-default compilation-max-output-line-length 5000)
+#+end_src
+
+*** Special buffer name
+#+begin_src elisp
+(setq compilation-buffer-name-function
+      'project-ext:persp-compilation-buffer-name-function)
+#+end_src
+
+** Build from Makefile
+#+begin_src elisp
+(use-package
+ make-project
+ :vc (:url "https://github.com/scipunch/make-project")
+ :general
+ (general-define-key
+  :prefix
+  "C-x"
+  "p c"
+  '(make-project-run :wk "Compile from project Makefile targets")))
+#+end_src
+
+** Follow compilation
+#+begin_src elisp
+(setq compilation-scroll-output t)
+#+end_src
+
+** Completion
+** Vertico
+*** Add annotations to completion
+#+begin_src elisp
+(use-package marginalia
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'left)
+  :init
+  (marginalia-mode))
+#+end_src
+
+*** Add icons
+#+begin_src elisp
+(use-package all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
+#+end_src
+
+*** Actual setup
+#+begin_src elisp
+(use-package vertico
+  :custom
+  (vertico-count 13)
+  (vertico-resize nil)
+  (vertico-cycle nil)
+  :config
+  (vertico-mode))
+#+end_src
+
+*** Better vertico search something
+#+begin_src elisp
+(use-package consult
+  :general
+  (general-define-key
+   :prefix "C-x"
+   "B" '(consult-buffer :wk "Search all buffers")
+   "b" '(consult-project-buffer :wk "Search project buffers"))
+  (general-define-key
+   :prefix "M-g"
+   "i" '(consult-imenu :wk "Imenu"))
+  (general-define-key
+   :prefix "C-;"
+   "o" '(consult-outline :wk "Outline")
+   "i" '(consult-line :wk "Search line")
+   ";" '(consult-ripgrep :wk "Ripgrep")))
+#+end_src
+
+** Rainbow mode
+#+begin_src elisp
+(use-package rainbow-mode
+  :hook
+  ((org-mode prog-mode) . rainbow-mode))
+#+end_src
+** Treesitter
+#+begin_src elisp
+(setq treesit-language-source-alist
+      '((rust "https://github.com/tree-sitter/tree-sitter-rust")
+        (python "https://github.com/tree-sitter/tree-sitter-python")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (make "https://github.com/alemuller/tree-sitter-make")
+        (emacs-lisp "https://github.com/emacs-tree-sitter/elisp-tree-sitter")
+        (nu "https://github.com/nushell/tree-sitter-nu")        
+        (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
+
+(setq treesit-font-lock-level 4)
+(setq major-mode-remap-alist
+      '((python-mode . python-ts-mode)
+        (rust-mode . rust-ts-mode)))
+#+end_src
+
+** GPTel
+#+begin_src elisp
+(use-package gptel :ensure t :config (setq gptel-log-level 'info)
+  :config
+  (setq gptel-default-mode 'org-mode)
+  :general
+  (general-define-key
+   :prefix "C-x"
+   "c" '(gptel-menu :wk "GPT menu")))
+
+(use-package elysium
+  :custom
+  (elysium-window-size 0.33)
+  (elysium-window-style 'vertical)
+  :general
+  (general-define-key
+   :prefix "C-c"
+   "p" '(elysium-query :wk "Elysium query")))
+#+end_src
+
+** ENV setup
+** Path
+#+begin_src elisp
+(add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
+(setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
+#+end_src
+
+** Region search
+#+begin_src elisp
+(defun my/occur-regions ()
+  (interactive)
+  (occur (format "^%s begin-region -- .*$" comment-start)))
+
+(use-package
+ emacs
+ :bind ("M-s r" . my/occur-regions))
+#+end_src
+
+** Snippets
+#+begin_src elisp
+(use-package
+ yasnippet
+ :config
+ (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+ (yas-global-mode 1))
+(use-package consult-yasnippet
+  :after yasnippet
+  :bind ("M-p" . consult-yasnippet))
+#+end_src
+
+
+* UI\UX
+** Cursor
+#+begin_src elisp
+(blink-cursor-mode t)
+#+end_src
+
+** Workspaces
+*** Perspective
+#+begin_src elisp
+(use-package perspective
+  :init
+  (setq persp-suppress-no-prefix-key-warning t)
+  (persp-mode)
+  :general
+  (general-define-key
+   "C-z" '(perspective-map :wk "Perspective"))
+  (general-define-key
+   :prefix "C-z"
+   "l" '(persp-switch-last :wk "Last perspective")
+   "p" '(project-ext:persp-switch :wk "Open project in a new perspective")))
+#+end_src
+
+*** Group buffers in ibuffer by perspective
+#+begin_src elisp
+(add-hook 'ibuffer-hook
+          (lambda ()
+            (persp-ibuffer-set-filter-groups)
+            (unless (eq ibuffer-sorting-mode 'alphabetic)
+              (ibuffer-do-sort-by-alphabetic))))
+#+end_src
+
+** Dashboard
+#+begin_src elisp
+(defun suzu/dashboard-insert-banner ()
+  "Insert the banner at the top of the dashboard."
+  (goto-char (point-max))
+  (when-let ((banner
+              (dashboard-choose-banner dashboard-startup-banner)))
+    (let ((start (point))
+          buffer-read-only
+          text-width
+          image-spec
+          (graphic-mode (display-graphic-p)))
+      (when graphic-mode
+        (insert "\n"))
+      ;; If specified, insert a text banner.
+      (when-let ((txt (plist-get banner :text)))
+        (if (file-exists-p txt)
+            (insert-file-contents txt)
+          (save-excursion (insert txt)))
+        (unless (text-properties-at 0 txt)
+          (put-text-property
+           (point) (point-max) 'face 'dashboard-text-banner))
+        (setq text-width 0)
+        (while (not (eobp))
+          (let ((line-length
+                 (- (line-end-position) (line-beginning-position))))
+            (when (< text-width line-length)
+              (setq text-width line-length)))
+          (forward-line 1)))
+      ;; If specified, insert an image banner. When displayed in a graphical frame, this will
+      ;; replace the text banner.
+      (when-let ((img (plist-get banner :image)))
+        (let ((img-props
+               (append
+                (when (> dashboard-image-banner-max-width 0)
+                  (list :max-width dashboard-image-banner-max-width))
+                (when (> dashboard-image-banner-max-height 0)
+                  (list
+                   :max-height dashboard-image-banner-max-height))
+                dashboard-image-extra-props)))
+          (setq image-spec
+                (cond
+                 ((dashboard--image-animated-p img)
+                  (create-image img))
+                 ((dashboard--type-is-xbm-p img)
+                  (create-image img))
+                 ((image-type-available-p 'imagemagick)
+                  (apply 'create-image
+                         img
+                         'imagemagick
+                         nil
+                         img-props))
+                 (t
+                  (apply 'create-image
+                         img nil nil
+                         (when (and (fboundp 'image-transforms-p)
+                                    (memq
+                                     'scale
+                                     (funcall 'image-transforms-p)))
+                           img-props))))))
+        (add-text-properties start (point) `(display ,image-spec))
+        (when (ignore-errors
+                (image-multi-frame-p image-spec))
+          (image-animate image-spec 0 t)))
+
+      ;; Finally, center the banner (if any).
+      (when-let*
+          ((text-align-spec
+            `(space . (:align-to (- center ,(/ text-width 2)))))
+           (image-align-spec
+            `(space . (:align-to (- center (0.5 . ,image-spec)))))
+           (prop
+            (cond
+             ;; Both an image & text banner.
+             ((and image-spec text-width)
+              ;; The quoting is intentional. This is a conditional display spec that will
+              ;; align the banner at redisplay time.
+              `((when (display-graphic-p)
+                  .
+                  ,image-align-spec)
+                (when (not (display-graphic-p))
+                  .
+                  ,text-align-spec)))
+             ;; One or the other.
+             (text-width
+              text-align-spec)
+             (image-spec
+              image-align-spec)
+             ;; No banner.
+             (t
+              nil)))
+           (prefix (propertize " " 'display prop)))
+        (add-text-properties
+         start (point)
+         `(line-prefix ,prefix wrap-prefix ,prefix)))
+      (insert "\n")
+      (add-text-properties
+       start (point)
+       '(cursor-intangible t inhibit-isearch t)))))
+
+(use-package
+ dashboard
+ :ensure t
+ :custom
+ (dashboard-set-init-info t)
+ (dashboard-set-navigator t)
+ (dashboard-show-shortcuts t)
+ (dashboard-center-content t)
+ (dashboard-startup-banner
+ (expand-file-name "~/.emacs.d/banners/anime/1.png"))
+ (dashboard-set-heading-icons t)
+ (dashboard-set-file-icons nil)
+ (dashboard-startupify-list
+  '(suzu/dashboard-insert-banner
+    dashboard-insert-newline
+    dashboard-insert-footer
+    dashboard-insert-newline
+    dashboard-insert-init-info
+    dashboard-insert-newline
+    end-of-buffer))
+ :config (dashboard-setup-startup-hook))
+
+(add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
+(setq-default initial-buffer-choice
+              (lambda () (get-buffer "*dashboard*")))
+#+end_src
+
+** Banners
+#+begin_src
+⡆⣿⣿⣦⠹⣳⣳⣕⢅⠈⢗⢕⢕⢕⢕⢕⢈⢆⠟⠋⠉⠁⠉⠉⠁⠈⠼⢐⢕
+⡝⡄⢻⢟⣿⣿⣷⣕⣕⣅⣿⣔⣕⣵⣵⣿⣿⢠⣿⢠⣮⡈⣌⠨⠅⠹⣷⡀⢱
+⡝⠁⣠⣾⠟⡉⡉⡉⠻⣦⣻⣿⣿⣿⣿⣿⣿⣿⣿⣧⠸⣿⣦⣥⣿⡇⡿⣰⢗
+⡀⢻⣿⡇⢙⠁⠴⢿⡟⣡⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣵⣵
+⣷⢄⠻⣿⣟⠿⠦⠍⠉⣡⣾⣿⣿⣿⣿⣿⣿⢸⣿⣦⠙⣿⣿⣿⣿⣿⣿⣿⣿
+
+⡗⢰⣶⣶⣦⣝⢝⢕⢕⠅⡆⢕⢕⢕⢕⢕⣴⠏⣠⡶⠛⡉⡉⡛⢶⣦⡀⠐⣕
+⡝⡵⠟⠈⢀⣀⣀⡀⠉⢿⣿⣿⣿⣿⣿⣿⣿⣼⣿⢈⡋⠴⢿⡟⣡⡇⣿⡇⡀
+⠁⢰⣿⡏⣴⣌⠈⣌⠡⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣬⣉⣉⣁⣄⢖⢕⢕
+⡻⣄⣻⣿⣌⠘⢿⣷⣥⣿⠇⣿⣿⣿⣿⣿⣿⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ 
+⡕⡑⣑⣈⣻⢗⢟⢞⢝⣻⣿⣿⣿⣿⣿⣿⣿⠸⣿⠿⠃⣿⣿⣿⣿⣿⣿⡿⠁#+end_src
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡒⣢⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⠃⠀⠀⠀⠉⣁⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠈⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣶⣟⣛⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⢛⣛⣷⡦⢀⣤⣶⡶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⣴⣶⣶⠂⠤⢄⣀⠀⠀⠀⠈⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠋⠉⣰⣿⣿⣿⣇⢹⡄⠀⠀⠀⣀⠀⣠⠤⠠⡄⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣀⡯⠹⢲⡄⠀⠀⠀⣿⣿⣿⣷⣤⡀⠈⣹⣶⠦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⠀⢷⠀⠀⢰⡇⠋⠀⠀⢠⠇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠛⠒⣎⡏⠀⠀⠀⠀⣿⣿⣿⡏⠙⠛⢦⡙⠉⠀⠀⠉⠓⢦⣀⠀⠀⢀⣀⣀⣀⣀⣀⡀⠀⢠⣿⣿⣿⠟⠻⣿⣿⡇⢸⡇⠀⠀⠓⠒⣦⠀⠛⢦⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠿⠓⠂⠀⡠⠽⢦⡀⠀⠀⠀⠈⠛⢛⡉⢉⠉⠀⠀⠙⠛⠋⢛⣿⢯⡉⠛⠀⠀⠘⠈⢿⠗⢻⠀⠀⠀⠀⠛⠦⠶⠋⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣇⠀⠀⢠⠋⠀⢀⡾⢛⡆⠀⠀⠀⢉⡽⠛⠁⠈⣏⢦⠐⢶⣤⡹⣿⠒⠁⠀⠀⢀⡠⠤⢼⢣⢸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⡴⠲⢤⡀⣀⣀⠀⠀⢸⣿⡗⠀⡇⠀⣠⣾⠟⠛⠡⣾⡴⢶⡯⠀⠤⠀⠀⢸⠸⡇⠀⡙⣿⣌⠻⣤⣀⡠⠋⠀⠀⢸⡏⢠⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⡇⠀⠀⠉⠁⣸⠀⠀⠀⢿⣿⠤⣫⡾⣿⣿⢱⣀⡼⠛⢒⡿⠀⠀⠀⠀⠀⠸⡇⢳⠐⠛⠉⠻⣇⢹⢿⣟⣦⣀⣸⣍⣷⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⡴⠄⠀⢰⠚⠁⠀⠀⠀⠘⢿⣿⡿⣤⠉⠁⣠⡿⠁⠀⣼⠁⠀⠀⣀⣀⡤⠂⡇⢸⡀⠀⠀⠀⠹⡆⠀⠀⠀⢿⣿⣤⣿⣿⣿⡇⠀⠀⠀⢀⢤⡀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠸⣄⣀⣀⡼⠀⠀⠀⠀⠀⠀⣼⣿⡶⠟⠀⣴⣿⠶⢦⢰⡟⡆⠀⣀⣩⣀⠀⢰⡇⣸⡓⠄⢀⣀⡀⢿⡀⡴⠛⢶⠘⣿⣿⣿⣿⣿⡀⠀⠘⢧⣀⡕⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⠃⠀⠀⢠⣿⠷⣤⡾⣼⡇⠁⢸⣏⠁⢘⡷⢘⡗⣿⣧⠆⣿⣈⡿⢺⣇⠉⢳⠟⠀⢸⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣽⡓⠀⠠⣼⢺⡅⠀⠂⣿⡩⡧⠀⠀⠛⠶⡛⠉⠁⣿⡏⠻⣬⠄⠨⠀⠀⢻⠀⠐⡄⠂⠀⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⡄⠀⢸⣿⣿⠁⣀⣿⣟⣀⣇⠆⢠⣀⣤⣄⠀⠀⢿⣿⣶⣻⣮⡀⠀⠀⣼⠀⠀⡏⠁⠀⢸⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⣿⢿⠀⠀⣿⣿⣿⠀⣿⠟⠉⠀⢹⡄⢸⣿⣿⣿⣿⣦⣸⡟⠀⠈⢻⣷⣆⡐⣿⡂⠀⡇⠀⠀⠘⣿⣿⣿⣿⣿⠀⠀⠀⠀⢀⡶⡄⠀⠀
+⢀⣦⡀⠀⠀⠀⠠⠴⠾⠛⠋⠉⠀⣿⠀⠀⠀⣿⠁⣿⣿⠉⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠙⢿⣿⣿⠀⠀⣅⠁⠀⠀⣿⣿⣿⣿⣿⠀⠀⠀⠸⡍⣰⣧⠀⠀
+⠈⣇⠙⢦⡀⠀⠀⠀⠀⠀⠀⠀⢰⣿⠀⠀⠀⣿⠄⣿⠃⠀⠀⠀⠀⠀⢹⣿⣿⣿⠟⠛⠿⠛⢇⠀⠀⠀⠀⠀⠻⣿⠀⢸⣇⠀⠀⣼⣿⣿⣿⣿⣿⠀⠀⠀⠐⠷⠃⠉⠀⠀
+⠀⢹⡀⠀⠙⢄⠀⠀⠀⠀⠀⠀⣾⣿⠀⠀⠀⣿⣆⣿⣠⣴⣶⣶⣤⣅⡒⢻⡀⠉⠳⣾⣷⣦⣸⣭⣴⡶⢶⣤⣤⣾⠀⣸⠧⠀⣸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢻⡷⠀⠀⠈⠳⣄⠀⠀⠀⣸⣿⣿⣀⠄⠀⣿⣷⣿⠛⣋⣉⣀⡀⠉⠉⠀⠀⠀⠀⠀⠉⠈⠉⣉⣈⡉⠉⠛⠿⡿⠆⣿⠂⢰⣿⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⣤⣳⡕⠄⠀⣦⠘⣦⠀⢠⣿⣿⣿⣿⣆⠀⠘⣿⣿⣜⠿⢳⠻⠁⠀⠀⢠⣠⢄⣀⣠⡄⠀⢚⢏⢎⣿⡿⡴⣸⣧⣾⣏⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀
+⠀⢻⡌⡛⠀⢀⣘⣿⣿⣄⣾⣿⣿⣿⣿⣿⣷⣤⣽⠟⠉⠉⠙⠒⢤⡀⠀⠘⢆⠀⠀⢠⠃⠀⠈⢈⡤⠞⠋⠉⠉⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣼⣆⠀⠀⠀⠀⠀⠀
+⠀⠀⠻⣮⣀⣺⣿⣿⣿⣟⣿⣿⣿⣿⣿⡻⢿⡿⠏⠀⠀⠀⠀⠀⠀⠙⢦⠀⠈⠑⠒⠋⠀⢀⡴⠋⠀⠀⠀⠀⠀⠀⢀⠈⠻⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀
+⠀⠀⢺⣿⣿⣿⣿⣿⣿⣿⣵⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⢸⣷⣶⣦⣤⣶⣶⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀
+⠀⠀⠀⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣍⣉⣽⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀
+⠀⠀⠀⠘⣿⣿⣿⣿⣿⢟⣱⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣖
+⠀⠀⠀⢀⣽⣿⣿⡿⣉⣸⣿⣿⣿⣿⣿⣿⣏⠻⠧⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷
+⠀⠀⣴⣿⣿⣿⣿⣿⠛⣽⣿⣿⣿⣿⣿⣿⠻⣷⣤⣀⠀⠀⠀⠀⠀⠀⢠⣿⣿⠿⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿
+⠀⠸⠿⠿⠿⠻⡿⠿⠴⠿⠿⠿⠿⢿⣿⣿⣷⣆⡉⠛⠿⢷⣶⣶⣶⣶⣿⣿⣿⣄⡊⠛⠿⢷⣶⣲⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠿⡷⠹⠿⠿⠿⠿⠿⡞
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠒⠽⠷⠶⠶⠴⠾⠿⠟⠛⠿⠟⠛⠛⠻⠲⠦⠤⠤⠤⠤⠤⠤⠶⠿⠛⠿⠟⠓⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+
+⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿
+⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿
+⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿
+⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿
+⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿
+⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿
+⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿
+⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿
+⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿
+⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿
+⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿
+
+⠤⠤⠤⠤⠤⠤⢤⣄⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠤⠶⠶⠶⠦⠤⠤⠤⠤⠤⢤⣤⣀⣀⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⠄⢂⣠⣭⣭⣕⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠀⠀⠀⠤⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠉⠉⠉
+⠀⠀⢀⠜⣳⣾⡿⠛⣿⣿⣿⣦⡠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣤⣤⣤⣤⣤⣤⣤⣤⣤⣍⣀⣦⠦⠄⣀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠠⣄⣽⣿⠋⠀⡰⢿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⡿⠛⠛⡿⠿⣿⣿⣿⣿⣿⣿⣷⣶⣿⣁⣂⣤⡄⠀⠀⠀⠀⠀⠀
+⢳⣶⣼⣿⠃⠀⢀⠧⠤⢜⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⠟⠁⠀⠀⠀⡇⠀⣀⡈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠁⠐⠀⣀⠀⠀
+⠀⠙⠻⣿⠀⠀⠀⠀⠀⠀⢹⣿⣿⡝⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡿⠋⠀⠀⠀⠀⠠⠃⠁⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⡿⠋⠀⠀
+⠀⠀⠀⠙⡄⠀⠀⠀⠀⠀⢸⣿⣿⡃⢼⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡏⠉⠉⠻⣿⡿⠋⠀⠀⠀⠀
+⠀⠀⠀⠀⢰⠀⠀⠰⡒⠊⠻⠿⠋⠐⡼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⠀⠀⠀⠀⣿⠇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠸⣇⡀⠀⠑⢄⠀⠀⠀⡠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢖⠠⠤⠤⠔⠙⠻⠿⠋⠱⡑⢄⠀⢠⠟⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⠉⠒⠒⠻⠶⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠡⢀⡵⠃⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠦⣀⠀⠀⠀⠀⠀⢀⣤⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠙⠛⠓⠒⠲⠿⢍⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⠟⠻⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠀⠀⠈⠻⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣶⣦⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⡇⠀⠀⠀⠀⠈⠙⢷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠾⠋⠁⢸⣿⡇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⡇⠀⠀⠀⠀⠀⠀⠀⠙⢷⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠛⠁⠀⠀⠀⣿⣼⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡏⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠛⠁⠀⠀⠀⠀⠀⣸⡿⣿⠂⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⣿⠀⠀⠀⠀⠀⠶⠶⠶⠶⠶⠶⠿⠷⠶⠶⠤⣤⣤⣀⣀⡀⢀⣤⡾⠛⠁⠀⠀⠀⠀⠀⠀⠀⢠⣿⢣⡟⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⣽⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡷⣸⠇⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⢣⡿⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣼⠃⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠇⠀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡏⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣿⣿⡾⠛⠉⣉⣽⣿⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⠶⠛⢛⣿⣿⣷⣶⣤⣀⠀⠀⠀⠀⠀⠀⢸⣿⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢰⣾⠛⢉⣵⡟⣃⣤⣶⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⣠⣾⠏⣡⣴⣾⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⢈⡹⣇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠙⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣰⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠶⠖⠲⠾⣿⣿⣦⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⣠⣴⡾⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠀⠀⠀⠀⠀⠈⠙⢿⣄⠀⠀⠀⠀
+⠀⠀⣿⡛⠉⠁⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢷⣄⠀⠀
+⠀⠀⣾⣷⣦⣀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣧⠀
+⠀⡀⠈⠻⢿⣿⣿⣷⠆⠀⠙⠻⠿⣿⣿⡿⢿⣿⠋⠀⠀⠀⣴⠇⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡆
+⠀⠻⣟⠛⠛⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠿⣿⣆⣀⣠⣼⢿⣧⠀⠀⠀⢀⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⠿⣛⠹⣮⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣷
+⠀⠀⠈⠻⢦⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⢩⠿⠻⣯⢻⣷⣶⣿⡿⠋⠀⠀⠀⠉⠉⠉⠉⠁⠀⣐⣭⣾⡿⠋⢻⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿
+⠀⠀⠀⢀⣰⣿⣻⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⡿⠛⣍⠡⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡟
+⠀⠀⠀⠛⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡿⠁
+⠀⠀⠀⢐⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠀⠀
+⠀⠀⠀⣼⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡾⠃⠀⠀⠀
+⠀⠀⠀⣸⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣶⡟⠀⠀⠀⠀⠀
+⠀⠀⣰⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠛⠀⠀⠀⠀⠀⠀
+⢠⣾⢿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⡏⠀⠀⠀⠀⠀⠀⠀
+⠀⣰⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣿⠀⠀⠀⠀⠀⠀⠀⠀
+⣾⢿⣾⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠛⠀⠀⠀⠀⠀⠀⠀⠀
+⢀⣾⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀
+
+
+
+
 *** Indents
 #+begin_src elisp
 (setq-default indent-tabs-mode nil)
@@ -1204,25 +1427,6 @@ Install package for loading ~.env~ & setup hooks
 ;; :hook (after-init . global-emojify-mode)
 #+end_src
 
-** Source code block tag expansion
-#+begin_src elisp
-(with-eval-after-load 'org
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-  (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
-  (add-to-list 'org-structure-template-alist '("sqt" . "src sql :var table=table-name"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
-#+end_src
-
-#+begin_src elisp
-;; (add-hook 'org-mode-hook
-;;   (lambda ()
-;;     (setq-local electric-pair-inhibit-predicate
-;;       `(lambda (c)
-;;         (if (char-equal c "<") t (electric-pair-inhibit-predicate c))))))
-#+end_src
-
 ** Visual fill column (center buffer)
 #+begin_src elisp
 (defun suzu/visual-fill ()
@@ -1243,6 +1447,82 @@ Install package for loading ~.env~ & setup hooks
   (info-mode . suzu/visual-fill)
   (text-mode . suzu/visual-fill))
 #+end_src
+
+** Sudo edit
+#+begin_src elisp
+(use-package
+ sudo-edit
+ :ensure t
+ :config
+ (defun my/sudo-edit-find-file ()
+   (interactive)
+   (let ((SHELL (getenv "SHELL")))
+     (setenv "SHELL" "/usr/bin/bash")
+     (call-interactively 'sudo-edit-find-file)
+     (setenv "SHELL" SHELL))))
+#+end_src
+
+** Helpful
+#+begin_src elisp
+(use-package helpful
+  :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  :bind
+  ([remap describe-function] . helpful-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-key] . helpful-key))
+#+end_src
+
+** Navigation
+*** Moving between windows and buffers
+#+begin_src elisp
+(use-package
+ buffer-move
+ :bind
+ ("<C-S-up>" . buf-move-up)
+ ("<C-S-down>" . buf-move-down)
+ ("<C-S-left>" . buf-move-left)
+ ("<C-S-right>" . buf-move-right))
+#+end_src
+
+#+begin_src elisp
+(use-package
+ emacs
+ :bind
+ ("<C-up>" . windmove-up)
+ ("<C-right>" . windmove-right)
+ ("<C-left>" . windmove-left)
+ ("<C-down>" . windmove-down))
+#+end_src
+
+*** Better jumper
+#+begin_src elisp
+(use-package better-jumper
+  :config
+  (better-jumper-mode +1)
+  (defun better-better-jumper-set-jump (&rest r)
+    (better-jumper-set-jump))
+  (advice-add #'find-file :before #'better-better-jumper-set-jump)
+  (advice-add #'next-error :before #'better-better-jumper-set-jump)
+  (advice-add #'previous-error :before #'better-better-jumper-set-jump)
+  :bind
+  ("C-," . better-jumper-jump-backward)
+  ("C-." . better-jumper-jump-forward))
+#+end_src
+
+** Show current datetime
+#+begin_src elisp
+(defun me/display-current-time ()
+  "Display the current time in the minibuffer."
+  (interactive)
+  (message (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
+
+(general-define-key
+ :keymaps '(global-map)
+ "M-t" '(me/display-current-time :wk "Display datetime"))
+
+#+end_src
+
 
 * Org mode
 ** Base
@@ -1497,161 +1777,25 @@ So it'll be nice to run them automatically
     ))
 #+end_src
 
-* PDF tools
+** Source code block tag expansion
 #+begin_src elisp
-(defun suzu/pdf-setup-hook ()
-  (setq blink-cursor-mode nil))
-
-(use-package pdf-tools
-  :disabled
-  :config
-  (pdf-tools-install)
-  (add-hook 'pdf-view-mode-hook 'suzu/pdf-setup-hook))
+(with-eval-after-load 'org
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+  (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
+  (add-to-list 'org-structure-template-alist '("sqt" . "src sql :var table=table-name"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python")))
 #+end_src
 
 #+begin_src elisp
-(defun suzu/find-pdf-file ()
-  (interactive)
-  (let* ((places '("~/Downloads" "~/Documents/books"))
-         (files-from-places (mapcar (lambda (place) (directory-files place t "\\.pdf$")) places))
-         (files (my/flatten-list files-from-places))
-         (file (completing-read "Choose PDF file: " files)))
-    (find-file file)))
+;; (add-hook 'org-mode-hook
+;;   (lambda ()
+;;     (setq-local electric-pair-inhibit-predicate
+;;       `(lambda (c)
+;;         (if (char-equal c "<") t (electric-pair-inhibit-predicate c))))))
 #+end_src
 
-* Project
-** Register not only ~.git~ dirs
-#+begin_src elisp
-(defun my/dir-contains-project-marker (dir)
-  "Checks if `.project' file is present in directory at DIR path."
-  (let ((project-marker-path (file-name-concat dir ".project")))
-    (when (file-exists-p project-marker-path)
-       dir)))
-
-(customize-set-variable 'project-find-functions
-                        (list #'project-try-vc
-                              #'my/dir-contains-project-marker))
-#+end_src
-
-** Compilation
-*** Ansi colors
-#+begin_src elisp
-(use-package ansi-color)
-
-(defun suzu/ansi-colorize-buffer ()
-  (let ((buffer-read-only nil))
-    (ansi-color-apply-on-region (point-min) (point-max))))
-(add-hook 'compilation-filter-hook 'suzu/ansi-colorize-buffer)
-
-
-#+end_src
-
-*** Remember all compilation buffer names
-#+begin_src elisp
-(defvar my/global-compilation-buffer-names-list nil
-  "List of names of each compilation buffer")
-
-(defun my/compilation-hook (process)
-  (unless (member
-           (buffer-name) my/global-compilation-buffer-names-list)
-    (push (buffer-name) my/global-compilation-buffer-names-list)))
-
-(add-hook 'compilation-start-hook 'my/compilation-hook)
-#+end_src
-
-*** Hotkeys
-#+begin_src elisp
-;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-k") 'suzu/window-up)
-;; (evil-define-key '(normal insert visual) compilation-mode-map (kbd "C-j") 'suzu/window-down)
-#+end_src
-
-*** Increase line length to hide
-#+begin_src elisp
-(setq-default compilation-max-output-line-length 5000)
-#+end_src
-
-*** Special buffer name
-#+begin_src elisp
-(setq compilation-buffer-name-function
-      'project-ext:persp-compilation-buffer-name-function)
-#+end_src
-
-** Build from Makefile
-#+begin_src elisp
-(use-package
- make-project
- :vc (:url "https://github.com/scipunch/make-project")
- :general
- (general-define-key
-  :prefix
-  "C-x"
-  "p c"
-  '(make-project-run :wk "Compile from project Makefile targets")))
-#+end_src
-
-** Follow compilation
-#+begin_src elisp
-(setq compilation-scroll-output t)
-#+end_src
-
-* Completion
-** Vertico
-*** Add annotations to completion
-#+begin_src elisp
-(use-package marginalia
-  :custom
-  (marginalia-max-relative-age 0)
-  (marginalia-align 'left)
-  :init
-  (marginalia-mode))
-#+end_src
-
-*** Add icons
-#+begin_src elisp
-(use-package all-the-icons-completion
-  :after (marginalia all-the-icons)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode)
-  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
-#+end_src
-
-*** Actual setup
-#+begin_src elisp
-(use-package vertico
-  :custom
-  (vertico-count 13)
-  (vertico-resize nil)
-  (vertico-cycle nil)
-  :config
-  (vertico-mode))
-#+end_src
-
-*** Better vertico search something
-#+begin_src elisp
-(use-package consult
-  :general
-  (general-define-key
-   :prefix "C-x"
-   "B" '(consult-buffer :wk "Search all buffers")
-   "b" '(consult-project-buffer :wk "Search project buffers"))
-  (general-define-key
-   :prefix "M-g"
-   "i" '(consult-imenu :wk "Imenu"))
-  (general-define-key
-   :prefix "C-;"
-   "o" '(consult-outline :wk "Outline")
-   "i" '(consult-line :wk "Search line")
-   ";" '(consult-ripgrep :wk "Ripgrep")))
-#+end_src
-
-* Rainbow mode
-#+begin_src elisp
-(use-package rainbow-mode
-  :diminish
-  :hook
-  ((org-mode prog-mode) . rainbow-mode))
-#+end_src
 
 * Shells and terminals
 ** Shell
@@ -1809,120 +1953,31 @@ Turn off duplicating lines on execution
                nil))
 #+end_src
 
-* Sudo edit
-#+begin_src elisp
-(use-package
- sudo-edit
- :ensure t
- :config
- (defun my/sudo-edit-find-file ()
-   (interactive)
-   (let ((SHELL (getenv "SHELL")))
-     (setenv "SHELL" "/usr/bin/bash")
-     (call-interactively 'sudo-edit-find-file)
-     (setenv "SHELL" SHELL))))
-#+end_src
 
-* TLDR
+* Tools
+** PDF
 #+begin_src elisp
-(use-package tldr :ensure t)
-#+end_src
+(defun suzu/pdf-setup-hook ()
+  (setq blink-cursor-mode nil))
 
-* Transparency
-#+begin_src elisp
-(add-to-list 'default-frame-alist '(alpha-background . 100))
-(add-to-list 'corfu--frame-parameters '(alpha-background . 100))
-#+end_src
-
-* Treesitter
-#+begin_src elisp
-(setq treesit-language-source-alist
-      '((rust "https://github.com/tree-sitter/tree-sitter-rust")
-        (python "https://github.com/tree-sitter/tree-sitter-python")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-        (go "https://github.com/tree-sitter/tree-sitter-go")
-        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-        (json "https://github.com/tree-sitter/tree-sitter-json")
-        (make "https://github.com/alemuller/tree-sitter-make")
-        (emacs-lisp "https://github.com/emacs-tree-sitter/elisp-tree-sitter")
-        (nu "https://github.com/nushell/tree-sitter-nu")        
-        (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
-
-(setq treesit-font-lock-level 4)
-(setq major-mode-remap-alist
-      '((python-mode . python-ts-mode)
-        (rust-mode . rust-ts-mode)))
-#+end_src
-
-* Which-key
-#+begin_src elisp
-(use-package which-key
-  :diminish
-  :init
-  (which-key-mode)
+(use-package pdf-tools
+  :disabled
   :config
-  (setq which-key-popup-type 'side-window
-        which-key-side-window-max-height 0.50))
+  (pdf-tools-install)
+  (add-hook 'pdf-view-mode-hook 'suzu/pdf-setup-hook))
 #+end_src
 
-* Workspaces
-** Install perspective
 #+begin_src elisp
-(use-package perspective
-  :init
-  (setq persp-suppress-no-prefix-key-warning t)
-  (persp-mode)
-  :general
-  (general-define-key
-   "C-z" '(perspective-map :wk "Perspective"))
-  (general-define-key
-   :prefix "C-z"
-   "l" '(persp-switch-last :wk "Last perspective")
-   "p" '(project-ext:persp-switch :wk "Open project in a new perspective")))
+(defun suzu/find-pdf-file ()
+  (interactive)
+  (let* ((places '("~/Downloads" "~/Documents/books"))
+         (files-from-places (mapcar (lambda (place) (directory-files place t "\\.pdf$")) places))
+         (files (my/flatten-list files-from-places))
+         (file (completing-read "Choose PDF file: " files)))
+    (find-file file)))
 #+end_src
 
-** Group buffers in ibuffer by perspective
-#+begin_src elisp
-(add-hook 'ibuffer-hook
-          (lambda ()
-            (persp-ibuffer-set-filter-groups)
-            (unless (eq ibuffer-sorting-mode 'alphabetic)
-              (ibuffer-do-sort-by-alphabetic))))
-#+end_src
-
-* GPTel
-#+begin_src elisp
-(use-package gptel :ensure t :config (setq gptel-log-level 'info)
-  :config
-  (setq gptel-default-mode 'org-mode)
-  :general
-  (general-define-key
-   :prefix "C-x"
-   "c" '(gptel-menu :wk "GPT menu")))
-
-(use-package elysium
-  :custom
-  (elysium-window-size 0.33)
-  (elysium-window-style 'vertical)
-  :general
-  (general-define-key
-   :prefix "C-c"
-   "p" '(elysium-query :wk "Elysium query")))
-#+end_src
-
-* Helpful
-#+begin_src elisp
-(use-package helpful
-  :commands (helpful-callable helpful-variable helpful-command helpful-key)
-  :bind
-  ([remap describe-function] . helpful-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . helpful-variable)
-  ([remap describe-key] . helpful-key))
-#+end_src
-
-* Tramp
+** Tramp
 #+begin_src elisp
 (setq remote-file-name-inhibit-cache nil)
 (setq vc-ignore-dir-regexp
@@ -1932,55 +1987,6 @@ Turn off duplicating lines on execution
 (setq tramp-verbose 1)
 #+end_src
 
-* ENV setup
-** Path
-#+begin_src elisp
-(add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
-(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
-(setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
-#+end_src
-
-* Resize with mouse
-#+begin_src elisp
-(add-to-list 'default-frame-alist '(drag-internal-border . 1))
-(add-to-list 'default-frame-alist '(internal-border-width . 5))
-#+end_src
-
-* Show current datetime
-#+begin_src elisp
-(defun me/display-current-time ()
-  "Display the current time in the minibuffer."
-  (interactive)
-  (message (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
-
-(general-define-key
- :keymaps '(global-map)
- "M-t" '(me/display-current-time :wk "Display datetime"))
-
-#+end_src
-
-* Snippets
-#+begin_src elisp
-(use-package
- yasnippet
- :config
- (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
- (yas-global-mode 1))
-(use-package consult-yasnippet
-  :after yasnippet
-  :bind ("M-p" . consult-yasnippet))
-#+end_src
-
-* Region search
-#+begin_src elisp
-(defun my/occur-regions ()
-  (interactive)
-  (occur (format "^%s begin-region -- .*$" comment-start)))
-
-(use-package
- emacs
- :bind ("M-s r" . my/occur-regions))
-#+end_src
 
 * Display buffer alist
 ** Helpers
@@ -2013,48 +2019,10 @@ The resize pertains to the maximum and minimum values"
     (body-function . my-window-select-fit-size)))
 #+end_src
 
+
 * Free keys
 #+begin_src elisp
 (use-package free-keys
   :vc (:url "https://github.com/Fuco1/free-keys"))
 #+end_src
 
-#+begin_src elisp
-(blink-cursor-mode t)
-#+end_src
-
-* Moving between windows and buffers
-#+begin_src elisp
-(use-package
- buffer-move
- :bind
- ("<C-S-up>" . buf-move-up)
- ("<C-S-down>" . buf-move-down)
- ("<C-S-left>" . buf-move-left)
- ("<C-S-right>" . buf-move-right))
-#+end_src
-
-#+begin_src elisp
-(use-package
- emacs
- :bind
- ("<C-up>" . windmove-up)
- ("<C-right>" . windmove-right)
- ("<C-left>" . windmove-left)
- ("<C-down>" . windmove-down))
-#+end_src
-
-* Better jumper
-#+begin_src elisp
-(use-package better-jumper
-  :config
-  (better-jumper-mode +1)
-  (defun better-better-jumper-set-jump (&rest r)
-    (better-jumper-set-jump))
-  (advice-add #'find-file :before #'better-better-jumper-set-jump)
-  (advice-add #'next-error :before #'better-better-jumper-set-jump)
-  (advice-add #'previous-error :before #'better-better-jumper-set-jump)
-  :bind
-  ("C-," . better-jumper-jump-backward)
-  ("C-." . better-jumper-jump-forward))
-#+end_src
