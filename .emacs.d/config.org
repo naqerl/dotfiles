@@ -9,7 +9,6 @@
   - Python: poetry
 - Simulate single mode-line when multiple windows opened
 
-
 * Important programs to load first
 ** Path
 #+begin_src elisp
@@ -42,7 +41,6 @@
 #+begin_src elisp
 (setq-default debug-on-error nil)
 #+end_src
-
 
 * Dev
 ** Common
@@ -232,7 +230,7 @@ Generate table of contents
 #+begin_src elisp
 (defun my/emacs-lisp-mode-hook ()
   (flymake-mode)
-  (keyap-set emacs-lisp-mode-map "C-c C-f" 'elisp-autofmt-buffer))
+  (keymap-set emacs-lisp-mode-map "C-c C-f" 'elisp-autofmt-buffer))
 
 (use-package
  elisp-autofmt
@@ -440,7 +438,6 @@ Install package for loading ~.env~ & setup hooks
 
 (use-package flymake :bind ("<f5>" . my/show-buffer-diagnostics))
 #+end_src
-
 
 * UI\UX
 ** Theme
@@ -1189,8 +1186,6 @@ The resize pertains to the maximum and minimum values"
     (body-function . my-window-select-fit-size)))
 #+end_src
 
-
-
 * Helper packages
 *** Undo tree
 #+begin_src elisp
@@ -1285,7 +1280,6 @@ The resize pertains to the maximum and minimum values"
   :hook
   ((org-mode prog-mode) . rainbow-mode))
 #+end_src
-
 
 * Org
 ** Base
@@ -1560,7 +1554,6 @@ So it'll be nice to run them automatically
 ;;         (if (char-equal c "<") t (electric-pair-inhibit-predicate c))))))
 #+end_src
 
-
 * Shells and terminals
 ** Shell
 Turn off duplicating lines on execution
@@ -1718,7 +1711,6 @@ Turn off duplicating lines on execution
                nil
                nil))
 #+end_src
-
 
 * Tools
 ** PDF
