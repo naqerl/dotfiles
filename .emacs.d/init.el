@@ -43,12 +43,11 @@
            load-env-vars magit make-project marginalia markdown-toc
            nerd-icons-corfu nginx-mode nushell-ts-mode orderless
            org-auto-tangle org-present pcmpl-args peep-dired
-           perspective pet php-mode plantuml-mode poetry prettier-js
-           pulsar rainbow-mode ruff-format rust-docs rust-mode
-           sqlformat sublime-themes sudo-edit surround tao-theme tldr
-           toc-org typescript-mode undo-tree vertico
-           visual-regexp-steroids vterm-toggle web-mode yaml-mode
-           yuck-mode))
+           perspective pet php-mode plantuml-mode prettier-js pulsar
+           rainbow-mode ruff-format rust-docs rust-mode sqlformat
+           sublime-themes sudo-edit surround tao-theme tldr toc-org
+           typescript-mode undo-tree vertico visual-regexp-steroids
+           vterm-toggle web-mode yaml-mode yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")
      (vterm-toggle :url "https://github.com/scipunch/vterm-toggle")))

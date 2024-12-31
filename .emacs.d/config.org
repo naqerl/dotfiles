@@ -9,7 +9,7 @@
   - Python: poetry
 - Simulate single mode-line when multiple windows opened
 
-* Important programs to load first
+* Important things to load first
 ** Path
 #+begin_src elisp
 (add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
@@ -42,6 +42,10 @@
 (setq-default debug-on-error nil)
 #+end_src
 
+** Profiling
+#+begin_src elisp
+(setq use-package-compute-statistics t)
+#+end_src
 * Dev
 ** Common
 *** Docs pop up
@@ -106,10 +110,6 @@
   :config
   (add-hook 'rust-ts-mode-hook 'suzu/rust-mode))
 
-(use-package cargo
-  :config
-  (add-hook 'rust-ts-mode-hook 'cargo-minor-mode))
-
 (use-package rust-docs
   :vc (:url "https://github.com/scipunch/rust-docs"))
 #+end_src
@@ -125,13 +125,6 @@
 (use-package ruff-format
   :config
   (setq ruff-format-command "ruff check --fix --select I"))
-
-(use-package poetry
-  :ensure t
-  :custom
-  (poetry-tracking-strategy 'project)
-  :config
-  (poetry-tracking-mode +1))
 
 (add-hook 'python-ts-mode-hook 'suzu/python-mode)
 #+end_src
@@ -184,14 +177,14 @@ Generate table of contents
 #+begin_src elisp
 (setq-default js-indent-level 2)
 
-(use-package jtsx :ensure t)
-
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
-
+(use-package
+ jtsx
+ :disabled ;; Slow load as f
+ :config
+ (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
+ (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode)))
 
 (use-package typescript-mode :ensure t)
-
 
 (defun my/prettier ()
   "Formats given file with prettier."
@@ -202,10 +195,7 @@ Generate table of contents
       (insert content))
     (save-excursion
       (shell-command-on-region
-       (point-min) (point-max)
-       (format
-        "prettier %s"
-        temp-file)
+       (point-min) (point-max) (format "prettier %s" temp-file)
        (current-buffer) t "*Prettier Error*" t))
     (delete-file temp-file)))
 
@@ -289,7 +279,7 @@ Generate table of contents
 
 *** PHP
 #+begin_src elisp
-(use-package php-mode)
+(use-package php-mode :disabled) ;; Really slow to start
 #+end_src
 
 *** Nu
