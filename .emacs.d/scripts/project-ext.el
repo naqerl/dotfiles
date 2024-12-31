@@ -182,5 +182,29 @@ WHAT - element from `project-ext:search--comment-regexp' or string any"
 
 ; end-region   -- Ctags
 
+; begin-region -- Environment
+
+(defvar project-ext:env-dotenv-file-name ".env"
+  "The name of the .env file.")
+
+(defun project-ext:env-load ()
+  "Export all environment variables in the closest .env file."
+  (let ((env-file (project-ext:env--find-file)))
+    (when env-file
+      (load-env-vars env-file))))
+
+(defun project-ext:env--find-file ()
+  "Searches for the closes .env file."
+  (let* ((env-file-directory
+          (locate-dominating-file
+           "." project-ext:env-dotenv-file-name))
+         (file-name
+          (concat
+           env-file-directory project-ext:env-dotenv-file-name)))
+    (when (file-exists-p file-name)
+      file-name)))
+
+; end-region   -- Environment
+
 (provide 'project-ext)
 ;;; project-ext.el ends here
