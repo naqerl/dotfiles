@@ -43,164 +43,6 @@
 (setq-default debug-on-error nil)
 #+end_src
 
-** General keybindings
-#+begin_src elisp
-(defun scroll-half-down ()
-  "Scroll down half a window."
-  (interactive)
-  (scroll-down (floor (/ (window-height) 2))))
-
-(defun scroll-half-up ()
-  "Scroll up half a window."
-  (interactive)
-  (scroll-up (floor (/ (window-height) 2))))
-
-(defun my/window-with-name-visible-p (name)
-  "Check if a window with the given NAME is currently visible."
-  (let ((buffer (get-buffer name)))
-    (when buffer
-      (seq-some
-       (lambda (window) (eq (window-buffer window) buffer))
-       (window-list)))))
-
-
-
-(use-package
- general
- :config
- (general-define-key
-  "C-+"
-  '(text-scale-increase :wk "Zoom in")
-  "C--"
-  '(text-scale-decrease :wk "Zoom out"))
-
- (general-define-key
-  :prefix "C-x" "3"
-  '((lambda ()
-      (interactive)
-      (split-window-right)
-      (windmove-right))
-    :wk "Split window right"))
-
- (general-define-key :prefix "C-x" "I" '(ibuffer :wk "Show iBuffer"))
-
-
- (general-define-key
-  :keymaps
-  '(global-map)
-  "<f5>"
-  '((lambda ()
-      (interactive)
-      (flymake-show-buffer-diagnostics)
-      (message "Buffer diagnostics")
-      (other-window 1))
-    :wk "Open buffer diagnostics")
-  "M-]"
-  '(my/next-error :wk "Go to next error")
-  "M-["
-  '(my/previous-error :wk "Go to prev error"))
-
- (general-define-key
-  "<f7>"
-  '(org-agenda :wk "Org Agenda")
-  "<f8>"
-  '(recompile :wk "Reccompile")
-  "<f9>"
-  '(project-compile :wk "Manual project compile"))
-
- (general-define-key
-  "C-v"
-  '(scroll-half-up :wk "Scroll up")
-  "M-v"
-  '(scroll-half-down :wk "Scroll down")))
-
-(general-define-key
- :prefix "C-x" "/"
- '(comment-or-uncomment-region :wk "Toggle comment region"))
-
-(defun my/visual-inner-WORD ()
-  "Select the inner word at point."
-  (interactive)
-  (search-backward-regexp " \\|^")
-  (forward-char)
-  (set-mark (point))
-  (search-forward-regexp " \\|$")
-  (backward-char))
-
-(general-define-key
- :prefix "C-c" "W" '(my/visual-inner-WORD :wk "Visual inner WORD"))
-
-(general-define-key
- :prefix "C-;" "d" '(duplicate-line :wk "Duplicate line"))
-#+end_src
-
-#+RESULTS:
-
-** Git
-*** Magit
-#+begin_src elisp
-(use-package
- magit
- :config (setq magit-status-buffer-switch-function 'switch-to-buffer)
- (setq magit-display-buffer-function
-       'magit-display-buffer-same-window-except-diff-v1)
- :bind ("C-x g o" . magit) ("C-x g c" . magit-commit))
-#+end_src
-
-*** Gutter
-#+begin_src elisp
-(use-package
- git-gutter
- :custom
- (git-gutter:modified-sign "~")
- (git-gutter:added-sign "+")
- (git-gutter:deleted-sign "-")
- :config
- (set-face-foreground
-  'git-gutter:modified (plist-get grayscale-theme-colors :yellow))
- (set-face-foreground
-  'git-gutter:added (plist-get grayscale-theme-colors :green))
- (set-face-foreground
-  'git-gutter:deleted (plist-get grayscale-theme-colors :red))
- (defun my/stage-hunk ()
-   "Wrapper around git-gutter:stage-hunk but without confirm requirement"
-   (interactive)
-   (git-gutter:awhen
-    (git-gutter:search-here-diffinfo git-gutter:diffinfos)
-    (git-gutter:do-stage-hunk it)
-    (git-gutter:update-all-windows)
-    (message "✅ staged" (buffer-name))))
- :bind
- ("C-x g n" . git-gutter:next-hunk)
- ("C-x g p" . git-gutter:previous-hunk)
- ("C-x g s" . my/stage-hunk)
- :hook
- ((prog-mode org-mode) . git-gutter-mode)
- (magit-post-refresh-hook git-gutter:update-all-windows))
-#+end_src
-
-*** Merge
-#+begin_src elisp
-(use-package smerge-mode
-  :ensure nil
-  :hook
-  (prog-mode . smerge-mode))
-#+end_src
-
-*** Ediff
-#+begin_src elisp
-(setq ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-windows-plain)
-
-(defun suzu/ediff-hook ()
-(ediff-setup-keymap)
-(define-key ediff-mode-map "j" 'ediff-next-difference)
-(define-key ediff-mode-map "k" 'ediff-previous-difference)
-(golden-ratio-mode nil))
-
-(add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
-#+end_src
-
 
 * Dev
 ** Common
@@ -221,11 +63,7 @@
       (with-selected-frame eldoc-box--frame
         (scroll-up 3))))
   (setq max-mini-window-height 0)
-  (setq eldoc-idle-delay 0)
-  (general-define-key
-   :keymap 'prog-mode-map
-   :prefix "C-h"
-   "." '(eldoc-box-help-at-point :wk "Show doc")))
+  (setq eldoc-idle-delay 0))
 #+end_src
 
 *** Ctags
@@ -254,6 +92,12 @@
         (rust-mode . rust-ts-mode)))
 #+end_src
 
+*** Toggle comments
+#+begin_src elisp
+(use-package emacs
+  :bind
+  ("C-x /" . comment-or-uncomment-region))
+#+end_src
 ** Languages
 *** Rust
 #+begin_src elisp
@@ -385,22 +229,17 @@ Generate table of contents
 #+end_src
 
 *** Emacs Lisp
-
 #+begin_src elisp
 (defun my/emacs-lisp-mode-hook ()
   (flymake-mode)
-  (general-define-key
-   :keymaps '(local)
-   :prefix
-   "C-c"
-   "C-f"
-   '(elisp-autofmt-buffer :wk "Format buffer")))
+  (keyap-set emacs-lisp-mode-map "C-c C-f" 'elisp-autofmt-buffer))
 
 (use-package
  elisp-autofmt
  :hook (emacs-lisp-mode-hook . my/emacs-lisp-mode-hook))
 
-(setq elisp-flymake-byte-compile-load-path load-path)
+(with-eval-after-load 'flymake
+  (setq elisp-flymake-byte-compile-load-path load-path))
 #+end_src
 
 *** Tex 
@@ -499,42 +338,6 @@ Install package for loading ~.env~ & setup hooks
   (prog-mode . suzu/set-project-env))
 #+end_src
 
-** Project
-*** Register not only ~.git~ dirs
-#+begin_src elisp
-(defun my/dir-contains-project-marker (dir)
-  "Checks if `.project' file is present in directory at DIR path."
-  (let ((project-marker-path (file-name-concat dir ".project")))
-    (when (file-exists-p project-marker-path)
-       dir)))
-
-(customize-set-variable 'project-find-functions
-                        (list #'project-try-vc
-                              #'my/dir-contains-project-marker))
-#+end_src
-
-*** Load personal extensions
-#+begin_src elisp
-(require 'project-ext)
-
-(defun my/project-new-created-hook (project-path)
-  (message "My project new created hook with %s" project-path)
-  (project-persp-switch project-path))
-(add-hook 'project-ext:new-created-hook 'my/project-new-created-hook)
-
-(with-eval-after-load 'perspective
-  (setq compilation-buffer-name-function
-        'project-ext:persp-compilation-buffer-name-function))
-#+end_src
-
-*** Build from ~Makefile~
-#+begin_src elisp
-(use-package
- make-project
- :vc (:url "https://github.com/scipunch/make-project")
- :bind ("C-x p c" . make-project-run))
-#+end_src
-
 ** Compilation
 *** Ansi colors
 #+begin_src elisp
@@ -593,6 +396,16 @@ Install package for loading ~.env~ & setup hooks
 (setq compilation-scroll-output t)
 #+end_src
 
+*** Binds
+#+begin_src elisp
+(use-package
+ emacs
+ :bind
+ ("<f8>" . recompile)
+ ("<f9>" . project-compile)
+ ("M-]" . my/next-error)
+ ("M-[" . my/previous-error))
+#+end_src
 ** Snippets
 *** Yasnippet
 #+begin_src elisp
@@ -615,6 +428,17 @@ Install package for loading ~.env~ & setup hooks
 (use-package
  emacs
  :bind ("M-s r" . my/occur-regions))
+#+end_src
+
+** Flymake
+#+begin_src elisp
+(defun my/show-buffer-diagnostics ()
+  (interactive)
+  (flymake-show-buffer-diagnostics)
+  (message "Buffer diagnostics")
+  (other-window 1))
+
+(use-package flymake :bind ("<f5>" . my/show-buffer-diagnostics))
 #+end_src
 
 
@@ -763,6 +587,12 @@ Automatically resizes windows to fit golden ratio
 (setq make-backup-files nil)
 #+end_src
 
+*** Zoom in & out
+#+begin_src elisp
+(use-package
+ emacs
+ :bind ("C-+" . text-scale-increase) ("C--" . text-scale-decrease))
+#+end_src
 ** Completion
 *** Corfu
 #+begin_src elisp
@@ -881,17 +711,15 @@ Automatically resizes windows to fit golden ratio
 ** Workspaces
 *** Perspective
 #+begin_src elisp
-(use-package perspective
-  :init
-  (setq persp-suppress-no-prefix-key-warning t)
-  (persp-mode)
-  :general
-  (general-define-key
-   "C-z" '(perspective-map :wk "Perspective"))
-  (general-define-key
-   :prefix "C-z"
-   "l" '(persp-switch-last :wk "Last perspective")
-   "p" '(project-ext:persp-switch :wk "Open project in a new perspective")))
+(use-package
+ perspective
+ :init
+ (setq persp-suppress-no-prefix-key-warning t)
+ (persp-mode)
+ :bind
+ ("C-z" . perspective-map)
+ ("C-z l" . persp-switch-last)
+ ("C-z p" . project-ext:persp-switch))
 #+end_src
 
 *** Group buffers in ibuffer by perspective
@@ -1185,12 +1013,7 @@ Automatically resizes windows to fit golden ratio
 
 *** Pulse current line
 #+begin_src elisp
-(use-package pulsar
-  :general
-  (general-define-key
-   :prefix "C-x"
-   :keymaps '(global)
-   "l" '(pulsar-pulse-line-cyan :wk "Pulse current line")))
+(use-package pulsar :bind ("C-x l" . pulsar-pulse-line-cyan))
 #+end_src
 
 *** Delete on paste
@@ -1242,12 +1065,9 @@ Automatically resizes windows to fit golden ratio
 
 *** Regex Replace
 #+begin_src elisp
-(use-package visual-regexp-steroids
-  :general
-  (general-define-key
-   :prefix "C-c"
-   "r" '(vr/replace :wk "Visual regexp replaceq")
-   "q" '(vr/replace :wk "Visual regexp query replace")))
+(use-package
+ visual-regexp-steroids
+ :bind ("C-c r" . vr/replace) ("C-c q" . vr/replace))
 #+end_src
 
 ** Navigation
@@ -1255,7 +1075,15 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (winner-mode +1) ;; Allows to restores layout after maximizing
 #+end_src
-*** Custom package
+*** Vertical split
+#+begin_src elisp
+(defun my/split-right-and-switch ()
+  (interactive)
+  (split-window-right)
+  (windmove-right))
+(use-package emacs :bind ("C-x 3" . my/split-right-and-switch))
+#+end_src
+*** SciMotions
 #+begin_src elisp
 (require 'scimotions)
 #+end_src
@@ -1295,6 +1123,41 @@ Automatically resizes windows to fit golden ratio
   ("C-." . better-jumper-jump-forward))
 #+end_src
 
+*** Scroll
+#+begin_src elisp
+(defun my/scroll-half-down ()
+  "Scroll down half a window."
+  (interactive)
+  (scroll-down (floor (/ (window-height) 2))))
+
+(defun my/scroll-half-up ()
+  "Scroll up half a window."
+  (interactive)
+  (scroll-up (floor (/ (window-height) 2))))
+
+(use-package emacs
+  :bind
+  ("C-v" . my/scroll-half-up)
+  ("M-v" . my/scroll-half-down))
+#+end_src
+** Motions
+*** Select inner word
+#+begin_src elisp
+(defun my/visual-inner-WORD ()
+  "Select the inner word at point."
+  (interactive)
+  (search-backward-regexp " \\|^")
+  (forward-char)
+  (set-mark (point))
+  (search-forward-regexp " \\|$"))
+
+(use-package emacs :bind ("C-c W" . my/visual-inner-WORD))
+#+end_src
+*** Duplicate line
+#+begin_src elisp
+(use-package emacs :bind ("C-; d" . duplicate-line))
+#+end_src
+
 ** Display buffer alist
 *** Helpers
 #+begin_src elisp
@@ -1326,29 +1189,6 @@ The resize pertains to the maximum and minimum values"
     (body-function . my-window-select-fit-size)))
 #+end_src
 
-
-** Dired
-*** Base
-#+begin_src elisp
-(use-package dired-open
-  :custom ((dired-listing-switches "-agho --group-directories-first"))
-  :config
-  ;; (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
-  ;;  (EVIL-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
-  (setq dired-open-extensions '(("gif" . "feh")
-                                ("jpg" . "feh")
-                                ("jpeg" . "feh")
-                                ("png" . "feh")
-                                ("mkv" . "mpv")
-                                ("mp4" . "mpv"))))
-
-(use-package peep-dired
-  :after dired
-  :hook (evil-normalize-keymaps . peep-dired-hook))
-
-(setf dired-kill-when-opening-new-dired-buffer t)
-(setq-default dired-listing-switches "-aBhl  --group-directories-first")
-#+end_src
 
 
 * Helper packages
@@ -1410,15 +1250,13 @@ The resize pertains to the maximum and minimum values"
 
 *** Show current datetime
 #+begin_src elisp
-(defun me/display-current-time ()
+(defun my/display-current-time ()
   "Display the current time in the minibuffer."
   (interactive)
-  (message (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
+  (message
+   (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
 
-(general-define-key
- :keymaps '(global-map)
- "M-t" '(me/display-current-time :wk "Display datetime"))
-
+(use-package emacs :bind ("M-t" . my/display-current-time))
 #+end_src
 
 *** Auth source
@@ -1449,7 +1287,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 
-* Org mode
+* Org
 ** Base
 *** Main setup function
 #+begin_src elisp
@@ -1819,13 +1657,15 @@ Turn off duplicating lines on execution
     "Eshell history: "
     (delete-dups (ring-elements eshell-history-ring)))))
 
-(general-define-key
- :keymaps
- '(eshell-mode-map)
- "C-r"
- '(my/eshell-history :wk "Search eshell history")
- "C-l"
- '((lambda () (interactive) (eshell/clear-scrollback)) :wk "Clear scrollback"))
+(use-package
+ eshell
+ :bind
+ (:map
+  eshell-mode-map ("C-r" . my/eshell-history)
+  ("C-l" .
+   (lambda ()
+     (interactive)
+     (eshell/clear-scrollback)))))
 #+end_src
 
 ** Vterm
@@ -1961,6 +1801,127 @@ Turn off duplicating lines on execution
   (setq elfeed-goodies/entry-pane-size 0.5))
 
 (add-hook 'elfeed-show-mode-hook 'visual-line-mode)
+#+end_
+** Magit
+*** Magit
+#+begin_src elisp
+(use-package
+ magit
+ :config (setq magit-status-buffer-switch-function 'switch-to-buffer)
+ (setq magit-display-buffer-function
+       'magit-display-buffer-same-window-except-diff-v1)
+ :bind ("C-x g o" . magit) ("C-x g c" . magit-commit))
+#+end_src
+
+*** Gutter
+#+begin_src elisp
+(use-package
+ git-gutter
+ :custom
+ (git-gutter:modified-sign "~")
+ (git-gutter:added-sign "+")
+ (git-gutter:deleted-sign "-")
+ :config
+ (set-face-foreground
+  'git-gutter:modified (plist-get grayscale-theme-colors :yellow))
+ (set-face-foreground
+  'git-gutter:added (plist-get grayscale-theme-colors :green))
+ (set-face-foreground
+  'git-gutter:deleted (plist-get grayscale-theme-colors :red))
+ (defun my/stage-hunk ()
+   "Wrapper around git-gutter:stage-hunk but without confirm requirement"
+   (interactive)
+   (git-gutter:awhen
+    (git-gutter:search-here-diffinfo git-gutter:diffinfos)
+    (git-gutter:do-stage-hunk it)
+    (git-gutter:update-all-windows)
+    (message "✅ staged" (buffer-name))))
+ :bind
+ ("C-x g n" . git-gutter:next-hunk)
+ ("C-x g p" . git-gutter:previous-hunk)
+ ("C-x g s" . my/stage-hunk)
+ :hook
+ ((prog-mode org-mode) . git-gutter-mode)
+ (magit-post-refresh-hook git-gutter:update-all-windows))
+#+end_src
+
+*** Merge
+#+begin_src elisp
+(use-package smerge-mode
+  :ensure nil
+  :hook
+  (prog-mode . smerge-mode))
+#+end_src
+
+*** Ediff
+#+begin_src elisp
+(setq ediff-split-window-function 'split-window-horizontally
+      ediff-window-setup-function 'ediff-setup-windows-plain)
+
+(defun suzu/ediff-hook ()
+(ediff-setup-keymap)
+(define-key ediff-mode-map "j" 'ediff-next-difference)
+(define-key ediff-mode-map "k" 'ediff-previous-difference)
+(golden-ratio-mode nil))
+
+(add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
+#+end_src
+** Project
+*** Register not only ~.git~ dirs
+#+begin_src elisp
+(defun my/dir-contains-project-marker (dir)
+  "Checks if `.project' file is present in directory at DIR path."
+  (let ((project-marker-path (file-name-concat dir ".project")))
+    (when (file-exists-p project-marker-path)
+       dir)))
+
+(customize-set-variable 'project-find-functions
+                        (list #'project-try-vc
+                              #'my/dir-contains-project-marker))
+#+end_src
+
+*** Load personal extensions
+#+begin_src elisp
+(require 'project-ext)
+
+(defun my/project-new-created-hook (project-path)
+  (message "My project new created hook with %s" project-path)
+  (project-persp-switch project-path))
+(add-hook 'project-ext:new-created-hook 'my/project-new-created-hook)
+
+(with-eval-after-load 'perspective
+  (setq compilation-buffer-name-function
+        'project-ext:persp-compilation-buffer-name-function))
+#+end_src
+
+*** Build from ~Makefile~
+#+begin_src elisp
+(use-package
+ make-project
+ :vc (:url "https://github.com/scipunch/make-project")
+ :bind ("C-x p c" . make-project-run))
+#+end_src
+** Dired
+*** Base
+#+begin_src elisp
+(use-package dired-open
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :config
+  ;; (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+  ;;  (EVIL-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
+  (setq dired-open-extensions '(("gif" . "feh")
+                                ("jpg" . "feh")
+                                ("jpeg" . "feh")
+                                ("png" . "feh")
+                                ("mkv" . "mpv")
+                                ("mp4" . "mpv"))))
+
+(use-package peep-dired
+  :after dired
+  :hook (evil-normalize-keymaps . peep-dired-hook))
+
+(setf dired-kill-when-opening-new-dired-buffer t)
+(setq-default dired-listing-switches "-aBhl  --group-directories-first")
 #+end_src
 
 

@@ -60,5 +60,13 @@
                               (apply (quote ,sentinel) args)))))))
     (apply fun args)))
 
+(defun my/window-with-name-visible-p (name)
+  "Check if a window with the given NAME is currently visible."
+  (let ((buffer (get-buffer name)))
+    (when buffer
+      (seq-some
+       (lambda (window) (eq (window-buffer window) buffer))
+       (window-list)))))
+
 (provide 'my-extensions)
 ;;; my-extensions.el ends here
