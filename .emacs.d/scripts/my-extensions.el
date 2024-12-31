@@ -47,5 +47,18 @@
      (lambda (dir) (puthash dir t initial-dirs-set)) initial-dirs)
     initial-dirs-set))
 
+(defun my/inhibit-sentinel-messages (fun &rest args)
+  "Inhibit messages in all sentinels started by FUN with ARGS."
+  (cl-letf* ((old-set-process-sentinel
+              (symbol-function 'set-process-sentinel))
+             ((symbol-function 'set-process-sentinel)
+              (lambda (process sentinel)
+                (funcall old-set-process-sentinel
+                         process
+                         `(lambda (&rest args)
+                            (let ((inhibit-message t))
+                              (apply (quote ,sentinel) args)))))))
+    (apply fun args)))
+
 (provide 'my-extensions)
 ;;; my-extensions.el ends here

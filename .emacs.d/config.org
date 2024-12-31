@@ -788,6 +788,7 @@ Automatically resizes windows to fit golden ratio
 
 * Dev
 ** Common
+*** Docs pop up
 #+begin_src elisp
 (use-package eldoc-box
   :config
@@ -809,6 +810,11 @@ Automatically resizes windows to fit golden ratio
    :keymap 'prog-mode-map
    :prefix "C-h"
    "." '(eldoc-box-help-at-point :wk "Show doc")))
+#+end_src
+
+*** Ctags
+#+begin_src elisp
+(add-hook 'prog-mode-hook 'project-ext:ctags-generate-after-save-hook)
 #+end_src
 
 ** Languages

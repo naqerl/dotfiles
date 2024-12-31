@@ -10,8 +10,10 @@
 
 (defvar-keymap project-ext-keymap
   :doc "Project ext keymap."
-  :prefix 'project-ext-keymap
-  "s" #'project-ext:search-comment)
+  :prefix
+  'project-ext-keymap
+  "s"
+  #'project-ext:search-comment)
 
 (keymap-set project-prefix-map "e" 'project-ext-keymap)
 
@@ -155,6 +157,30 @@ WHAT - element from `project-ext:search--comment-regexp' or string any"
        (format "%s:" (upcase what))))))
 
 ; end-region   -- Project search extensions
+
+; begin-region -- Ctags
+
+(defun project-ext:ctags-generate ()
+  "Generates TAGS file for the project root from git files."
+  (interactive)
+  (if (project-current)
+      (let ((default-directory (project-root (project-current)))
+            (display-buffer-alist
+             '(("*Async Shell Command*"
+                display-buffer-no-window
+                (nil)))))
+        (if (file-exists-p ".git")
+            (my/inhibit-sentinel-messages
+             #'async-shell-command "git ls-files | ctags -ReL -")
+          (message
+           "Project ctags will be generated only for git repository.")))
+    (message "Ctags will be generated only inside a project.")))
+
+(defun project-ext:ctags-generate-after-save-hook ()
+  "Adds `after-save-hook' to generate project ctags."
+  (add-hook 'after-save-hook 'project-ext:ctags-generate 0 t))
+
+; end-region   -- Ctags
 
 (provide 'project-ext)
 ;;; project-ext.el ends here
