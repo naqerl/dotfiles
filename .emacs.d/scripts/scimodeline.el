@@ -108,64 +108,6 @@ or not."
              (with-selected-window (minibuffer-window)
                (eq window (minibuffer-selected-window)))))))
 
-(setq-default mode-line-format nil)
-
-(defface scimodeline-hide-face
-  `((t
-     :overline "#BEC3C6"
-     :height 1
-     :font "Iosevka NF 7"
-     :box nil
-     :background ,(plist-get grayscale-theme-colors :bg)))
-  "Face with a accent background for use on the mode line.")
-
-
-;; Declared as var cause :line-width (1 . 0) is forbidden
-(defvar scimodeline-header-outline
-  '(:overline
-    "#BEC3C6"
-    :underline nil
-    :box (:color "#BEC3C6" :line-width (1 . 0)))
-  "Doc string.")
-
-(defun sci-box-buffer ()
-  "Doc string."
-  (interactive)
-  (setq
-   mode-line-format
-   `((:eval ,(propertize " " 'face 'scimodeline-hide-face)))
-   fringes-outside-margins t
-   left-margin-width 0
-   right-margin-width 0
-   left-fringe-width 1
-   right-fringe-width 1)
-  (face-remap-add-relative 'mode-line-active 'scimodeline-hide-face)
-  (face-remap-add-relative 'mode-line-inactive 'scimodeline-hide-face)
-  (face-remap-add-relative 'header-line scimodeline-header-outline)
-  (face-remap-add-relative
-   'header-line-active scimodeline-header-outline)
-  (face-remap-add-relative
-   'header-line-inactive scimodeline-header-outline)
-  (set-window-margins nil 1 1)
-  (when (eq (window-buffer) (current-buffer))
-    (set-window-buffer nil (current-buffer))))
-
-;; (setq window-divider-default-right-width 10)
-;; (window-divider-mode t)
-
-;; (add-hook 'prog-mode-hook 'sci-box-buffer)
-;; (add-hook 'org-mode-hook 'sci-box-buffer)
-;; (add-hook 'vterm-mode-hook 'sci-box-buffer)
-
-(custom-set-faces
- '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
- `(window-divider
-   ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2)))))
- `(window-divider-first-pixel
-   ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2)))))
- `(window-divider-last-pixel
-   ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2))))))
-
 (setq-default mode-line-format
               '(""
                 my-modeline-buffer-name

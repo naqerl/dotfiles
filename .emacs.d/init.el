@@ -15,7 +15,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
+ '(font-lock-keyword-face ((t (:inherit italic :foreground "#bec3c6" :weight bold))))
+ '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
  '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
+ '(org-table ((t (:inherit default :foreground "#b6b6b6"))))
  '(window-divider ((t (:foreground "#424242"))))
  '(window-divider-first-pixel ((t (:foreground "#424242"))))
  '(window-divider-last-pixel ((t (:foreground "#424242")))))
