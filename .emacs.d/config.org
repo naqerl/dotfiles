@@ -1100,10 +1100,10 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
  (defun my/better-jumper-advice-set (&rest r)
    (when (called-interactively-p)
      (better-jumper-set-jump)))
- (dolist
-  (fn
-   '(xref-find-definitions find-file next-error previous-error))
-  (advice-add fn :before #'my/better-jumper-advice-set))
+ (dolist (fn
+          '(xref-find-definitions
+            find-file next-error previous-error project-find-file))
+   (advice-add fn :before #'my/better-jumper-advice-set))
  :bind
  ("C-," . better-jumper-jump-backward)
  ("C-." . better-jumper-jump-forward))
