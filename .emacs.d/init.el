@@ -43,11 +43,12 @@
            load-env-vars magit make-project marginalia markdown-toc
            nerd-icons-corfu nginx-mode nushell-ts-mode orderless
            org-auto-tangle org-present pcmpl-args peep-dired
-           perspective pet php-mode plantuml-mode prettier-js pulsar
-           rainbow-mode ruff-format rust-docs rust-mode sqlformat
-           sublime-themes sudo-edit surround tao-theme tldr toc-org
-           typescript-mode undo-tree vertico visual-regexp-steroids
-           vterm-toggle web-mode yaml-mode yuck-mode))
+           perspective pet php-mode plantuml-mode popper prettier-js
+           pulsar rainbow-mode ruff-format rust-docs rust-mode
+           sqlformat sublime-themes sudo-edit surround tao-theme tldr
+           toc-org typescript-mode undo-tree vertico
+           visual-regexp-steroids vterm-toggle web-mode yaml-mode
+           yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")
      (vterm-toggle :url "https://github.com/scipunch/vterm-toggle")))
@@ -58,6 +59,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil))))
  '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
  '(font-lock-keyword-face ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
  '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))

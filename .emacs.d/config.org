@@ -1850,3 +1850,21 @@ Turn off duplicating lines on execution
 (setf dired-kill-when-opening-new-dired-buffer t)
 (setq-default dired-listing-switches "-aBhl  --group-directories-first")
 #+end_src
+
+** Popper
+#+begin_src elisp
+(use-package
+ popper
+ :bind
+ (("C-`" . popper-toggle)
+  ("M-`" . popper-cycle)
+  ("C-M-`" . popper-toggle-type))
+ :init
+ (setq popper-reference-buffers
+       '("\\*Async Shell Command\\*"
+         help-mode
+         compilation-mode))
+ (setq popper-group-function #'popper-group-by-perspective) ; group by perspective
+ (popper-mode +1)
+ (popper-echo-mode +1)) ; For echo area hints
+#+end_src
