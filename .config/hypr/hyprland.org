@@ -293,18 +293,7 @@ bind = $mainMode, O, exec, thunar
 
 *** Emacs
 #+begin_src conf
-$reset = hyprctl dispatch submap reset
-bind = $mainMod, E, submap, emacs
-submap=emacs
-bind = ,E, exec, $emacs
-bind = ,S, exec, $emacs --eval '(eshell)'; notify-send "kek"; $reset
-bind = ,D, exec, $emacs --eval '(dired nil)'; $reset
-bind = ,F, exec, $emacs --eval '(elfeed)'; $reset
-bind = ,V, exec, $emacs --eval '(vterm "nu")'; $reset
-bind = ,R, exec, notify-send "Killing emacs" && pkill -9 emacs && $emacsDaemon && $emacsClient; $reset
-bind=,escape,submap,reset 
-
-submap=reset
+bind = $mainMod, E, exec, "emacs"
 #+end_src
 
 ** Workspaces
