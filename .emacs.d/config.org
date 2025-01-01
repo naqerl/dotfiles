@@ -829,6 +829,12 @@ Automatically resizes windows to fit golden ratio
  (add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
  (setq-default initial-buffer-choice
                (lambda () (get-buffer "*dashboard*"))))
+
+(setq initial-scratch-message
+      (format-time-string ";; Created at: %Y-%m-%dT%H:%M:%S+00:00\n\n" nil t))
+
+(setq-default initial-buffer-choice
+              (lambda () (get-buffer "*scratch*")))
 #+end_src
 
 ** Banners
