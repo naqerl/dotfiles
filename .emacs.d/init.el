@@ -6,9 +6,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(auth-source-save-behavior nil)
- '(package-vc-selected-packages
-   '((make-project :url "https://github.com/scipunch/make-project")
-     (vterm-toggle :url "https://github.com/scipunch/vterm-toggle")))
+ '(package-selected-packages nil)
+ '(package-vc-selected-packages '((rust-docs :url "https://github.com/scipunch/rust-docs")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
+ '(window-divider ((t (:foreground "#424242"))))
+ '(window-divider-first-pixel ((t (:foreground "#424242"))))
+ '(window-divider-last-pixel ((t (:foreground "#424242")))))

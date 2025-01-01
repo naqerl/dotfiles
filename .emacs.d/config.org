@@ -1093,17 +1093,20 @@ Automatically resizes windows to fit golden ratio
 *** Better jumper
 TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+begin_src elisp
-(use-package better-jumper
-  :config
-  (better-jumper-mode +1)
-  (defun better-better-jumper-set-jump (&rest r)
-    (better-jumper-set-jump))
-  (advice-add #'find-file :before #'better-better-jumper-set-jump)
-  (advice-add #'next-error :before #'better-better-jumper-set-jump)
-  (advice-add #'previous-error :before #'better-better-jumper-set-jump)
-  :bind
-  ("C-," . better-jumper-jump-backward)
-  ("C-." . better-jumper-jump-forward))
+(use-package
+ better-jumper
+ :init
+ (better-jumper-mode +1)
+ (defun my/better-jumper-advice-set (&rest r)
+   (when (called-interactively-p)
+     (better-jumper-set-jump)))
+ (dolist
+  (fn
+   '(xref-find-definitions find-file next-error previous-error))
+  (advice-add fn :before #'my/better-jumper-advice-set))
+ :bind
+ ("C-," . better-jumper-jump-backward)
+ ("C-." . better-jumper-jump-forward))
 #+end_src
 
 *** Scroll
