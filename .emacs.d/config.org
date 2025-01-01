@@ -28,6 +28,7 @@
 (dolist (path '("~/.emacs.d/scripts" "~/dotfiles/.emacs.d/themes"))
   (add-to-list 'load-path (expand-file-name path)))
 (require 'package-manager)
+(require 'project-ext)
 (require 'my-extensions)
 #+end_src
 ** Upgrade GC
@@ -709,7 +710,7 @@ Automatically resizes windows to fit golden ratio
 (defun suzu/dashboard-insert-banner ()
   "Insert the banner at the top of the dashboard."
   (goto-char (point-max))
-  (when-let ((banner
+  (when-let* ((banner
               (dashboard-choose-banner dashboard-startup-banner)))
     (let ((start (point))
           buffer-read-only
@@ -1819,10 +1820,8 @@ Turn off duplicating lines on execution
                               #'my/dir-contains-project-marker))
 #+end_src
 
-*** Load personal extensions
+*** Project extension setup
 #+begin_src elisp
-(require 'project-ext)
-
 (defun my/project-new-created-hook (project-path)
   (message "My project new created hook with %s" project-path)
   (project-persp-switch project-path))
