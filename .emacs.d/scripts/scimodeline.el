@@ -73,7 +73,11 @@
 (defvar-local my-persp-name
     '(:eval
       (when (mode-line-window-selected-p)
-        (propertize (persp-current-name) 'face 'bold)))
+        (concat
+         (propertize "| " 'face 'mode-line)
+         (propertize (format "󰖯 %s" (persp-current-name))
+                     'face
+                     'italic))))
   "Mode line construct to display current perspective name.")
 (put 'my-persp-name 'risky-local-variable t)
 
@@ -82,7 +86,9 @@
       (when (and (boundp 'compilation-in-progress)
                  compilation-in-progress
                  (mode-line-window-selected-p))
-        (propertize "󱁤  " 'face 'my-modeline-warn-fg)))
+        (concat
+         (propertize "| " 'face 'mode-line)
+         (propertize "󱁤  " 'face 'my-modeline-warn-fg))))
   "Mode line construct to display compilation process.")
 (put 'my-compilation-in-progress 'risky-local-variable t)
 
@@ -169,7 +175,6 @@ or not."
                 my-persp-name
                 " "
                 my-compilation-in-progress
-                my-modeline-lsp
                 my-modeline-timer))
 
 
