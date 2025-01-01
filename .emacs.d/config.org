@@ -1888,3 +1888,8 @@ Turn off duplicating lines on execution
  (popper-mode +1)
  (popper-echo-mode +1)) ; For echo area hints
 #+end_src
+
+* Final
+#+begin_src elisp
+(message "Config fully loaded")
+#+end_src
