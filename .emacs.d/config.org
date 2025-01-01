@@ -820,14 +820,14 @@ Automatically resizes windows to fit golden ratio
 
 (use-package
  dashboard
- :ensure t
+ :disabled
  :custom
  (dashboard-set-init-info t)
  (dashboard-set-navigator t)
  (dashboard-show-shortcuts t)
  (dashboard-center-content t)
  (dashboard-startup-banner
- (expand-file-name "~/.emacs.d/banners/anime/1.png"))
+  (expand-file-name "~/.emacs.d/banners/anime/1.png"))
  (dashboard-set-heading-icons t)
  (dashboard-set-file-icons nil)
  (dashboard-startupify-list
@@ -838,11 +838,11 @@ Automatically resizes windows to fit golden ratio
     dashboard-insert-init-info
     dashboard-insert-newline
     end-of-buffer))
- :config (dashboard-setup-startup-hook))
-
-(add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
-(setq-default initial-buffer-choice
-              (lambda () (get-buffer "*dashboard*")))
+ :config
+ (dashboard-setup-startup-hook)
+ (add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
+ (setq-default initial-buffer-choice
+               (lambda () (get-buffer "*dashboard*"))))
 #+end_src
 
 ** Banners
