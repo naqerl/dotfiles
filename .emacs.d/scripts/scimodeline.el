@@ -160,13 +160,12 @@ or not."
  `(window-divider-last-pixel
    ((t (:foreground ,(plist-get grayscale-theme-colors :bg+2))))))
 
-
 (setq-default mode-line-format
               '(""
                 my-modeline-buffer-name
                 "  "
                 my-modeline-major-mode
-                mode--line-format-right-align
+                " "
                 my-persp-name
                 " "
                 my-compilation-in-progress

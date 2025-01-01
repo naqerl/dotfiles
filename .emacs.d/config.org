@@ -1291,39 +1291,15 @@ The resize pertains to the maximum and minimum values"
 #+begin_src elisp
 (defun suzu/org-icons ()
   "Beautify org mode keywords."
-  (setq prettify-symbols-alist '(("[#A]" . "")
-                                 ("[#B]" . "")
-                                 ("[#C]" . "")
-                                 ("[ ]" . "")
-                                 ("[X]" . "")
-                                 ("[-]" . "")
-                                 ("#+begin_src" . "")
-                                 ("#+end_src" . "")
-                                 (":properties:" . "")
-                                 (":PROPERTIES:" . "")
-                                 (":end:" . "―")
-                                 (":END:" . "―")
-                                 (":ID:" . "")
-                                 ("#+startup:" . "")
-                                 ("#+title: " . "")
-                                 ("#+results:" . "")
-                                 ("#+name:" . "")
-                                 ("#+roam_tags:" . "")
-                                 ("#+filetags:" . "")
-                                 ("#+html_head:" . "")
-                                 ("#+subtitle:" . "")
-                                 ("#+author:" . "")
-                                 ("#+description:" . "󰦨")
-                                 (":effort:" . "")
-                                 ("*" . "󰣏")
-                                 ("**" . " 󱀝")
-                                 ("***" . "  ")
-                                 ("****" . "   ")
-                                 ("*****" . "    ")
-                                 ("******" . "     ")
-                                 ("scheduled:" . "")
-                                 ("#+auto_tangle: t" . "󰁪")
-                                 ("deadline:" . "")))
+  (setq prettify-symbols-alist
+        '(("[ ]" . "☐")
+          ("[X]" . "☑")
+          ("[-]" . "❍")
+          ("#+begin_src" . "")
+          ("#+end_src" . "")
+          ("#+title: " . "")
+          ("#+author:" . "")
+          ("#+description:" . "󰦨")))
   (prettify-symbols-mode))
 #+end_src
 
@@ -1783,7 +1759,8 @@ Turn off duplicating lines on execution
   (setq elfeed-goodies/entry-pane-size 0.5))
 
 (add-hook 'elfeed-show-mode-hook 'visual-line-mode)
-#+end_
+#+end_src
+
 ** Magit
 *** Magit
 #+begin_src elisp
@@ -1905,5 +1882,3 @@ Turn off duplicating lines on execution
 (setf dired-kill-when-opening-new-dired-buffer t)
 (setq-default dired-listing-switches "-aBhl  --group-directories-first")
 #+end_src
-
-
