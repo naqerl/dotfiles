@@ -567,42 +567,41 @@ Automatically resizes windows to fit golden ratio
 ** Completion
 *** Corfu
 #+begin_src elisp
- (use-package
-  corfu
-  :disabled
-  :custom
-  (corfu-cycle t) ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto nil) ;; Enable auto completion
-  (corfu-popupinfo-mode t)
-  (corfu-echo-documentation 0)
-  :bind
-  (:map
-   corfu-map
-   ("M-SPC" . corfu-insert-separator)
-   ("RET" . nil)
-   ("TAB" . corfu-next)
-   ([tab] . corfu-next)
-   ("S-TAB" . corfu-previous)
-   ([backtab] . corfu-previous)
-   ("C-<return>" . corfu-insert))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode))
+(use-package
+ corfu
+ :disabled
+ :custom
+ (corfu-cycle t) ;; Enable cycling for `corfu-next/previous'
+ (corfu-auto nil) ;; Enable auto completion
+ (corfu-popupinfo-mode t) (corfu-echo-documentation 0)
+ :bind
+ (:map
+  corfu-map
+  ("M-SPC" . corfu-insert-separator)
+  ("RET" . nil)
+  ("TAB" . corfu-next)
+  ([tab] . corfu-next)
+  ("S-TAB" . corfu-previous)
+  ([backtab] . corfu-previous)
+  ("C-<return>" . corfu-insert))
+ :init (corfu-popupinfo-mode)
+ :config
+ (defun corfu-enable-always-in-minibuffer ()
+   "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+   (unless (or (bound-and-true-p mct--active)
+               (bound-and-true-p vertico--input)
+               (eq (current-local-map) read-passwd-map))
+     (setq-local corfu-auto nil) ;; Enable/disable auto completion
+     (setq-local
+      corfu-echo-delay nil ;; Disable automatic echo and popup
+      corfu-popupinfo-delay nil)
+     (corfu-mode 1)))
+ (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer
+           1))
 
-(defun corfu-enable-always-in-minibuffer ()
-  "Enable Corfu in the minibuffer if Vertico/Mct are not active."
-  (unless (or (bound-and-true-p mct--active)
-              (bound-and-true-p vertico--input)
-              (eq (current-local-map) read-passwd-map))
-    (setq-local corfu-auto nil) ;; Enable/disable auto completion
-    (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
-                corfu-popupinfo-delay nil)
-    (corfu-mode 1)))
-(add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
 
-(use-package emacs
-  :init
-  (setq completion-cycle-threshold 3))
+
+(use-package emacs :init (setq completion-cycle-threshold 3))
 #+end_src
 
 **** Dabbrev
