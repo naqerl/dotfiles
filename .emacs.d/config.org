@@ -1630,6 +1630,7 @@ Turn off duplicating lines on execution
 ** Vterm
 #+begin_src elisp
 (use-package vterm
+  :disabled
   :config
   (setq 
         vterm-max-scrollback 5000)
