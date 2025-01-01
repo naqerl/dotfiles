@@ -500,7 +500,7 @@ Automatically resizes windows to fit golden ratio
  (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
  :custom
  (golden-ratio-auto-scale t)
- (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*")))
+ (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*" "*Async Shell Command*")))
 #+end_src
 
 *** Zen mode
@@ -1168,6 +1168,15 @@ The resize pertains to the maximum and minimum values"
     (dedicated . t)
     (body-function . my-window-select-fit-size)))
 #+end_src
+
+*** Async shell command
+#+begin_src elisp
+(add-to-list
+  'display-buffer-alist
+  '("\\*Async Shell Command\\*"
+    (display-buffer-reuse-mode-window display-buffer-below-selected)
+    (body-function . my-window-select-fit-size)))
+#+end_src>
 
 * Helper packages
 *** Undo tree
@@ -1859,11 +1868,7 @@ Turn off duplicating lines on execution
  (("C-`" . popper-toggle)
   ("M-`" . popper-cycle)
   ("C-M-`" . popper-toggle-type))
- :init
- (setq popper-reference-buffers
-       '("\\*Async Shell Command\\*"
-         help-mode
-         compilation-mode))
+ :init (setq popper-reference-buffers '("\\*Async Shell Command\\*"))
  (setq popper-group-function #'popper-group-by-perspective) ; group by perspective
  (popper-mode +1)
  (popper-echo-mode +1)) ; For echo area hints
