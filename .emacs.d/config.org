@@ -51,6 +51,7 @@
 *** Docs pop up
 #+begin_src elisp
 (use-package eldoc-box
+  :disabled
   :config
   (defun suzu/eldoc-box-scroll-up ()
     "Scroll up in `eldoc-box--frame'"
@@ -116,15 +117,15 @@
 
 *** Python
 #+begin_src elisp
-(defun suzu/python-mode()
+(defun suzu/python-mode ()
   (ruff-format-on-save-mode))
-  
-(use-package python
-  :ensure t)
 
-(use-package ruff-format
-  :config
-  (setq ruff-format-command "ruff check --fix --select I"))
+(use-package python :ensure t)
+
+(use-package
+ ruff-format
+ :after python
+ :config (setq ruff-format-command "ruff check --fix --select I"))
 
 (add-hook 'python-ts-mode-hook 'suzu/python-mode)
 #+end_src
@@ -139,12 +140,12 @@
 Format
 
 #+begin_src elisp
-(use-package sqlformat
-:config
-(setq sqlformat-command 'pgformatter)
-(setq sqlformat-args '("-s2" "-g"))
-:hook
-(sql-mode-hook . sqlformat-on-save-mode))
+(use-package
+ sqlformat
+ :config
+ (setq sqlformat-command 'pgformatter)
+ (setq sqlformat-args '("-s2" "-g"))
+ :hook (sql-mode-hook . sqlformat-on-save-mode))
 #+end_src
 
 Literate SQL programming
@@ -294,36 +295,11 @@ Generate table of contents
 #+end_src
 
 ** Working with ~.env~ files
-Find ~.env~ file
-#+begin_src elisp
-(defvar suzu/dotenv-file-name ".env"
-  "The name of the .env file.")
-
-(defun suzu/find-env-file ()
-  "Find the closest .env file in the directory hierarchy."
-
-  (let* ((env-file-directory (locate-dominating-file "." suzu/dotenv-file-name))
-         (file-name (concat env-file-directory suzu/dotenv-file-name)))
-    (when (file-exists-p file-name)
-      file-name)))
-#+end_src
-
-Declare function for loading ~.env~
-#+begin_src elisp
-(defun suzu/set-project-env ()
-  "Export all environment variables in the closest .env file."
-
-  (let ((env-file (suzu/find-env-file)))
-    (when env-file
-      (load-env-vars env-file))))
-#+end_src
-
 Install package for loading ~.env~ & setup hooks
 #+begin_src elisp
 (use-package load-env-vars
   :hook
-  (eshell-mode . suzu/set-project-env)
-  (prog-mode . suzu/set-project-env))
+  ((eshell-mode prog-mode) . project-ext:env-load))
 #+end_src
 
 ** Compilation
@@ -585,6 +561,7 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
  (use-package
   corfu
+  :disabled
   :custom
   (corfu-cycle t) ;; Enable cycling for `corfu-next/previous'
   (corfu-auto nil) ;; Enable auto completion
@@ -639,6 +616,8 @@ Automatically resizes windows to fit golden ratio
 **** Orderless
 #+begin_src elisp
 (use-package orderless
+  :disabled
+  :after corfu
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
@@ -648,6 +627,8 @@ Automatically resizes windows to fit golden ratio
 **** Icons
 #+begin_src elisp
 (use-package nerd-icons-corfu
+  :disabled
+  :after corfu
 :config
 (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
@@ -689,7 +670,7 @@ Automatically resizes windows to fit golden ratio
   :bind
    ("C-x B"  . consult-buffer)
    ("C-x b"  . consult-project-buffer)
-   ("M-g i"  . consult-imenu)
+   ("M-i"  . consult-imenu)
    ("C-; o"  . consult-outline)
    ("C-; i"  . consult-line)
    ("C-; ;"  . consult-ripgrep))
@@ -1096,6 +1077,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Better jumper
+TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+begin_src elisp
 (use-package better-jumper
   :config
@@ -1181,6 +1163,7 @@ The resize pertains to the maximum and minimum values"
 #+begin_src elisp
 (use-package undo-tree :ensure t)
 #+end_src
+
 *** Emoji
 #+begin_src elisp
 (use-package emojify)
@@ -1250,12 +1233,6 @@ The resize pertains to the maximum and minimum values"
   :config
   (auth-source-pass-enable)
   (setq auth-source-debug 'trivia))
-#+end_src
-*** Imenu
-#+begin_src elisp
-(use-package imenu
-  :bind
-  ("M-i" . imenu))
 #+end_src
 
 *** Free keys
@@ -1582,17 +1559,6 @@ Turn off duplicating lines on execution
   (eshell-syntax-highlighting-global-mode +1))
 #+end_src
 
-*** Toggle eshell
-#+begin_src elisp
-(use-package eshell-toggle
-  :custom
-  (eshell-toggle-window-side 'above)
-  (eshell-toggle-size-fraction 3)
-  (eshell-toggle-use-projectile-root nil)
-  (eshell-toggle-use-git-root t)
-  (eshell-toggle-run-command nil))
-#+end_src
-
 *** Better completions
 #+begin_src elisp
 (use-package pcmpl-args
@@ -1667,16 +1633,6 @@ Turn off duplicating lines on execution
     (display-buffer-reuse-window display-buffer-in-side-window)
     (reusable-frames . visible)
     (side . top))))
-#+end_src
-
-** Powershell
-#+begin_src elisp
-(defun run-powershell ()
-  "Run powershell"
-  (interactive)
-  (async-shell-command "c:/Users/suzu/AppData/Local/Microsoft/WindowsApps/pwsh.exe -Command -"
-               nil
-               nil))
 #+end_src
 
 * Tools
