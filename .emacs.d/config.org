@@ -452,10 +452,7 @@ Install package for loading ~.env~ & setup hooks
 
 (use-package
  grayscale-theme
- :after (vterm)
- :config
- (require 'grayscale-vterm)
- (require 'grayscale-ansi)
+ :init (require 'grayscale-ansi)
  (set-face-attribute
   'org-block nil
   :background
@@ -467,7 +464,21 @@ Install package for loading ~.env~ & setup hooks
   '(font-lock-string-face
     ((t (:inherit italic :foreground "#738678"))))
   `(org-table
-    ((t (:inherit default :foreground ,(plist-get grayscale-theme-colors :fg)))))))
+    ((t
+      (:inherit
+       default
+       :foreground ,(plist-get grayscale-theme-colors :fg)))))
+  `(org-code
+    ((t
+      (:inherit
+       default
+       :background "black"
+       :foreground ,(plist-get grayscale-theme-colors :fg+1)
+       :box
+       (:line-width
+        (1 . 1)
+        :color ,(plist-get grayscale-theme-colors :fg-1)
+        :style released-button)))))))
 #+end_src
 
 *** Current
