@@ -79,7 +79,13 @@
 
 *** Ctags
 #+begin_src elisp
-(add-hook 'prog-mode-hook 'project-ext:ctags-generate-after-save-hook)
+(use-package
+ etags
+ :config
+ (setq
+  tags-add-tables nil
+  tags-revert-without-query t)
+ (add-hook 'prog-mode-hook #'project-ext:etags-mode))
 #+end_src
 
 *** Treesitter
@@ -1904,3 +1910,4 @@ Turn off duplicating lines on execution
 #+begin_src elisp
 (message "Config fully loaded")
 #+end_src
+

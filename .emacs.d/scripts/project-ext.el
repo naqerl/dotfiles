@@ -158,9 +158,32 @@ WHAT - element from `project-ext:search--comment-regexp' or string any"
 
 ; end-region   -- Project search extensions
 
-; begin-region -- Ctags
+; begin-region -- Etags
 
-(defun project-ext:ctags-generate ()
+
+(define-minor-mode project-ext:etags-mode
+  "Autoloads TAGS file from the current project root.
+Updates project's TAGS file on every save."
+  :init-value
+  nil
+  (message "[project-ext]: Etags mode activated")
+  (if project-ext:etags-mode
+      (progn
+        (add-hook 'after-save-hook 'project-ext:etags--generate 0 t)
+        (project-ext:etags--read))
+    (remove-hook 'after-save-hook 'project-ext:etags--generate)))
+
+(defun project-ext:etags--read ()
+  "Reads TAGS table from the project root."
+  (message "Reading etags table")
+  (let ((project-tags-table
+         (and (project-current)
+              (expand-file-name "TAGS"
+                                (project-root (project-current))))))
+    (when (and project-tags-table (file-exists-p project-tags-table))
+      (visit-tags-table project-tags-table t))))
+
+(defun project-ext:etags--generate ()
   "Generates TAGS file for the project root from git files."
   (interactive)
   (if (project-current)
@@ -173,14 +196,13 @@ WHAT - element from `project-ext:search--comment-regexp' or string any"
             (my/inhibit-sentinel-messages
              #'async-shell-command "git ls-files | ctags -ReL -")
           (message
-           "Project ctags will be generated only for git repository.")))
-    (message "Ctags will be generated only inside a project.")))
+           "Project etags will be generated only for git repository.")))
+    (message "Etags will be generated only inside a project.")))
 
-(defun project-ext:ctags-generate-after-save-hook ()
-  "Adds `after-save-hook' to generate project ctags."
-  (add-hook 'after-save-hook 'project-ext:ctags-generate 0 t))
 
-; end-region   -- Ctags
+;;
+
+; end-region   -- Etags
 
 ; begin-region -- Environment
 
