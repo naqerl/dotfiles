@@ -6,7 +6,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(make-project rust-docs))
+ '(custom-safe-themes
+   '("2f9cff368c07d280a7a766e9f04a0053a17bb74f775504dc49421d1fda2a0797"
+     default))
+ '(package-selected-packages '(make-project nginx-mode rust-docs))
  '(package-vc-selected-packages '((rust-docs :url "https://github.com/scipunch/rust-docs")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
