@@ -1730,35 +1730,40 @@ Turn off duplicating lines on execution
 
 ** Elfeed
 #+begin_src elisp
-(use-package elfeed
-  :config
-  (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"
-        elfeed-feeds (quote
-                      (
-                       ("https://www.reddit.com/r/emacsporn.rss" reddit emacs)
-                       ("https://www.reddit.com/r/manga.rss" reddit manga)
-                       ("https://www.reddit.com/r/manga.rss" reddit manga)
-                       ("https://hackaday.com/blog/feed/" hackaday linux)
-                       ("https://opensource.com/feed" opensource linux)
-                       ("https://linux.softpedia.com/backend.xml" softpedia linux)
-                       ("https://itsfoss.com/feed/" itsfoss linux)
-                       ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
-                       ("https://www.computerworld.com/index.rss" computerworld linux)
-                       ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
-                       ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
-                       ("https://betanews.com/feed" betanews linux)
-                       ("https://systemcrafters.net/rss/news.xml" emacs)
-                       ("https://hnrss.org/frontpage" hackernews)
-                       ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
+(use-package
+ elfeed
+ :config
+ (setq
+  elfeed-feeds
+  (quote
+   (("https://www.mdpi.com/rss" research)
+    ("https://protesilaos.com/interpretations.xml" philosophy)
+    ("https://protesilaos.com/codelog.xml" emacs)
+    ("https://pythonspeed.com/atom.xml" python)
+    ("https://fabiensanglard.net/rss.xml" software)
+    ("www.redblobgames.com/blog/posts.xml" math algorithms)
+    ("https://www.reddit.com/r/emacsporn.rss" reddit emacs)
+    ("https://hackaday.com/blog/feed/" hackaday linux)
+    ("https://opensource.com/feed" opensource linux)
+    ("https://linux.softpedia.com/backend.xml" softpedia linux)
+    ("https://itsfoss.com/feed/" itsfoss linux)
+    ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
+    ("https://www.computerworld.com/index.rss" computerworld linux)
+    ("https://www.networkworld.com/category/linux/index.rss"
+     networkworld
+     linux)
+    ("https://www.techrepublic.com/rssfeeds/topic/open-source/"
+     techrepublic
+     linux)
+    ("https://betanews.com/feed" betanews linux)
+    ("https://systemcrafters.net/rss/news.xml" emacs)
+    ("https://hnrss.org/frontpage" hackernews)
+    ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
 
-
-(use-package elfeed-goodies
-  :init
-  (elfeed-goodies/setup)
-  :config
-  (setq elfeed-goodies/entry-pane-size 0.5))
-
-(add-hook 'elfeed-show-mode-hook 'visual-line-mode)
+(use-package
+ elfeed-goodies
+ :init (elfeed-goodies/setup)
+ :config (setq elfeed-goodies/entry-pane-size 0.5))
 #+end_src
 
 ** Magit

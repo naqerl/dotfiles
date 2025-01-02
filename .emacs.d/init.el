@@ -6,7 +6,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
+ '(package-selected-packages '(make-project))
  '(package-vc-selected-packages '((rust-docs :url "https://github.com/scipunch/rust-docs")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
@@ -19,6 +19,7 @@
  '(font-lock-keyword-face ((t (:inherit italic :foreground "#bec3c6" :weight bold))))
  '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
  '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
+ '(org-code ((t (:inherit default :background "black" :foreground "#b6b6b6" :box (:line-width (1 . 1) :color "#e2e2e2" :style released-button)))))
  '(org-table ((t (:inherit default :foreground "#b6b6b6"))))
  '(window-divider ((t (:foreground "#424242"))))
  '(window-divider-first-pixel ((t (:foreground "#424242"))))
