@@ -1733,7 +1733,7 @@ Turn off duplicating lines on execution
  :ensure t
  :config (setq gptel-log-level 'info)
  :config (setq gptel-default-mode 'org-mode)
- :bind ("C-x c" . gptel-menu))
+ :bind ("C-c g" . gptel-menu))
 
 (use-package
  elysium
