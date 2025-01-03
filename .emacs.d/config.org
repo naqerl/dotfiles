@@ -669,9 +669,8 @@ Automatically resizes windows to fit golden ratio
    ("C-x B"  . consult-buffer)
    ("C-x b"  . consult-project-buffer)
    ("M-i"  . consult-imenu)
-   ("C-; o"  . consult-outline)
-   ("C-; i"  . consult-line)
-   ("C-; ;"  . consult-ripgrep))
+   ("C-c i"  . consult-line)
+   ("C-c e"  . consult-ripgrep))
 #+end_src
 
 ** Workspaces
