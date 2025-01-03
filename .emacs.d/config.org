@@ -613,6 +613,24 @@ Automatically resizes windows to fit golden ratio
         completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
 
+*** Default completion system
+#+begin_src elisp
+(use-package
+ completion
+ :config
+ (setq
+  completions-format 'one-column
+  completions-header-format nil
+  completions-max-height 20
+  completion-auto-select t
+  completion-show-help nil)
+ :bind
+ (:map
+  completion-in-region-mode-map
+  ("C-n" . 'minibuffer-next-completion)
+  ("C-p" . 'minibuffer-previous-completion)))
+#+end_src
+
 *** Vertico
 #+begin_src elisp
 (use-package vertico
