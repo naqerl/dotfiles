@@ -1185,6 +1185,12 @@ The resize pertains to the maximum and minimum values"
     display-buffer-below-selected)))
 #+end_src
 
+*** Emacs Shell
+#+begin_src elisp
+(add-to-list
+ 'display-buffer-alist
+ '("\\*eshell\\*" (display-buffer-below-selected)))
+#+end_src
 
 * Helper packages
 *** Undo tree
