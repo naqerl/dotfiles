@@ -1767,20 +1767,22 @@ Turn off duplicating lines on execution
  :bind ("C-x g o" . magit) ("C-x g c" . magit-commit))
 #+end_src
 
+Actually added some
+
 *** Gutter
 #+begin_src elisp
 (use-package
  git-gutter
  :custom
- (git-gutter:modified-sign "~")
- (git-gutter:added-sign "+")
- (git-gutter:deleted-sign "-")
+ (git-gutter:modified-sign " ")
+ (git-gutter:added-sign " ")
+ (git-gutter:deleted-sign " ")
  :config
- (set-face-foreground
+ (set-face-background
   'git-gutter:modified (plist-get grayscale-theme-colors :yellow))
- (set-face-foreground
+ (set-face-background
   'git-gutter:added (plist-get grayscale-theme-colors :green))
- (set-face-foreground
+ (set-face-background
   'git-gutter:deleted (plist-get grayscale-theme-colors :red))
  (defun my/stage-hunk ()
    "Wrapper around git-gutter:stage-hunk but without confirm requirement"
@@ -1796,7 +1798,7 @@ Turn off duplicating lines on execution
  ("C-x g s" . my/stage-hunk)
  :hook
  ((prog-mode org-mode) . git-gutter-mode)
- (magit-post-refresh-hook git-gutter:update-all-windows))
+ ((after-save-hook magit-post-refresh-hook) . git-gutter:update-all-windows))
 #+end_src
 
 *** Merge
