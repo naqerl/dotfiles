@@ -1134,7 +1134,7 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+end_src
 *** Duplicate line
 #+begin_src elisp
-(use-package emacs :bind ("C-; d" . duplicate-line))
+(use-package emacs :bind ("C-c d" . duplicate-line))
 #+end_src
 
 ** Display buffer alist
