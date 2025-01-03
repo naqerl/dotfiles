@@ -1881,7 +1881,7 @@ Turn off duplicating lines on execution
   ("C-M-`" . popper-toggle-type))
  :init
  (setq popper-reference-buffers
-       '("\\*Async Shell Command\\*" shell-mode))
+       '("\\*Async Shell Command\\*" shell-mode eshell-mode))
  (setq popper-group-function #'popper-group-by-perspective) ; group by perspective
  (popper-mode +1)
  (popper-echo-mode +1)) ; For echo area hints
