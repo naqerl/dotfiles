@@ -4,12 +4,11 @@
 (defun org-babel-async-execute-sql (body params)
   "Run a SQL block at point asynchrously."
   (interactive)
-  (message "[Org babel async sql] body=%s params=%s" body params)
-
   (let ((current-file (buffer-file-name))
         (uuid (org-id-uuid))
         (temporary-file-directory "./")
         (tempfile (make-temp-file "sql-"))
+        (time (current-time))
         (connect-set
          (cdr
           (assoc-string
@@ -43,7 +42,7 @@
 
      `(lambda (result)
         "Code that runs when the async function finishes."
-        (message "Query %s finished with result=%s" ,uuid result)
+        (message "Query %s finished in %fms" ,uuid ,(* 1000 (float-time (time-since time))))
         (save-window-excursion
           (save-excursion
             (save-restriction
