@@ -21,7 +21,7 @@
 
     (unless connect-set
       (error "Failed to find dbconnections in src block header args"))
-    
+
     (org-babel-tangle '(4) tempfile)
     (org-babel-remove-result)
     (save-excursion
@@ -34,16 +34,18 @@
 
     (async-start
      `(lambda ()
-        (prog1 (shell-command-to-string
-                (format
-                 "PGPASSWORD=%s psql -h %s -p %s -U %s -d %s -f %s"
-                 ,(car (cdr (assoc 'sql-password connect-set)))
-                 ,(car (cdr (assoc 'sql-server connect-set)))
-                 ,(car (cdr (assoc 'sql-port connect-set)))
-                 ,(car (cdr (assoc 'sql-user connect-set)))
-                 ,(car (cdr (assoc 'sql-database connect-set)))
-                 ,
-                 tempfile))
+        (prog1 (replace-regexp-in-string
+                "\n$" ""
+                (shell-command-to-string
+                 (format
+                  "PGPASSWORD=%s psql -h %s -p %s -U %s -d %s -f %s"
+                  ,(car (cdr (assoc 'sql-password connect-set)))
+                  ,(car (cdr (assoc 'sql-server connect-set)))
+                  ,(car (cdr (assoc 'sql-port connect-set)))
+                  ,(car (cdr (assoc 'sql-user connect-set)))
+                  ,(car (cdr (assoc 'sql-database connect-set)))
+                  ,
+                  tempfile)))
           (delete-file ,tempfile)))
 
      `(lambda (result)
@@ -57,7 +59,7 @@
                 (re-search-forward ,uuid)
                 (beginning-of-line)
                 (kill-line)
-                (insert
-                 (mapconcat (lambda (x) (format "%s" x))
-                            (butlast (s-split "\n" result))
-                            "\n"))))))))))
+                (kill-line)
+                (org-insert-drawer nil "Output")
+                (insert result)
+                (insert (format-time-string " at [%F %r]"))))))))))

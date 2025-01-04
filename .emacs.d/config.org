@@ -30,6 +30,7 @@
 (require 'package-manager)
 (require 'project-ext)
 (require 'my-extensions)
+(require 'ssh)
 #+end_src
 ** Upgrade GC
 #+begin_src elisp
@@ -159,7 +160,8 @@ Format
  :config
  (setq sqlformat-command 'pgformatter)
  (setq sqlformat-args '("-s2" "-g"))
- :hook (sql-mode-hook . sqlformat-on-save-mode))
+ :hook (sql-mode-hook . sqlformat-on-save-mode)
+ :bind (:map sql-mode-map ("C-c C-f" . sqlformat-buffer)))
 #+end_src
 
 Literate SQL programming
@@ -1392,6 +1394,15 @@ So it'll be nice to run them automatically
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 #+end_src
 
+*** Results regexp
+#+begin_src elisp
+;; (use-package
+;;  org
+;;  :config
+;;  (setq
+;;   org-babel-result-regexp
+;;   "^[     ]*#\\+results\\(?:\\[[[:digit:]]\\{4\\}\\(?:-[[:digit:]]\\{2\\}\\)\\{2\\}\\(?: [[:digit:]]\\{2\\}\\(?::[[:digit:]]\\{2\\}\\)\\{2\\}\\)?\\(?: \\([[:xdigit:]]+\\)\\)?\\]\\)?:[   ]*$"))
+#+end_src
 ** Roam
 #+begin_src elisp
 (use-package org-roam
