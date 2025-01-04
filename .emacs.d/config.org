@@ -85,7 +85,7 @@
  (setq
   tags-add-tables nil
   tags-revert-without-query t)
- (add-hook 'prog-mode-hook #'project-ext:etags-mode))
+ :hook (prog-mode-hook . project-ext:etags-mode))
 #+end_src
 
 *** Treesitter
@@ -1176,19 +1176,12 @@ The resize pertains to the maximum and minimum values"
     (body-function . my-window-select-fit-size)))
 #+end_src
 
-*** Shell
+*** Shell and Emacs shell
 #+begin_src elisp
 (add-to-list
  'display-buffer-alist
- '("\\*shell\\*" (display-buffer-reuse-mode-window
+ '("\\*\\([a-z-]+\\)?shell\\*" (display-buffer-reuse-mode-window
     display-buffer-below-selected)))
-#+end_src
-
-*** Emacs Shell
-#+begin_src elisp
-(add-to-list
- 'display-buffer-alist
- '("\\*eshell\\*" (display-buffer-below-selected)))
 #+end_src
 
 * Helper packages
@@ -1582,7 +1575,7 @@ Turn off duplicating lines on execution
         ;; eshell-prompt-regexp suzu/eshell-prompt-regexp
         eshell-prompt-function (lambda () "A simple prompt." "󰘧 ")
         eshell-prompt-regexp "^󰘧 "
-        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh" "paru")))
+        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
 #+end_src
 
 *** Fish like prompt highlight
@@ -1602,7 +1595,7 @@ Turn off duplicating lines on execution
 #+begin_src elisp
 (defun eshell/asc (cmd)
   "Runs `cmd` in async bash shell"
-  (async-shell-command (format "bash -c '%s'" cmd)))
+  (async-shell-command cmd))
 (put 'eshell/asc 'eshell-no-numeric-conversions t)
 #+end_src
 
@@ -1792,13 +1785,16 @@ Actually added some
     (git-gutter:do-stage-hunk it)
     (git-gutter:update-all-windows)
     (message "✅ staged" (buffer-name))))
+ (defun my/update-gutter ()
+   (git-gutter-mode +1)
+   (add-hook 'after-save-hook #'git-gutter:update-all-windows 100 t))
  :bind
  ("C-x g n" . git-gutter:next-hunk)
  ("C-x g p" . git-gutter:previous-hunk)
  ("C-x g s" . my/stage-hunk)
  :hook
- ((prog-mode org-mode) . git-gutter-mode)
- ((after-save-hook magit-post-refresh-hook) . git-gutter:update-all-windows))
+ (magit-post-refresh-hook . git-gutter:update-all-windows)
+ ((org-mode prog-mode) . my/update-gutter))
 #+end_src
 
 *** Merge
@@ -1840,7 +1836,7 @@ Actually added some
 #+begin_src elisp
 (defun my/project-new-created-hook (project-path)
   (message "My project new created hook with %s" project-path)
-  (project-persp-switch project-path))
+  (project-ext:persp-switch project-path))
 (add-hook 'project-ext:new-created-hook 'my/project-new-created-hook)
 
 (with-eval-after-load 'perspective

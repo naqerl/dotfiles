@@ -15,7 +15,7 @@
   "s"
   #'project-ext:search-comment)
 
-(keymap-set project-prefix-map "e" 'project-ext-keymap)
+(keymap-set project-prefix-map "a" 'project-ext-keymap)
 
 ; end-region   -- Keymap
 
@@ -160,7 +160,6 @@ WHAT - element from `project-ext:search--comment-regexp' or string any"
 
 ; begin-region -- Etags
 
-
 (define-minor-mode project-ext:etags-mode
   "Autoloads TAGS file from the current project root.
 Updates project's TAGS file on every save."
@@ -169,12 +168,13 @@ Updates project's TAGS file on every save."
   (message "[project-ext]: Etags mode activated")
   (if project-ext:etags-mode
       (progn
-        (add-hook 'after-save-hook 'project-ext:etags--generate 0 t)
-        (project-ext:etags--read))
-    (remove-hook 'after-save-hook 'project-ext:etags--generate)))
+        (add-hook 'after-save-hook 'project-ext:etags-generate 0 t)
+        (project-ext:etags-read))
+    (remove-hook 'after-save-hook 'project-ext:etags-generate)))
 
-(defun project-ext:etags--read ()
+(defun project-ext:etags-read ()
   "Reads TAGS table from the project root."
+  (interactive)
   (message "Reading etags table")
   (let ((project-tags-table
          (and (project-current)
@@ -183,7 +183,7 @@ Updates project's TAGS file on every save."
     (when (and project-tags-table (file-exists-p project-tags-table))
       (visit-tags-table project-tags-table t))))
 
-(defun project-ext:etags--generate ()
+(defun project-ext:etags-generate ()
   "Generates TAGS file for the project root from git files."
   (interactive)
   (if (project-current)
@@ -198,9 +198,6 @@ Updates project's TAGS file on every save."
           (message
            "Project etags will be generated only for git repository.")))
     (message "Etags will be generated only inside a project.")))
-
-
-;;
 
 ; end-region   -- Etags
 
