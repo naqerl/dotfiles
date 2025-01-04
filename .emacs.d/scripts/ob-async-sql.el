@@ -55,7 +55,7 @@
                 (kill-line)
                 (org-insert-drawer nil "Output")
                 (insert result)
-                (insert (format-time-string " at [%F %r]"))))))))
+                (insert (format-time-string " at <%F %r>"))))))))
     uuid))
 
 (advice-add 'org-babel-execute:sql :override #'org-babel-async-execute-sql)
