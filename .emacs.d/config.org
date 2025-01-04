@@ -105,9 +105,6 @@
         (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")))
 
 (setq treesit-font-lock-level 4)
-(setq major-mode-remap-alist
-      '((python-mode . python-ts-mode)
-        (rust-mode . rust-ts-mode)))
 #+end_src
 
 *** Toggle comments
@@ -124,7 +121,7 @@
 
 (use-package rust-mode
   :config
-  (add-hook 'rust-ts-mode-hook 'suzu/rust-mode))
+  (add-hook 'rust-mode-hook 'suzu/rust-mode))
 
 (use-package rust-docs
   :vc (:url "https://github.com/scipunch/rust-docs"))
@@ -132,17 +129,13 @@
 
 *** Python
 #+begin_src elisp
-(defun suzu/python-mode ()
-  (ruff-format-on-save-mode))
-
-(use-package python :ensure t)
+(use-package python)
 
 (use-package
  ruff-format
  :after python
- :config (setq ruff-format-command "ruff check --fix --select I"))
-
-(add-hook 'python-ts-mode-hook 'suzu/python-mode)
+ :config (setq ruff-format-command "ruff check --fix --select I")
+ :hook (python-mode . ruff-format-on-save-mode))
 #+end_src
 
 *** Yuck
@@ -229,8 +222,6 @@ Generate table of contents
  :hook (web-mode-hook . my/web-mode-hook))
 
 (use-package prettier-js :ensure t)
-
-(add-hook 'js-ts-mode-hook 'prettier-js-mode)
 #+end_src
 
 *** Emacs Lisp
@@ -303,12 +294,6 @@ Generate table of contents
 *** PHP
 #+begin_src elisp
 (use-package php-mode :disabled) ;; Really slow to start
-#+end_src
-
-*** Nu
-#+begin_src elisp
-(use-package nushell-ts-mode
-  :ensure t)
 #+end_src
 
 *** JSON
@@ -500,7 +485,6 @@ Install package for loading ~.env~ & setup hooks
 *** Current
 #+begin_src elisp
 (load-theme 'koi :no-confirm)
-
 #+end_src
 
 *** Line numbers width
