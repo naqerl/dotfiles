@@ -6,92 +6,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("664399b8d97032be9ec66fb0236b0571465775cd013c49f4b992c9bf76c4a50e"
-     "8479cd19dacd2417569d4e98567221868d9ae0898c07c487a124e88d025dc0e8"
-     "da8d91b998ab270f2f3d5b9d74e8b661235a15926ccefd553afdb28c3c56fbfc"
-     "1fefc4d6f879fe0a7c3988fcefe4cd04e98ab710e732482b8deff86502992ec3"
-     "ffa0cdad280da93a5823e54255c1ef822fbdb1da799ebbd118347c3a16cde31e"
-     "052320911234ea25c23332077e3e33ec7efd013271b6a86d0146144e5876f41a"
-     "616a699b591b68cd905a0b8b5b386110080d1367f396291c80948f2764a09fdd"
-     "422af4bcede8e3d56f6b9057aea4296681270df3d810724d383fe5816e268e6c"
-     "627582a7f837ee657022730af347d25040bc154221ea55ddf430bfd79b9b5ba8"
-     "71faef3a2d5fd8d1fac35d467200fcfce74ce31818a3c65b1ae0b26f929b91d4"
-     "5724b1db00a6af2354efa8fb56f2fba66e8e2184e2a0df21275ce7c57fea6b41"
-     "8965073efd92a1a62a23501ea81aec1a7cc07db8d8d275d67481cd9bbff37dd7"
-     "5e6e88c55badc2f3a28973a55cf820b8842c2a1b34bcc49fb33833474c623b15"
-     "7158fdbbf192cc8d88081cc1b551ec0fc8b6266fff3466398f336071f1f4599a"
-     "b5ad37d24b9adaca4a7ed279d79d850e7d221ff6db6333f87787bd8e72c73fdc"
-     "e76428b327382b4aad37f6300ceb12ba1a92d267e545ac7168e24214584e6e07"
-     "da3ce52ba689281510e7541bafaa327a78e095a66821fce979d725e61fa2f0b0"
-     "354bbb7ec5c6a71a7715655a1b27c43ed79fb66649a2c002892a01c55cdb8d87"
-     "0297cf65878e323a9581b275bb5c13ebc42fac3472173f63f60e32d929df3c95"
-     "bdf7bebd3526091de2a018772cb507de9175ff94eab67cc6a0a2c35d7b666575"
-     "5e0f4a7c4cd6c8442ae40775e76fcf1b943b4bd592926f70954322b0c9144384"
-     "427efdce3897f2e0081927c7a6a17afe187506ec2dfeda18541064939c3ec3e4"
-     "92187b35e3c565c4c4153cc0acd29d25dce4e057381358dd280fc2420f14f40a"
-     "b5fd3fac86f2bc38284f9581ef25c378b307f9d864807a3f10db87645635c686"
-     "dd4c1752b3fd023d62180229ff7629a2fd9a28c8a3fc0926cef763139eac0d6d"
-     "81b5140005884f0e3687aaed2ac308e32f3fc84dcc0bda0731d693359d1655a6"
-     "583d3f874abdd203002a89d2608c8b24bfefd6fb6d1760ea55693bca1a022d58"
-     "7e0e59af4d390d9d274fa4dfaaf623787073fddc822f5049fd1afe754bca889c"
-     "11c2445720437a0cde654f132c6bab8f6ce86ed3a56a97e9a61ee6678a6bd7b3"
-     "d60d351c21f827cd678bd7d9eece6f88f8a100b6e26fca2b47ede957f88a8664"
-     "503f93d966e7cf27f6d277dec2dffb023b59bb4b643fd751800c600ff14eea7b"
-     "e5b6c7bd202e2a00f166b752c8a4d5cde5b2d0b134d38fcfe0452fedac45bf42"
-     "2be50e3fced9bfe583d4d61e980c5971c23ad710ffaf416bf6f7ea9925964505"
-     "7a91200ae2db78e07e1a4c6c717a7e2b39bdfeb68199f5cb7e37cc75db8656ce"
-     "7cc15af2d96498134f88596c4dff548c64991c423756a8c75135a1ef8ec52dc2"
-     "21b30975977442f774b6625917d9aaed3c4d761a499290f0278e1a0f960d68c8"
-     "33fca01a1e03e51049a87e8d49d5e63f20e420eb1c0444f16b40955cad0916bf"
-     "94f084b66a0c192de01fa3eef372c5bebdaf60fbba9d24878bd22e058a6388a0"
-     "e5b1af87c7c8d37dee5162fefc8e0ec41968dc40da527ed30281794ca37072b8"
-     "d809b1397cb1ed22352e3cf7c00c0a9ef8867aca9ec15e1147c872671faa3d98"
-     "bcc759d68b2f8f1ae839ad7806da734ada32c56ff4b68429bb9273269afdc1b4"
-     "f381c6efdfcd18d6e8b08d68a2f01f84102e91b0d495e997bfc6f80eb1074d0a"
-     "5897be397e443d5aabedb437856e9fffc67178e109e31473ecddd961281866b2"
-     "c6b3e81a4e01e83a0af4ebd62b236a0113c2cf4beee41e961a27abea49852941"
-     "a2b0b0ab15399b997da4f8958536c0ed71b12127cd47843b83f211f88c78add8"
-     "fbaed20abd45b17c65d69dd4314212a2a8180c79a255fa5c1791f2549bdf7a4a"
-     "36da0af886eb1ee5f321149c31707a5510dd4cc1ed2f69ed9a3b0276ff82d0ef"
-     "59cca2de938ad11f1d419bee254b4498fe375515ab961bde462f1e5c7bea98e7"
-     "00ea4b07ac2dde79da23da564d0b8d3974e95701bbe4eede6ac71c1a5f8e9961"
-     "23de4de37d1f0bf38f3f64c7c3404ec54fbdb9f07476389d003f19e04234999c"
-     "32c79ea2cf873669ad4aa4f4d108623ebea4110c22ab95cbaf71edb717e63459"
-     "5b2e154e24611e50b51723f67415ff0f263030c2880519729cdf515fdf1583ee"
-     "339d91c01bb8b6faea3bc817ac197ea054e6696f05c31aa44e9e67dc9a6fb633"
-     "a64e59486bcd9e2932f3a1ac5e78623b9e0dcd3267b6da9e3ffeb5e79b2ea5b4"
-     "e0e1a134e00663bace2421979024088103575fc74039a48a892aa88406a3fb9e"
-     "c2bcfcf9424cdcec14b3dd307c9bc304b07360a51fa5c1e7b0a491d23d95719e"
-     "0dcdba3915680245a54316827a41ff390aaf4eaa1c169601ad4ae8cb4e5bd949"
-     "9596485c45f112a7d2de06c53474832ed59488465c3643ee1f7624e06ecb263f"
-     "817069e1547b55c68c3ea7983dcf9f174303e605ae591a44dd0e0b36e6a4cb3e"
-     "43b77c36d59e792f6758f4c337c2c8c0eb3bcd3e3b81ba938ceecab0bec3612f"
-     "a014cd1abe3691aec2adf800adbdb8f082a0390ccbe7db695e5540a2a9cabfe4"
-     "cbfac9d7ad995e2914929ffed6dd9571134e3bcbc767b8a583a28720e16ffde3"
-     "39be9906b90832c628aff734d69fa94b1db8e1f5b65a19db96d5104e4e5253e4"
-     "70b9c65b450b1ff1c3e64e53880d6648132ad7fb8d91c722620b07c590fa3520"
-     "2cb34d08101e179a2d98da9e7dab4905ce37a487fd76dc651d0822b71e46836f"
-     "872cbaac5c1849f1ed7f958b1548a4f3af410a85d99bd7ef9e0c6fd12b7aa577"
-     "49f2dfc7565776af69fa90c7dcb06e0684a77c7a64b567eb9c9f386e259d9482"
-     "d59fbc13a3be1d8a5f4b728a134c40bc02defce8f57cb59a76d7382e43edf5f2"
-     "64d1128e7665da4d45c5a1471e565becec0633ef38ca99197f09db733fc86965"
-     "5501ea6d24cc1a5b97ced3ab16aef3e2b5bc9f0a0a8a08eaecad117e27d79038"
-     "b7a824f277682c4d42ff46c20b20ff92e846916c642a716cebfa5ed58934b362"
-     "4f5544cf02e4c4d8468066f56bda0b43d9ff44ed69fc6855a6fc94f6346aedfa"
-     "555b5ca6ca7b2625296ef5a25d737b7fa005ca5d42a1bd0f15cf3fa893b9f18c"
-     "77be2a2c8a510993f6e6abf8ab62fd5ee6890430545f9058a209188d074a29a3"
-     "7f0304fc1adb4bfbf252c3bb63151eb1411289d0d7b5001d62d07686b7ffa23c"
-     "32eda95da1c21875322f6b7630d7f0ffd9f90f53cd392002b827477a5adfb573"
-     "fc78ad97d2ca7b48158560029d609f1801369822af8ea590a3907bf4d98939b4"
-     "f9b72901e4be8f60a68bf29543a54cb7ab2ec26fe2dc264051623e4dc433d547"
-     "caf5d8bf180b195b4914601da3532805977479e96080a98de4cdc075cef9f50c"
-     "ce6ae55197b5d20afb707fab18b461231b0b7dceee471f464cf85d9b367ca965"
-     "c6e1d3e82921c79562511eb4d0af6efb39666e41e309598067c0481c5925cc7f"
-     "2f9cff368c07d280a7a766e9f04a0053a17bb74f775504dc49421d1fda2a0797"
-     default))
- '(package-selected-packages '(git-gutter-fringe make-project nginx-mode rust-docs))
- '(package-vc-selected-packages '((rust-docs :url "https://github.com/scipunch/rust-docs")))
+ '(custom-safe-themes '(default))
+ '(package-selected-packages
+   '(git-gutter-fringe make-project nginx-mode rust-docs))
+ '(package-vc-selected-packages
+   '((rust-docs :url "https://github.com/scipunch/rust-docs")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
 (custom-set-faces
@@ -100,8 +19,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
- '(font-lock-keyword-face ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
- '(font-lock-string-face ((t (:inherit italic :foreground "#738678"))))
+ '(font-lock-keyword-face
+   ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
+ '(font-lock-string-face
+   ((t (:inherit italic :foreground "#738678"))))
  '(fringe ((t (:foreground "#BEC3C6" :background "#BEC3C6"))))
- '(org-code ((t (:inherit default :background "black" :foreground "#e6e6e6" :box (:line-width (1 . 1) :color "#868686" :style released-button)))))
+ '(org-code
+   ((t
+     (:inherit
+      default
+      :background "black"
+      :foreground "#e6e6e6"
+      :box
+      (:line-width
+       (1 . 1)
+       :color "#868686"
+       :style released-button)))))
  '(org-table ((t (:inherit default :foreground "#b6b6b6")))))
