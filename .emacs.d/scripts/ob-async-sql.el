@@ -58,6 +58,6 @@
                 (beginning-of-line)
                 (kill-line)
                 (insert
-                 (mapconcat (lambda (x) (format "| %s |" x))
+                 (mapconcat (lambda (x) (format "%s" x))
                             (butlast (s-split "\n" result))
                             "\n"))))))))))
