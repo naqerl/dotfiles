@@ -86,6 +86,7 @@
    (match					:background fg-1)
    (flymake-note-echo							:foreground fg)
    (xref-info					:foreground aqua)
+   (success								:foreground green)
 
    (font-lock-builtin-face                      :foreground fg+1)
    (font-lock-comment-delimiter-face            :foreground fg-1)
