@@ -430,7 +430,6 @@ Install package for loading ~.env~ & setup hooks
 * UI\UX
 ** Theme
 #+begin_src elisp
-(require 'cobrakai-theme)
 (require 'koi-theme)
 #+end_src
 *** Modus
@@ -460,8 +459,6 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 #+begin_src elisp
-(use-package base16-theme :disabled)
-
 (setq
  left-margin-width 1
  right-margin-width 1)
@@ -470,11 +467,12 @@ Install package for loading ~.env~ & setup hooks
 
 (use-package
  grayscale-theme
+ :disabled
  :init (require 'grayscale-ansi)
  (set-face-attribute
   'org-block nil
   :background
-  (plist-get grayscale-theme-colors :bg+1))
+  (plist-get koi-theme-colors :bg+1))
  (custom-set-faces
   '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
   '(font-lock-keyword-face
@@ -1061,6 +1059,7 @@ Automatically resizes windows to fit golden ratio
   (interactive)
   (split-window-right)
   (windmove-right))
+(window-divider-mode 1)
 (use-package emacs :bind ("C-x 3" . my/split-right-and-switch))
 #+end_src
 *** SciMotions
@@ -1782,16 +1781,16 @@ Actually added some
 (use-package
  git-gutter
  :custom
- (git-gutter:modified-sign " ")
- (git-gutter:added-sign " ")
- (git-gutter:deleted-sign " ")
+ (git-gutter:modified-sign "~")
+ (git-gutter:added-sign "+")
+ (git-gutter:deleted-sign "-")
  :config
- (set-face-background
-  'git-gutter:modified (plist-get grayscale-theme-colors :yellow))
- (set-face-background
-  'git-gutter:added (plist-get grayscale-theme-colors :green))
- (set-face-background
-  'git-gutter:deleted (plist-get grayscale-theme-colors :red))
+ (set-face-foreground
+  'git-gutter:modified (plist-get koi-theme-colors :yellow))
+ (set-face-foreground
+  'git-gutter:added (plist-get koi-theme-colors :green))
+ (set-face-foreground
+  'git-gutter:deleted (plist-get koi-theme-colors :red))
  (defun my/stage-hunk ()
    "Wrapper around git-gutter:stage-hunk but without confirm requirement"
    (interactive)

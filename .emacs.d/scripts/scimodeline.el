@@ -1,7 +1,3 @@
-(defface my-modeline-background
-  '((t :background "#5f509f" :foreground "white" :inherit bold))
-  "Face with a accent background for use on the mode line.")
-
 (defface my-modeline-alert-bg
   '((t :background "#b52c2c" :foreground "white" :inherit bold))
   "Face with a red background for use on the mode line.")
@@ -18,12 +14,12 @@
 
 (defvar-local my-modeline-buffer-name
     '(:eval
-      (when (mode-line-window-selected-p)
-        (concat
-
-         (propertize (my-modeline--buffer-name)
-                     'face
-                     'my-modeline-background))))
+      (concat
+       (propertize (my-modeline--buffer-name)
+                   'face
+                   (if (mode-line-window-selected-p)
+                       'mode-line-emphasis
+                     'mode-line-inactive))))
   "Mode line construct to display the buffer name.")
 
 (put 'my-modeline-buffer-name 'risky-local-variable t)

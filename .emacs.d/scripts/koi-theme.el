@@ -5,10 +5,6 @@
 ;; Dark theme inspired by Kanagawa and grayscale themes
 
 ;;; Code:
-
-(unless (>= emacs-major-version 24)
-  (error "Requires Emacs 24 or later"))
-
 (defgroup koi-theme
   nil
   "Koi theme options."
@@ -16,8 +12,6 @@
 
 (deftheme koi
   "An elegant minimal darkish theme.")
-
-
 
 (defun koi-theme-set-faces (theme-name colors faces)
   "Define the important part of `THEME-NAME' using `COLORS' to map the `FACES' to actual colors."
@@ -53,38 +47,45 @@
     ;; Return the transformed spec
     output))
 
-(defconst koi-dark-colors
-  `(:fg-1 "#717C7C"
+(defconst koi-theme-colors
+  `(:fg-2 "#393836"
+    :fg-1 "#717C7C"
     :fg "#c5c9c5"
     :fg+1 "#a6a69c"
     :bg-1 "#0d0c0c"
     :bg "#181616"
     :bg+1 "#282727"
-    :lavender "#9CABCA"
     :aqua "#8ea4a2"
+    :aqua+1 "#597b75"
     :green "#87a987"
     :blue "#7E9CD8"
     :yellow "#c4b28a"
     :red "#C34043"
     :orange "#FF9E3B"))
 
-
 (koi-theme-set-faces
  'koi
- koi-dark-colors
+ koi-theme-colors
  '(
-   (default                                     :background bg       :foreground fg                   )
-   (cursor                                      :background green    :foreground bg       :weight bold)
-   (region                                      :background bg+1                                      )
-   (line-number                                 :background bg-1     :foreground fg+1                 )
-   (line-number-current-line                    :background bg-1     :foreground green    :weight bold)
-   (mode-line                                   :background bg-1                                      )
-   (mode-line-inactive                          :background bg-1                          :box nil    )
-   (vertical-border                                                  :foreground bg-1                 )
-   (minibuffer-prompt                                                :foreground aqua                 )
-   (highlight                                   :background bg+1                                      )
-
-   ; begin-region -- Font lock
+   (default                                     :background bg		:foreground fg)
+   (cursor                                      :background green	:foreground bg		:weight bold)
+   (region                                      :background bg+1)
+   (line-number                                 :background bg		:foreground fg-2)
+   (line-number-current-line                    :background bg		:foreground green	:weight bold)
+   (mode-line                                   :background bg-1)
+   (mode-line-inactive                          :background bg-1	:foreground fg-2	:box nil)
+   (mode-line-emphasis                          :background bg+1				:box (:line-width 1 :color aqua))
+   (vertical-border                                                  	:foreground bg-1)
+   (minibuffer-prompt                                                	:foreground aqua)
+   (highlight                                   :background bg+1)
+   (fringe					:background bg-1	:foreground bg-1)
+   (window-divider				:background bg-1	:foreground bg-1)
+   (window-divider-first-pixel			:background bg-1	:foreground bg-1)
+   (window-divider-last-pixel			:background bg-1	:foreground bg-1)
+   (link                                    	:foreground aqua :underline t)
+   (match					:background fg-1)
+   (flymake-note-echo							:foreground fg)
+   (xref-info					:foreground aqua)
 
    (font-lock-builtin-face                      :foreground fg+1)
    (font-lock-comment-delimiter-face            :foreground fg-1)
@@ -103,14 +104,14 @@
    (font-lock-variable-name-face                :foreground fg+1)
    (font-lock-warning-face                      :foreground yellow)
 
-   ; end-region   -- Font lock
-
-   ; begin-region -- Show paren mode
-
    (show-paren-match                            :background red)
-   (show-paren-mismatch                        :background orange)
+   (show-paren-mismatch                         :background orange)
 
-   ; end-region   -- Show paren mode
+
+   (org-date                                    :foreground aqua)
+   (org-block					:background bg+1)
+   (org-block-begin-line			:background bg+1	:foreground aqua :extend t)
+   (org-block-end-line				:background bg+1 	:foreground aqua :extend t)
   ))
 
 ;;;###autoload
