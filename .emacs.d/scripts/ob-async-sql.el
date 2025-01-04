@@ -1,10 +1,10 @@
-(provide 'ob-async-sql)
-
 (require 'org)
+(require 'async)
 
-(defun org-babel-async-execute-sql ()
+(defun org-babel-async-execute-sql (body params)
   "Run a SQL block at point asynchrously."
   (interactive)
+  (message "[Org babel async sql] body=%s params=%s" body params)
 
   (let ((current-file (buffer-file-name))
         (uuid (org-id-uuid))
@@ -22,15 +22,8 @@
     (unless connect-set
       (error "Failed to find dbconnections in src block header args"))
 
-    (org-babel-tangle '(4) tempfile)
-    (org-babel-remove-result)
-    (save-excursion
-      (re-search-forward "#\\+END_SRC")
-      (insert
-       (format "\n\n#+RESULTS:%s\n: %s"
-               (or (org-element-property :name (org-element-context))
-                   "")
-               uuid)))
+    (with-temp-file tempfile
+      (insert body))
 
     (async-start
      `(lambda ()
@@ -50,7 +43,7 @@
 
      `(lambda (result)
         "Code that runs when the async function finishes."
-        (message "Query %s finished" , uuid)
+        (message "Query %s finished with result=%s" ,uuid result)
         (save-window-excursion
           (save-excursion
             (save-restriction
@@ -62,4 +55,9 @@
                 (kill-line)
                 (org-insert-drawer nil "Output")
                 (insert result)
-                (insert (format-time-string " at [%F %r]"))))))))))
+                (insert (format-time-string " at [%F %r]"))))))))
+    uuid))
+
+(advice-add 'org-babel-execute:sql :override #'org-babel-async-execute-sql)
+
+(provide 'ob-async-sql)
