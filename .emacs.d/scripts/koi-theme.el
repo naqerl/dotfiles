@@ -113,6 +113,7 @@
    (org-block-begin-line			:background bg+1	:foreground aqua :extend t)
    (org-block-end-line				:background bg+1 	:foreground aqua :extend t)
    (org-code					:background bg+1	:foreground fg+1 :box (:line-width (1 . 1) :color fg-1 :style released-button))
+   (org-ellipsis							:foreground aqua)
 
    (orderless-match-face-0						:foreground green)
    (orderless-match-face-1						:foreground blue)
