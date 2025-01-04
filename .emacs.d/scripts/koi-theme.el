@@ -108,11 +108,14 @@
    (show-paren-match                            :background red)
    (show-paren-mismatch                         :background orange)
 
-
    (org-date                                    :foreground aqua)
    (org-block					:background bg+1)
    (org-block-begin-line			:background bg+1	:foreground aqua :extend t)
    (org-block-end-line				:background bg+1 	:foreground aqua :extend t)
+
+   (orderless-match-face-0						:foreground green)
+   (orderless-match-face-1						:foreground blue)
+   (orderless-match-face-2						:foreground red)
   ))
 
 ;;;###autoload
