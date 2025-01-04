@@ -19,6 +19,9 @@
            sql-connection-alist
            t))))
 
+    (unless connect-set
+      (error "Failed to find dbconnections in src block header args"))
+    
     (org-babel-tangle '(4) tempfile)
     (org-babel-remove-result)
     (save-excursion
