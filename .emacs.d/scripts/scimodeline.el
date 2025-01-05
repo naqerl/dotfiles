@@ -1,3 +1,6 @@
+(require 'org)
+(require 'all-the-icons)
+
 (defface my-modeline-alert-bg
   '((t :background "#b52c2c" :foreground "white" :inherit bold))
   "Face with a red background for use on the mode line.")
@@ -6,7 +9,7 @@
   "Face to show warn messages.")
 
 (defface my-modeline-accent-fg '((t :foreground "#2fafff"))
-  "Accent face")
+  "Accent face.")
 
 (defun my-modeline--buffer-name ()
   "Return `buffer-name' with spaces around it."
@@ -33,7 +36,12 @@
     '(:eval
       (when (stringp (my-modeline--major-mode-name))
         (list
-         (propertize "λ" 'face 'shadow)
+         (or (and (buffer-file-name)
+                  (all-the-icons-icon-for-file
+                   (buffer-file-name)
+                   :height 0.7
+                   :v-adjust 0.02))
+             "")
          " "
          (propertize (my-modeline--major-mode-name) 'face 'bold)))
       "Mode line construct to display the major mode."))
@@ -45,8 +53,9 @@
       (when (and (boundp 'org-timer-mode-line-string)
                  (mode-line-window-selected-p))
         (let* ((time
-                (string-trim (replace-regexp-in-string
-                 "[\<\>]" "" org-timer-mode-line-string)))
+                (string-trim
+                 (replace-regexp-in-string
+                  "[\<\>]" "" org-timer-mode-line-string)))
                (status
                 (if (string= time "0:00:01")
                     (propertize "|  TIMER DONE "
