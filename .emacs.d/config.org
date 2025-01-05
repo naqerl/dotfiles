@@ -1319,7 +1319,9 @@ The resize pertains to the maximum and minimum values"
  :bind
  ("C-c l" . org-store-link)
  ("M-n" . org-next-link)
- ("M-p" . org-previous-link))
+ ("M-p" . org-previous-link)
+ ("C-c a" . org-agenda)
+ ("C-c t" . org-timer-set-timer))
 #+end_src
 
 *** Tags
