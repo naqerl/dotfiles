@@ -42,8 +42,7 @@
                    :height 0.7
                    :v-adjust 0.02))
              "")
-         " "
-         (propertize (my-modeline--major-mode-name) 'face 'bold)))
+         " " (propertize (my-modeline--major-mode-name) 'face 'bold)))
       "Mode line construct to display the major mode."))
 
 (put 'my-modeline-major-mode 'risky-local-variable t)
@@ -58,9 +57,11 @@
                   "[\<\>]" "" org-timer-mode-line-string)))
                (status
                 (if (string= time "0:00:01")
-                    (propertize "|  TIMER DONE "
-                                'face
-                                'my-modeline-alert-bg)
+                    (concat
+                     (propertize "| " 'face 'mode-line)
+                     (propertize "  TIMER DONE "
+                                 'face
+                                 'my-modeline-alert-bg))
                   (propertize (format "|  %s" time) 'face 'bold))))
           status)))
   "Mode line construct to display org timer.")
