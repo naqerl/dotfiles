@@ -116,12 +116,9 @@
 ** Languages
 *** Rust
 #+begin_src elisp
-(defun suzu/rust-mode()
-  (add-hook 'before-save-hook 'rust-format-buffer nil t))
-
 (use-package rust-mode
   :config
-  (add-hook 'rust-mode-hook 'suzu/rust-mode))
+  (setq rust-format-on-save t))
 
 (use-package rust-docs
   :vc (:url "https://github.com/scipunch/rust-docs"))
