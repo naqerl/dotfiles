@@ -69,7 +69,7 @@
  '(
    (default                                     :background bg		:foreground fg)
    (cursor                                      :background green	:foreground bg		:weight bold)
-   (region                                      :background bg+1)
+   (region                                      :background fg-2)
    (line-number                                 :background bg		:foreground fg-2)
    (line-number-current-line                    :background bg		:foreground green	:weight bold)
    (mode-line                                   :background bg-1)
