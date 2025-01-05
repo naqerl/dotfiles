@@ -45,14 +45,14 @@
       (when (and (boundp 'org-timer-mode-line-string)
                  (mode-line-window-selected-p))
         (let* ((time
-                (replace-regexp-in-string
-                 "[\<\>]" "" org-timer-mode-line-string))
+                (string-trim (replace-regexp-in-string
+                 "[\<\>]" "" org-timer-mode-line-string)))
                (status
-                (if (string= time " 0:00:01")
-                    (propertize " TIMER DONE "
+                (if (string= time "0:00:01")
+                    (propertize "|  TIMER DONE "
                                 'face
                                 'my-modeline-alert-bg)
-                  (propertize time 'face 'bold))))
+                  (propertize (format "|  %s" time) 'face 'bold))))
           status)))
   "Mode line construct to display org timer.")
 (put 'my-modeline-timer 'risky-local-variable t)
