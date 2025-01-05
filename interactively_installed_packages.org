@@ -1,6 +1,5 @@
 | package                     | URL                                                        |
 |-----------------------------+------------------------------------------------------------|
-| id3v2                       | http://id3v2.sourceforge.net/                              |
 | unzip                       | http://infozip.sourceforge.net/UnZip.html                  |
 | net-tools                   | http://net-tools.sourceforge.net/                          |
 | libva-intel-driver          | https://01.org/linuxmedia/vaapi                            |
@@ -46,13 +45,10 @@
 | qmk                         | https://github.com/qmk/qmk_cli                             |
 | efibootmgr                  | https://github.com/rhboot/efibootmgr                       |
 | ttf-iosevka-nerd            | https://github.com/ryanoasis/nerd-fonts                    |
-| bash-completion             | https://github.com/scop/bash-completion                    |
 | sddm                        | https://github.com/sddm/sddm                               |
 | fd                          | https://github.com/sharkdp/fd                              |
 | swaybg                      | https://github.com/swaywm/swaybg                           |
-| tldr                        | https://github.com/tldr-pages/tldr-python-client           |
 | tmux                        | https://github.com/tmux/tmux/wiki                          |
-| ttf-fira-code               | https://github.com/tonsky/FiraCode                         |
 | tree-sitter                 | https://github.com/tree-sitter/tree-sitter                 |
 | yt-dlp                      | https://github.com/yt-dlp/yt-dlp                           |
 | zen-browser-bin             | https://github.com/zen-browser/desktop                     |
@@ -60,22 +56,19 @@
 | amd-ucode                   | https://gitlab.com/kernel-firmware/linux-firmware          |
 | linux-firmware              | https://gitlab.com/kernel-firmware/linux-firmware          |
 | man-db                      | https://gitlab.com/man-db/man-db                           |
-| gcr                         | https://gitlab.gnome.org/GNOME/gcr                         |
-| gvfs                        | https://gitlab.gnome.org/GNOME/gvfs                        |
+| ?gcr                        | https://gitlab.gnome.org/GNOME/gcr                         |
+| ?gvfs                       | https://gitlab.gnome.org/GNOME/gvfs                        |
 | libnotify                   | https://gitlab.gnome.org/GNOME/libnotify                   |
 | git                         | https://git-scm.com/                                       |
 | grim                        | https://git.sr.ht/~emersion/grim                           |
 | wireless_tools              | https://hewlettpackard.github.io/wireless-tools/Tools.html |
 | htop                        | https://htop.dev/                                          |
 | jq                          | https://jqlang.github.io/jq/                               |
-| smartmontools               | http://smartmontools.sourceforge.net                       |
 | mpv                         | https://mpv.io/                                            |
 | networkmanager              | https://networkmanager.dev/                                |
 | ngrok                       | https://ngrok.com                                          |
 | nmap                        | https://nmap.org/                                          |
 | nodejs                      | https://nodejs.org/                                        |
-| xf86-video-nouveau          | https://nouveau.freedesktop.org/                           |
-| nyxt                        | https://nyxt.atlas.engineer                                |
 | obs-studio                  | https://obsproject.com                                     |
 | gst-plugin-pipewire         | https://pipewire.org                                       |
 | pipewire                    | https://pipewire.org                                       |
