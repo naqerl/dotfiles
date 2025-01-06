@@ -197,7 +197,8 @@ Updates project's TAGS file on every save."
              #'async-shell-command "git ls-files | ctags -ReL -")
           (project-ext:info
            "Project etags will be generated only for git repository.")))
-    (project-ext:info "Etags will be generated only inside a project.")))
+    (project-ext:info
+     "Etags will be generated only inside a project.")))
 
 ; end-region   -- Etags
 
@@ -238,8 +239,9 @@ REST ommited."
 
 (defun project-ext:info (format-string &rest args)
   "Debug message FORMAT-STRING with ARGS."
-  (when rust-docs-debug
-    (apply #'message (format "INFO [project-ext]: %s" format-string) args)))
+  (apply #'message
+         (format "INFO [project-ext]: %s" format-string)
+         args))
 
 ; end-region   -- Logging
 
