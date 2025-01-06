@@ -240,7 +240,7 @@ REST ommited."
 (defun project-ext:info (format-string &rest args)
   "Debug message FORMAT-STRING with ARGS."
   (apply #'message
-         (format "INFO [project-ext]: %s" format-string)
+         (format "[project-ext] INFO: %s" format-string)
          args))
 
 ; end-region   -- Logging
