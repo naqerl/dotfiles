@@ -306,7 +306,7 @@ Install package for loading ~.env~ & setup hooks
 #+begin_src elisp
 (use-package load-env-vars
   :hook
-  ((eshell-mode prog-mode) . project-ext:dotenv-load))
+  ((eshell-mode shell-mode) . project-ext:dotenv-load))
 #+end_src
 
 ** Compilation
