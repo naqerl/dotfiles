@@ -118,9 +118,7 @@
 #+begin_src elisp
 (use-package
  rust-mode
- :config (setq rust-format-on-save t)
- (with-eval-after-load 'git-gutter
-   (advice-add 'rust-format-buffer :after 'git-gutter-mode)))
+ :custom (rust-format-on-save t))
 
 (use-package
  rust-docs
