@@ -68,7 +68,7 @@ PROJECT-PATH provided as argument")
 
 (defun project-ext:new--after-created (project-path)
   "Call after project created and pass PROJECT-PATH."
-  (message "After project created at %s" project-path)
+  (project-ext:info "After project created at %s" project-path)
   (project-remember-projects-under project-path)
   (run-hook-with-args 'project-ext:new-created-hook project-path))
 
@@ -92,7 +92,7 @@ If PROJECT-DIR not specified then prompts for it"
     "Creates new perspective for the given PROJECT-DIR."
     (persp-switch
      (project-ext:persp--get-last-two-elements project-dir))
-    (message project-dir)
+    (project-ext:info project-dir)
     (setq-local project-current-directory-override project-dir)
     (project-find-file))
 
@@ -114,7 +114,7 @@ Returns number of total found projects"
     (or depth (setq depth 6))
     (when (not (file-directory-p directory))
       (error "Base path should be a directory"))
-    (message "Searching projects in %s" directory)
+    (project-ext:info "Searching projects in %s" directory)
     (let ((projects-found
            (project-remember-projects-under directory)))
       (when (= projects-found 0)
@@ -129,7 +129,7 @@ Returns number of total found projects"
                       (+ projects-found
                          (project-ext:persp-discover
                           dir (1- depth))))))))
-      (message "Total projects found: %s" projects-found)
+      (project-ext:info "Total projects found: %s" projects-found)
       projects-found)))
 ; end-region   -- Project perspective extensions
 
@@ -165,7 +165,7 @@ WHAT - element from `project-ext:search--comment-regexp' or string any"
 Updates project's TAGS file on every save."
   :init-value
   nil
-  (message "[project-ext]: Etags mode activated")
+  (project-ext:info "Etags mode activated")
   (if project-ext:etags-mode
       (progn
         (add-hook 'after-save-hook 'project-ext:etags-generate 0 t)
@@ -175,7 +175,7 @@ Updates project's TAGS file on every save."
 (defun project-ext:etags-read ()
   "Reads TAGS table from the project root."
   (interactive)
-  (message "Reading etags table")
+  (project-ext:info "Reading etags table")
   (let ((project-tags-table
          (and (project-current)
               (expand-file-name "TAGS"
@@ -193,11 +193,11 @@ Updates project's TAGS file on every save."
                 display-buffer-no-window
                 (nil)))))
         (if (file-exists-p ".git")
-            (my/inhibit-sentinel-messages
+            (my/inhibit-sentinel-project-ext:infos
              #'async-shell-command "git ls-files | ctags -ReL -")
-          (message
+          (project-ext:info
            "Project etags will be generated only for git repository.")))
-    (message "Etags will be generated only inside a project.")))
+    (project-ext:info "Etags will be generated only inside a project.")))
 
 ; end-region   -- Etags
 
@@ -212,7 +212,7 @@ Updates project's TAGS file on every save."
   (let ((env-file (project-ext:dotenv--find-file)))
     (when env-file
       (load-env-vars env-file)))
-  (message "Dotenv loaded"))
+  (project-ext:info "Dotenv loaded"))
 
 (defun project-ext:dotenv--find-file ()
   "Searches for the closes .env file."
@@ -233,6 +233,15 @@ REST ommited."
  :before 'project-ext:dotenv--load-advice)
 
 ; end-region   -- Environment
+
+; begin-region -- Logging
+
+(defun project-ext:info (format-string &rest args)
+  "Debug message FORMAT-STRING with ARGS."
+  (when rust-docs-debug
+    (apply #'message (format "INFO [project-ext]: %s" format-string) args)))
+
+; end-region   -- Logging
 
 (provide 'project-ext)
 ;;; project-ext.el ends here
