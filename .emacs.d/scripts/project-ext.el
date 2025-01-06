@@ -206,13 +206,14 @@ Updates project's TAGS file on every save."
 (defvar project-ext:env-dotenv-file-name ".env"
   "The name of the .env file.")
 
-(defun project-ext:env-load ()
+(defun project-ext:dotenv-load ()
   "Export all environment variables in the closest .env file."
+  (interactive)
   (let ((env-file (project-ext:env--find-file)))
     (when env-file
       (load-env-vars env-file))))
 
-(defun project-ext:env--find-file ()
+(defun project-ext:dotenv--find-file ()
   "Searches for the closes .env file."
   (let* ((env-file-directory
           (locate-dominating-file
