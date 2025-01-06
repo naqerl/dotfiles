@@ -235,8 +235,8 @@ windowrulev2 = rounding 0, floating:0, onworkspace:f[1]
 
 ** Get rid of screen share window from Google Chrome
 #+begin_src conf
-windowrule = workspace 10 silent, title:(.*is sharing your screen.)
-windowrule = workspace 10 silent, title:(.*Meet -.*)
+windowrulev2 = workspace 10 silent, title:(.*is sharing your screen.*)
+windowrulev2 = workspace 10 silent, title:(.*Meet -.*)
 #+end_src
 
 ** Picture in picture in the corner
