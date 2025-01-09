@@ -235,6 +235,21 @@ REST ommited."
 
 ; end-region   -- Environment
 
+; begin-region -- Timer
+
+(defun project-ext:start-timer ()
+  "Starts timer for the given project."
+  (interactive)
+  ;; TODO: Implement
+  ;; Check if inside project
+  ;; Get or create entry for the current project
+  ;; Get or create entry fro the todays date
+  ;; Start timer
+  ;; Increase time after timer ends
+  )
+
+; end-region   -- Timer
+
 ; begin-region -- Logging
 
 (defun project-ext:info (format-string &rest args)
