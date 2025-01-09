@@ -12,3 +12,4 @@
    '((rust-docs :url "https://github.com/scipunch/rust-docs")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)

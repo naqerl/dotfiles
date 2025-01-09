@@ -241,10 +241,10 @@ windowrulev2 = workspace 10 silent, title:(.*Meet -.*)
 
 ** Picture in picture in the corner
 #+begin_src conf
-windowrule = float, title:(Picture in picture)
-windowrule = move 79% 79%, title:(Picture in picture)
-windowrule = pin, title:(Picture in picture)
-windowrule = noborder, title:(Picture in picture)
+windowrulev2 = float, title:(.*Picture-in-picture*)
+windowrulev2 = move 79% 79%, title:(.*Picture-in-picture.*)
+windowrulev2 = pin, title:(.*Picture-in-picture.*)
+windowrulev2 = noborder, title:(.*Picture-in-picture.*)
 #+end_src
 
 ** Wfzf in the center

@@ -168,9 +168,9 @@ Updates project's TAGS file on every save."
   (project-ext:info "Etags mode activated")
   (if project-ext:etags-mode
       (progn
-        (add-hook 'after-save-hook 'project-ext:etags-generate 0 t)
+        (add-hook 'after-save-hook 'project-ext:etags-generate 100 t)
         (project-ext:etags-read))
-    (remove-hook 'after-save-hook 'project-ext:etags-generate)))
+    (remove-hook 'after-save-hook 'project-ext:etags-generate t)))
 
 (defun project-ext:etags-read ()
   "Reads TAGS table from the project root."

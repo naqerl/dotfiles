@@ -86,7 +86,7 @@
  (setq
   tags-add-tables nil
   tags-revert-without-query t)
- :hook (prog-mode-hook . project-ext:etags-mode))
+  :hook (prog-mode . project-ext:etags-mode))
 #+end_src
 
 *** Treesitter
@@ -116,9 +116,7 @@
 ** Languages
 *** Rust
 #+begin_src elisp
-(use-package
- rust-mode
- :custom (rust-format-on-save t))
+(use-package rust-mode)
 
 (use-package
  rust-docs
@@ -385,8 +383,7 @@ Install package for loading ~.env~ & setup hooks
  (yas-global-mode 1))
 
 (use-package consult-yasnippet
-  :after yasnippet
-  :bind ("M-p" . consult-yasnippet))
+  :after yasnippet)
 #+end_src
 *** Region search
 #+begin_src elisp
@@ -634,7 +631,7 @@ Automatically resizes windows to fit golden ratio
   :bind
    ("C-x B"  . consult-buffer)
    ("C-x b"  . consult-project-buffer)
-   ("M-i"  . consult-imenu)
+   ("M-i"  . imenu)
    ("C-c i"  . consult-line)
    ("C-c e"  . consult-ripgrep))
 #+end_src
@@ -1767,8 +1764,8 @@ Actually added some
  (add-to-list 'git-gutter:update-hooks 'magit-post-refresh-hook)
  (add-to-list 'git-gutter:update-commands 'other-window)
  :bind
- ("C-x g n" . git-gutter:next-hunk)
- ("C-x g p" . git-gutter:previous-hunk)
+ ("M-)" . git-gutter:next-hunk)
+ ("M-(" . git-gutter:previous-hunk)
  ("C-x g s" . my/stage-hunk)
  :hook
  ((org-mode prog-mode) . git-gutter-mode))
