@@ -217,7 +217,17 @@ Generate table of contents
  :mode (("\\.html?\\'" . web-mode))
  :hook (web-mode-hook . my/web-mode-hook))
 
+(use-package
+ compile-eslint
+ :vc (:url "https://github.com/Fuco1/compile-eslint")
+ :config (push 'eslint compilation-error-regexp-alist))
+
 (use-package prettier-js :ensure t)
+
+(use-package
+ js
+ :after prettier-js
+ :bind (:map js-mode-map ("C-c C-f" . prettier-js)))
 #+end_src
 
 *** Emacs Lisp

@@ -7,9 +7,16 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(git-gutter-fringe make-project nginx-mode rust-docs))
+   '(compile-eslint git-gutter-fringe make-project nginx-mode rust-docs))
  '(package-vc-selected-packages
-   '((rust-docs :url "https://github.com/scipunch/rust-docs")))
+   '((compile-eslint :url "https://github.com/Fuco1/compile-eslint")
+     (rust-docs :url "https://github.com/scipunch/rust-docs")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
