@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: JsDoc global @typedef
+# key: @gtypedef
+# expand-env: ((yas-indent-line 'fixed))
+# --
+/**
+ * @global
+ * @typedef ${1:TypeName}
+ * @property {${2:string}} $0
+ */

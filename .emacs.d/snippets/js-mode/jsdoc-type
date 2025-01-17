@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: JsDoc @type
+# key: @type
+# expand-env: ((yas-indent-line 'fixed))
+# --
+/** @type {${1:object}} */${0}

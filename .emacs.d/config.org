@@ -31,6 +31,7 @@
 (require 'project-ext)
 (require 'my-extensions)
 (require 'ssh)
+(require 'app-launcher)
 #+end_src
 ** Upgrade GC
 #+begin_src elisp
@@ -560,6 +561,11 @@ Automatically resizes windows to fit golden ratio
  emacs
  :bind ("C-+" . text-scale-increase) ("C--" . text-scale-decrease))
 #+end_src
+*** System clipboard to kill ring integration
+#+begin_src elisp
+(setq save-interprogram-paste-before-kill t)
+#+end_src
+
 ** Completion
 *** Dabbrev
 #+begin_src elisp
