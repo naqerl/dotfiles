@@ -8,7 +8,7 @@
   - Rust: cargo, shuttle
   - Python: poetry
 - Simulate single mode-line when multiple windows opened
-
+- Check spell using treesitter and ispell/aspell. The key is to check only custom named nodes (like class, function, variable, string and etc.). Make it independent from emacs to use as pre-commit hook or in any CI/CD pipeline
 * Important things to load first
 ** Path
 #+begin_src elisp
