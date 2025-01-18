@@ -1653,6 +1653,10 @@ Turn off duplicating lines on execution
 #+end_src
 
 * Tools
+** Ispell
+#+begin_src elisp
+(setq-default ispell-program-name "aspell")
+#+end_src
 ** PDF
 #+begin_src elisp
 (defun suzu/pdf-setup-hook ()
