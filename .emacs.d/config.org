@@ -1529,7 +1529,7 @@ Turn off duplicating lines on execution
   :ensure t)
 #+end_src
 
-*** Aliases
+q*** Aliases
 #+begin_src elisp
 (setq suzu/eshell-aliases
       '((g  . magit)
@@ -1650,6 +1650,14 @@ Turn off duplicating lines on execution
     (display-buffer-reuse-window display-buffer-in-side-window)
     (reusable-frames . visible)
     (side . top))))
+#+end_src
+
+** Eat
+#+begin_src elisp
+(use-package eat
+  :config
+  (add-hook 'eshell-mode-hook #'eat-eshell-mode)
+  (add-hook 'eshell-mode-hook #'eat-eshell-visual-command-mode))
 #+end_src
 
 * Tools
@@ -1873,12 +1881,12 @@ Actually added some
 (use-package
  popper
  :bind
- (("C-`" . popper-toggle)
-  ("M-`" . popper-cycle)
+ (("C-~" . popper-cycle)
+  ("C-`" . popper-toggle)
   ("C-M-`" . popper-toggle-type))
  :init
  (setq popper-reference-buffers
-       '("\\*Async Shell Command\\*" shell-mode eshell-mode))
+       '("\\*Async Shell Command\\*" shell-mode eshell-mode eat-mode))
  (setq popper-group-function #'popper-group-by-perspective) ; group by perspective
  (popper-mode +1)
  (popper-echo-mode +1)) ; For echo area hints
