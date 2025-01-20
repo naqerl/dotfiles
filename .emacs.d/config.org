@@ -1164,6 +1164,10 @@ The resize pertains to the maximum and minimum values"
     display-buffer-below-selected)))
 #+end_src
 
+** Async shell command
+#+begin_src elisp
+(setq-default async-shell-command-buffer 'new-buffer)
+#+end_src
 * Helper packages
 *** Undo tree
 #+begin_src elisp
