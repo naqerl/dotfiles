@@ -204,30 +204,28 @@ Updates project's TAGS file on every save."
 
 ; begin-region -- Environment
 
-(defvar project-ext:dotenv-file-name ".env"
+(defvar project-ext:dotenv-file-name "^.env$"
   "The name of the .env file.")
 
 (defun project-ext:dotenv-load ()
-  "Export all environment variables in the closest .env file."
-  (interactive)
-  (let ((env-file (project-ext:dotenv--find-file)))
-    (when env-file
-      (load-env-vars env-file)))
-  (project-ext:info "Dotenv loaded"))
+  "Export all environment variables in the closest .env file, searching up to MAX-DEPTH directories."
+  (interactive "p")
+  (let* ((max-depth 4)
+         (env-files (project-ext:dotenv--find-files max-depth)))
+    (dolist (env-file env-files)
+      (load-env-vars env-file)
+      (project-ext:info "Loaded environment from %s" env-file))))
 
-(defun project-ext:dotenv--find-file ()
-  "Searches for the closes .env file."
-  (let* ((env-file-directory
-          (locate-dominating-file "." project-ext:dotenv-file-name))
-         (file-name
-          (concat env-file-directory project-ext:dotenv-file-name)))
-    (when (file-exists-p file-name)
-      file-name)))
+(defun project-ext:dotenv--find-files (max-depth)
+  "Recursively searches for .env files up to MAX-DEPTH directories."
+  (directory-files-recursively default-directory project-ext:dotenv-file-name))
 
 (defun project-ext:dotenv--load-advice (&rest rest)
   "Advice function to load dotenv.
 REST ommited."
-  (project-ext:dotenv-load))
+  (when (project-current)
+    (let ((default-directory (project-root (project-current))))
+      (project-ext:dotenv-load))))
 
 (advice-add
  'compilation-start

@@ -55,6 +55,7 @@ source = $HOME/.config/hypr/platform/current.conf
 * Env setup
 #+begin_src conf
 env = PATH,$HOME/.roswell/bin:$PATH
+env = PATH,$HOME/.local/share/uv/tools:$PATH
 #+end_src
 
 * Alisaes
@@ -67,7 +68,7 @@ $mainShiftMod = SUPER SHIFT
 ** Emacs
 #+begin_src conf
 $emacs = emacsclient --create-frame --alternate-editor=""
-$terminal = $emacs -e '(vterm "nu")'
+$terminal = $emacs -e '(progn (eat))'
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
 
@@ -278,7 +279,7 @@ bind = $mainShiftMod, Q, exec, hyprctl dispatch exit
 
 ** App launchers
 #+begin_src conf
-bind = $mainMod, T, exec, kitty
+bind = $mainMod, T, exec, $terminal
 
 bind = $mainMod, B, exec, run-chrome-profile
 bind = $mainMod, SPACE, exec, fuzzel

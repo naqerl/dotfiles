@@ -566,6 +566,12 @@ Automatically resizes windows to fit golden ratio
 (setq save-interprogram-paste-before-kill t)
 #+end_src
 
+*** Delete trailing whitespaces
+#+begin_src elisp
+(use-package
+ ws-butler
+ :config (add-hook 'prog-mode-hook #'ws-butler-mode))
+#+end_src
 ** Completion
 *** Dabbrev
 #+begin_src elisp
@@ -944,7 +950,7 @@ Automatically resizes windows to fit golden ratio
                 imenu-list-minor-mode-hook
                 imenu-list-major-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode -1))))
-(setq-default display-line-numbers-type 'relative)
+(setq-default display-line-numbers-type 'visual)
 #+end_src
 
 *** Scroll margin
@@ -1507,7 +1513,8 @@ So it'll be nice to run them automatically
   (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
   (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
   (add-to-list 'org-structure-template-alist '("sqt" . "src sql :var table=table-name"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("pu" . "src plantuml :file ")))
 #+end_src
 
 #+begin_src elisp
