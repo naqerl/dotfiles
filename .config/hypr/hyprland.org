@@ -12,7 +12,7 @@
 - [[#startup][Startup]]
   - [[#ui][UI]]
   - [[#run-xwayland-apps-that-require-root][Run xwayland apps that require root]]
-  - [[#launch-assistant-daemon][Launch assistant daemon]]
+  - [[#keyboard-layout-per-window][Keyboard layout per window]]
   - [[#start-apps][Start apps]]
   - [[#idle-daemon][Idle daemon]]
 - [[#input][Input]]
@@ -68,7 +68,7 @@ $mainShiftMod = SUPER SHIFT
 ** Emacs
 #+begin_src conf
 $emacs = emacsclient --create-frame --alternate-editor=""
-$terminal = $emacs -e '(progn (eat))'
+$terminal = $emacs -e '(eshell)'
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
 
@@ -98,12 +98,10 @@ It's needed for apps like gnome-disk-utility
 exec-once = xhost +SI:localuser:root
 #+end_src
 
-** Launch assistant daemon
-It's my personal app that adds essential features:
-- Each workspace has own state of choosed keybaord layout
-
+** Keyboard layout per window
+https://github.com/coffebar/hyprland-per-window-layout
 #+begin_src conf
-exec-once = hyprsistant
+exec-once = hyprland-per-window-layout
 #+end_src
 
 ** Start apps

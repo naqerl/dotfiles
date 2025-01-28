@@ -194,7 +194,7 @@ Updates project's TAGS file on every save."
                 (nil)))))
         (if (file-exists-p ".git")
             (my/inhibit-sentinel-messages
-             #'async-shell-command "git ls-files | ctags -ReL -")
+             #'async-shell-command "find -not -path './target' | ctags -ReL -")
           (project-ext:info
            "Project etags will be generated only for git repository.")))
     (project-ext:info
