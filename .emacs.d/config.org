@@ -1427,7 +1427,7 @@ So it'll be nice to run them automatically
 *** Base
 #+begin_src elisp
 (setq org-directory (expand-file-name "~/notes/org"))
-(setq org-agenda-files '((expand-file-name "~/notes/org")))
+(setq org-agenda-files (directory-files-recursively "~/notes/org/" "\\.org$"))
 (setq org-agenda-start-with-log-mode t)
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
@@ -1436,7 +1436,8 @@ So it'll be nice to run them automatically
 *** Custom todo states
 #+begin_src elisp
 (setq org-todo-keywords
-  '((sequence "BACKLOG(b)" "TODO(t)" "|" "DONE(d!)")
+  '((sequence "TODO(t)" "|" "DONE(d!)")
+    (sequence "TOREAD(tr)" "|" "READING(pr)" "|" "FINISED(f!")
     (sequence "INPROGRESS(p)" "INTEST(v)" "HOLD(h)" "|" "COMPLETED(c)" "CANCELED(k@)")))
 #+end_src
 

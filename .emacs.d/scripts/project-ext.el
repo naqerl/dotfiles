@@ -194,7 +194,7 @@ Updates project's TAGS file on every save."
                 (nil)))))
         (if (file-exists-p ".git")
             (my/inhibit-sentinel-messages
-             #'async-shell-command "find -not -path './target' | ctags -ReL -")
+             #'async-shell-command "ctags -ReL .")
           (project-ext:info
            "Project etags will be generated only for git repository.")))
     (project-ext:info
@@ -204,32 +204,35 @@ Updates project's TAGS file on every save."
 
 ; begin-region -- Environment
 
-(defvar project-ext:dotenv-file-name "^.env$"
-  "The name of the .env file.")
+(with-eval-after-load 'load-env-vars
+  (require 'load-env-vars)
+  (defvar project-ext:dotenv-file-name "^.env$"
+    "The name of the .env file.")
 
-(defun project-ext:dotenv-load ()
-  "Export all environment variables in the closest .env file, searching up to MAX-DEPTH directories."
-  (interactive "p")
-  (let* ((max-depth 4)
-         (env-files (project-ext:dotenv--find-files max-depth)))
-    (dolist (env-file env-files)
-      (load-env-vars env-file)
-      (project-ext:info "Loaded environment from %s" env-file))))
+  (defun project-ext:dotenv-load ()
+    "Export all environment variables in the closest .env file,
+searching up to MAX-DEPTH directories."
+    (interactive "p")
+    (when (project-current)
+      (dolist (env-file (project-ext:dotenv--find-files))
+        (load-env-vars env-file)
+        (project-ext:info "Loaded environment from %s" env-file))))
 
-(defun project-ext:dotenv--find-files (max-depth)
-  "Recursively searches for .env files up to MAX-DEPTH directories."
-  (directory-files-recursively default-directory project-ext:dotenv-file-name))
+  (defun project-ext:dotenv--find-files ()
+    "Recursively searches for .env files up to MAX-DEPTH directories."
+    (directory-files-recursively
+     default-directory project-ext:dotenv-file-name))
 
-(defun project-ext:dotenv--load-advice (&rest rest)
-  "Advice function to load dotenv.
+  (defun project-ext:dotenv--load-advice (&rest rest)
+    "Advice function to load dotenv.
 REST ommited."
-  (when (project-current)
-    (let ((default-directory (project-root (project-current))))
-      (project-ext:dotenv-load))))
+    (when (project-current)
+      (let ((default-directory (project-root (project-current))))
+        (project-ext:dotenv-load))))
 
-(advice-add
- 'compilation-start
- :before 'project-ext:dotenv--load-advice)
+  (advice-add
+   'compilation-start
+   :before 'project-ext:dotenv--load-advice))
 
 ; end-region   -- Environment
 
