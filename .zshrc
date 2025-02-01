@@ -106,3 +106,5 @@ eval "$(pyenv init -)"
 
 # Restart your shell for the changes to take effect.
 
+
+. "$HOME/.local/bin/env"

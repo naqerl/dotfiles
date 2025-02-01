@@ -5,6 +5,7 @@ frame_width = 1
 separator_color= frame
 corner_radius = 5
 min_icon_size = 256
+layer = top
 
 [urgency_low]
 foreground = "#989898"

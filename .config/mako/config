@@ -8,6 +8,7 @@ outer-margin=0,0,0,0
 anchor=top-center
 default-timeout=3000
 text-alignment=center
+layer=top
 
 [urgency=high]
 border-color=#C34043

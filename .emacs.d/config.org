@@ -1865,6 +1865,19 @@ Actually added some
  :vc (:url "https://github.com/scipunch/make-project")
  :bind ("C-x p c" . make-project-run))
 #+end_src
+
+*** Binds
+#+begin_src elisp
+(defun my/project-or-default-eshell ()
+  "Open eshell in project root or in the current."
+  (interactive)
+  (if (project-current)
+      (project-eshell)
+    (eshell)))
+
+(use-package project :bind ("C-x p e" . my/project-or-default-eshell))
+#+end_src
+
 ** Dired
 *** Base
 #+begin_src elisp
