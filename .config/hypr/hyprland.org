@@ -67,8 +67,8 @@ $mainShiftMod = SUPER SHIFT
 
 ** Emacs
 #+begin_src conf
-$emacs = emacsclient --create-frame --alternate-editor=""
-$terminal = $emacs -e '(eshell)'
+$emacs = $HOME/.local/bin/emacs
+$terminal = kitty
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
 
@@ -79,8 +79,6 @@ $pass-fzf = $HOME/.config/bin/pass-fzf
 exec-once = hyprctl setcursor GoogleDot-Black 22
 exec-once = gsettings set org.gnome.desktop.interface cursor-theme 'GoogleDot-Black'
 exec-once = gsettings set org.gnome.desktop.interface cursor-size '22'
-env = HYPRCURSOR_THEME,GoogleDot-Black
-env = HYPRCURSOR_SIZE,22
 cursor {
     inactive_timeout = 3
 }
@@ -107,8 +105,9 @@ exec-once = hyprland-per-window-layout
 ** Start apps
 #+begin_src conf
 exec-once = [workspace 1 silent] $emacs
-exec-once = [workspace 2 silent] zen-browser
-exec-once = [workspace 5 silent] telegram-desktop
+exec-once = [workspace 2 silent] chromium --enable-features=TouchpadOverscrollHistoryNavigation
+exec-once = [workspace 4 silent] kitty btop
+exec-once = [workspace 5 silent] flatpak run org.telegram.desktop
 #+end_src
 
 ** Idle daemon
@@ -281,7 +280,7 @@ bind = $mainShiftMod, Q, exec, hyprctl dispatch exit
 bind = $mainMod, T, exec, $terminal
 
 bind = $mainMod, B, exec, run-chrome-profile
-bind = $mainMod, SPACE, exec, fuzzel
+bind = $mainMod, SPACE, exec, tofi-drun | xargs hyprctl dispatch exec --
 # bind = $mainMod, SPACE, exec, emacsclient -cF "((visibility . nil))" -e "(suzu/emacs-app-launcher)"
 bind = $mainShiftMod, P, exec, open-pdf
 bind = $mainShiftMod, P, exec, hyprpicker -abind = $mainMod, TAB, exec, eww open --toggle powermenu
@@ -293,7 +292,7 @@ bind = $mainMode, O, exec, thunar
 
 *** Emacs
 #+begin_src conf
-bind = $mainMod, E, exec, "emacs"
+bind = $mainMod, E, exec, $HOME/.local/bin/emacs
 #+end_src
 
 ** Workspaces
@@ -392,7 +391,7 @@ bind = $mainMod, PRINT, exec, hyprshot -m window -o "$HOME/Pictures/Screenshots"
 # Screenshot a monitor
 bind = , PRINT, exec, hyprshot -m output -o "$HOME/Pictures/Screenshots"
 # Screenshot a region
-bind = $mainShiftMod, PRINT, exec, hyprshot -m region -o "$HOME/Pictures/Screenshots"
+bind = $mainShiftMod, PRINT, exec, grim -g "$(slurp)" - | swappy -f -
 #+end_src
 
 ** Audio

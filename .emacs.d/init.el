@@ -8,8 +8,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((compile-eslint :url "https://github.com/Fuco1/compile-eslint")
-     (rust-docs :url "https://github.com/scipunch/rust-docs")))
+   '((compile-eslint :url "https://github.com/Fuco1/compile-eslint")))
  '(warning-suppress-types '((comp))))
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)

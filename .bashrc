@@ -12,7 +12,7 @@ alias grep='grep --color=auto'
 # Env setup
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
-eval -- "$($HOME/.cargo/bin/starship init bash --print-full-init)"
+eval -- "$(starship init bash --print-full-init)"
 # Use bash-completion, if available
 [[ -f /usr/share/bash-completion/bash_completion ]] && \
     . /usr/share/bash-completion/bash_completion
@@ -52,4 +52,6 @@ export HISTSIZE=10000
 export HISTFILESIZE=10000
 export HISTCONTROL=ignoreboth:erasedups
 
-. "$HOME/.local/bin/env"
+[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
+export PATH=$HOME/.local/bin/:$PATH
+. "$HOME/.cargo/env"
