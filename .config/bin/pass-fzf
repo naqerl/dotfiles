@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 PASSWORD_STORE="$HOME/.password-store"
-wfzf="$HOME/dotfiles/.config/bin/wfzf"
+wfzf="bemenu"
 
 choosed_password=$(cd $PASSWORD_STORE && fd --type f | sed 's/\.gpg$//'| $wfzf)
 

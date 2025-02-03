@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 set -ex
-FZF=$HOME/.config/bin/wfzf
+FZF=bemenu
 EMOJI=$HOME/.cargo/bin/emoji-fzf
 
 if ! command -v $EMOJI &> /dev/null
 then
-    echo "emoji-fzf could not be found, installing..."
-    cargo install --git https://github.com/mvertescher/emoji-fzf.git --force
+    # https://github.com/mvertescher/emoji-fzf.git
+    notify-send --urgency critical --expire-time 3000  "emoji-fzf could not be found."
+    exit 1
 fi
 
-emoji=$($EMOJI preview | $FZF --preview "$EMOJI get {1}" | $EMOJI get)
+emoji=$($EMOJI preview | $FZF | $EMOJI get)
 if [[ -z "$emoji" ]] 
 then
+    notify-send "Emoji picking was cancelled"
     exit 1
 fi
 

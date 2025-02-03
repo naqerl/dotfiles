@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-fzf="$HOME/dotfiles/.config/bin/wfzf"
+fzf="bemenu"
 
 base_path="$HOME/Pictures/wallpapers"
 wallpaper=$(cd "$base_path" && fd --type file | $fzf --bind "ctrl-s:execute(feh $base_path/{})")
