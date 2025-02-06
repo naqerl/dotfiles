@@ -1328,7 +1328,7 @@ The resize pertains to the maximum and minimum values"
 *** Tags
 #+begin_src elisp
 (setq org-tag-alist
-      '(("project") ("idea") ("post") ("feature") ("improve") ("bug")))
+      '(("project") ("idea") ("post") ("feature") ("improve") ("bug") ("mvp") ("backlog") ("noexport")))
 #+end_src
 
 ** Table of contents
@@ -1917,6 +1917,12 @@ Actually added some
  (popper-echo-mode +1)) ; For echo area hints
 #+end_src
 
+** Pinentry
+#+begin_src elisp
+(defun pinentry-emacs (desc prompt ok error)
+  (let ((str (read-passwd (concat (replace-regexp-in-string "%22" "\"" (replace-regexp-in-string "%0A" "\n" desc)) prompt ": "))))
+    str))
+#+end_src
 * Final
 #+begin_src elisp
 (message "Config fully loaded")

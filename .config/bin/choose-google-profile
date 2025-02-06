@@ -1,25 +1,75 @@
 #!/usr/bin/env python3
 import subprocess
 import sys
+import json
+import os
+import logging
 
-name2profile = {
-    "private1": "Default",
-    "private2": "Profile 1",
-    "pixelplex": "Profile 2",
-    "bare": "Profile 4",
-}
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Sequence, assert_never
 
-fuzzel = subprocess.Popen(
-    ["fuzzel", "--dmenu"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
-)
-stdout, stderr = fuzzel.communicate(input="\n".join(name2profile.keys()).encode())
 
-status = fuzzel.wait()
+@dataclass
+class ChromeProfile:
+    name: str
+    directory: str
 
-if status != 0:
-    subprocess.run(["notify-send", "Failed to select Google profile"])
-    sys.exit(status)
 
-name = stdout.decode("utf-8").strip()
-profile = name2profile[name]
-print(profile)
+class ProfileSelectionCancelled:
+    pass
+
+
+SelectProfileResult = ChromeProfile | ProfileSelectionCancelled
+
+logging.basicConfig(level=logging.INFO)
+
+log = logging.getLogger(__name__)
+
+
+def read_profiles(chrome_dir: Path) -> list[ChromeProfile]:
+    with open(chrome_dir / "Local State", "rb") as fp:
+        local_state = json.load(fp)
+
+    profile_info = local_state.get("profile", {}).get("info_cache", {})
+    if not profile_info:
+        log.warning("Got empty profile info")
+        
+    return [
+        ChromeProfile(name=info["name"], directory=dir_name)
+        for dir_name, info in profile_info.items()
+    ]
+
+
+def select_profile(profiles: Sequence[ChromeProfile]) -> SelectProfileResult:
+    select_p = subprocess.Popen(
+        ["tofi"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
+    stdout, stderr = select_p.communicate(input="\n".join(profile.name for profile in profiles).encode())
+
+    status = select_p.wait()
+
+    if status != 0:
+        return ProfileSelectionCancelled()
+
+    name = stdout.decode("utf-8").strip()
+    
+    return next(profile for profile in profiles if profile.name == name)
+    
+
+def main() -> None:
+    chrome_dir = Path(os.environ["HOME"]) / ".config/chromium"
+    profiles = read_profiles(chrome_dir)
+    assert profiles
+    profile = select_profile(profiles)
+    match profile:
+        case ProfileSelectionCancelled():
+            sys.exit(1)
+        case ChromeProfile(directory=directory):
+            subprocess.run(["hyprctl", "dispatch", "exec", f"chromium --profile-directory='{directory}' --restore-last-session"])
+        case _:
+            assert_never(profile)
+
+
+if __name__ == "__main__":
+    main()

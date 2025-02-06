@@ -57,6 +57,7 @@ source = $HOME/.config/hypr/platform/current.conf
 #+begin_src conf
 env = PATH,$HOME/.roswell/bin:$PATH
 env = PATH,$HOME/.local/share/uv/tools:$PATH
+env = PATH,/opt/texlive/2024/bin/x86_64-linux/:$PATH
 #+end_src
 
 * Alisaes
@@ -107,8 +108,8 @@ exec-once = hyprland-per-window-layout
 #+begin_src conf
 exec-once = [workspace 1 silent] $emacs
 exec-once = [workspace 2 silent] chromium --enable-features=TouchpadOverscrollHistoryNavigation
-exec-once = [workspace 4 silent] kitty btop
 exec-once = [workspace 5 silent] flatpak run org.telegram.desktop
+exec-once = [workspace 6 silent] kitty btop
 #+end_src
 
 ** Idle daemon

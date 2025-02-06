@@ -79,7 +79,7 @@ PROJECT-PATH provided as argument")
   (require 'perspective)
   (defun project-ext:persp-compilation-buffer-name-function (_)
     "Creates unique compilation buffer name based on the current perspective."
-    (concat "*" (project-name (project-current)) "/compile*"))
+    (concat "*" (persp-current-name) "/compile*"))
 
   (defun project-ext:persp-switch (&optional project-dir)
     "Opens project in a new perspective.
