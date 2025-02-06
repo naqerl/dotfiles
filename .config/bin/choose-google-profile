@@ -62,11 +62,15 @@ def main() -> None:
     profiles = read_profiles(chrome_dir)
     assert profiles
     profile = select_profile(profiles)
+    additional_flags = (
+        "--enable-features=TouchpadOverscrollHistoryNavigation",
+        "--restore-last-session"
+    )
     match profile:
         case ProfileSelectionCancelled():
             sys.exit(1)
         case ChromeProfile(directory=directory):
-            subprocess.run(["hyprctl", "dispatch", "exec", f"chromium --profile-directory='{directory}' --restore-last-session"])
+            subprocess.run(["hyprctl", "dispatch", "exec", f"chromium --profile-directory='{directory}' {' '.join(additional_flags)}"])
         case _:
             assert_never(profile)
 
