@@ -1174,6 +1174,17 @@ The resize pertains to the maximum and minimum values"
 #+begin_src elisp
 (setq-default async-shell-command-buffer 'new-buffer)
 #+end_src
+** Stop yank on ~<C-backspace>~
+#+begin_src elisp
+(defun my-delete-backward-word ()
+  (interactive "*")
+  (push-mark)
+  (backward-word)
+  (delete-region (point) (mark)))
+(use-package emacs
+  :bind ("<C-backspace>" . my-delete-backward-word))
+#+end_src
+
 * Helper packages
 *** Undo tree
 #+begin_src elisp
@@ -1923,6 +1934,17 @@ Actually added some
   (let ((str (read-passwd (concat (replace-regexp-in-string "%22" "\"" (replace-regexp-in-string "%0A" "\n" desc)) prompt ": "))))
     str))
 #+end_src
+** Screenshot
+#+begin_src elisp
+(require 'screenshot)
+#+end_src
+** GraphQL
+#+begin_src elisp
+(use-package graphql-mode)
+(use-package graphql)
+(use-package request)
+#+end_src
+
 * Final
 #+begin_src elisp
 (message "Config fully loaded")

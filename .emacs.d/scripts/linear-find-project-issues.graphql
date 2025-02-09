@@ -1,0 +1,10 @@
+query findIssues($projectId: String!) {
+  project(id: $projectId) {
+    issues {
+      nodes {
+        id
+        title
+      }
+    }
+  }
+}

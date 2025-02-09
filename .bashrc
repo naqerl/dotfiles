@@ -55,3 +55,4 @@ export HISTCONTROL=ignoreboth:erasedups
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 export PATH=$HOME/.local/bin/:$PATH
 . "$HOME/.cargo/env"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
