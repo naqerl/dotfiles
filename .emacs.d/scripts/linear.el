@@ -5,7 +5,6 @@
 
 ;;; Code:
 (require 'graphql-mode)
-(require 'graphql)
 (require 'request)
 (require 'cl-lib)
 
@@ -18,6 +17,32 @@
 
 (defvar linear-home-directory (expand-file-name "~/notes/org/linear")
   "Directory for the linear org files.")
+
+(defvar linear--graphql-find-projects "
+  query {
+    projects {
+      nodes {
+        id
+        name
+        description
+        state
+      }
+    }
+  }"
+  "Get proects.")
+
+(defvar linear--graphql-find-issues "
+  query findIssues($projectId: String!) {
+    project(id: $projectId) {
+      issues {
+        nodes {
+          id
+          title
+        }
+      }
+    }
+  }"
+  "Get issues by project id.")
 
 (defmacro linear--execute (query &optional variables)
   "Executes GraphQL linear QUERY.
@@ -36,24 +61,22 @@ Accepts optional VARIABLES"
 
 (defun linear--fetch-projects ()
   "Returns a vector of current projects."
-  (let ((query
-         (graphql-query
-          ((projects (nodes id name description state))))))
-    (thread-last
-     (linear--execute query)
-     (alist-get 'data)
-     (alist-get 'projects)
-     (alist-get 'nodes))))
+  (thread-last
+   (linear--execute linear--graphql-find-projects)
+   (alist-get 'data)
+   (alist-get 'projects)
+   (alist-get 'nodes)))
 
 (defun linear--fetch-project-issues (project-id)
   "Returns issues for PROJECT-ID, optionally filtered by MILESTONE-ID.
 Returns a list of issues with their details."
-  (let ((query (with-cu)))
-    (thread-last
-     (linear--execute query `((projectId . ,project-id)))
-     (alist-get 'data)
-     (alist-get 'issues)
-     (alist-get 'nodes))))
+  (thread-last
+   (linear--execute linear--graphql-find-issues
+                    `((projectId . ,project-id)))
+   (alist-get 'data)
+   (alist-get 'project)
+   (alist-get 'issues)
+   (alist-get 'nodes)))
 
 ; end-region   -- GraphQL
 
