@@ -13,7 +13,11 @@ All of them saved to the =build.sh= file
 
 #+ATTR_ORG: :width 700
 [[./img/demo-emacs.png]]
-
+** Important to run
+*** System wide git ignore
+#+begin_src shell
+git config --global core.excludesfile ~/dotfiles/.system_wide_gitignore
+#+end_src
 ** Setup
 *** Fail fast
 #+begin_src shell

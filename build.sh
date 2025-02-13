@@ -1,3 +1,5 @@
+git config --global core.excludesfile ~/dotfiles/.system_wide_gitignore
+
 set -ex
 
 if [[ -z $(command -v rustup) ]]; then
