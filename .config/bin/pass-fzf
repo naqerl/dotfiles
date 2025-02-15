@@ -2,7 +2,7 @@
 PASSWORD_STORE="$HOME/.password-store"
 wfzf="$HOME/.config/bin/wfzf"
 
-choosed_password=$(cd $PASSWORD_STORE && fd --type f | sed 's/\.gpg$//'| $wfzf)
+choosed_password=$(cd $PASSWORD_STORE && find -type f -not -path './.git/*' | sed 's/\.gpg$//; s/^\.\///'| $wfzf)
 
 if [[ -z "$choosed_password" ]]; then
 	exit

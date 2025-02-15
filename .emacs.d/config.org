@@ -654,6 +654,7 @@ Automatically resizes windows to fit golden ratio
    ("C-x B"  . consult-buffer)
    ("C-x b"  . consult-project-buffer)
    ("M-i"  . imenu)
+   ("M-I" . consult-imenu)
    ("C-c i"  . consult-line)
    ("C-c e"  . consult-ripgrep))
 #+end_src
@@ -1788,7 +1789,9 @@ Actually added some
       (project-eshell)
     (eshell)))
 
-(use-package project :bind ("C-x p e" . my/project-or-default-eshell))
+(use-package project :bind
+  ("C-x p e" . my/project-or-default-eshell)
+  ("C-x p F" . project-root-find-file))
 #+end_src
 
 ** Dired

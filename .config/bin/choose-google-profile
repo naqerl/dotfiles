@@ -26,6 +26,9 @@ logging.basicConfig(level=logging.INFO)
 
 log = logging.getLogger(__name__)
 
+HOME = os.environ["HOME"]
+FZF = f"{HOME}/.config/bin/wfzf"
+
 
 def read_profiles(chrome_dir: Path) -> list[ChromeProfile]:
     with open(chrome_dir / "Local State", "rb") as fp:
@@ -43,7 +46,7 @@ def read_profiles(chrome_dir: Path) -> list[ChromeProfile]:
 
 def select_profile(profiles: Sequence[ChromeProfile]) -> SelectProfileResult:
     select_p = subprocess.Popen(
-        ["tofi"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+        [FZF], stdin=subprocess.PIPE, stdout=subprocess.PIPE
     )
     stdout, stderr = select_p.communicate(input="\n".join(profile.name for profile in profiles).encode())
 
