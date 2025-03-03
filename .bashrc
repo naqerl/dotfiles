@@ -3,11 +3,11 @@
 [[ "$TERM" == 'dumb' ]] && return
 
 # Aliases setup
-alias ls="exa --long --header --icons"
 alias g="git"
 alias d="docker"
 alias gr="cd \$(gitroot.sh)"
 alias grep='grep --color=auto'
+alias yt-mp4='yt-dlp -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"'
 
 # Env setup
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"

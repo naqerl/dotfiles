@@ -6,6 +6,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auth-source-save-behavior nil)
  '(package-selected-packages
    '(all-the-icons-completion all-the-icons-dired better-jumper
                               buffer-move compile-eslint
@@ -14,15 +15,15 @@
                               elfeed-goodies elisp-autofmt elysium
                               emojify eshell-git-prompt
                               eshell-syntax-highlighting free-keys
-                              gcmh git-gutter go-mode golden-ratio
-                              graphql graphql-mode helpful
-                              indent-guide json-mode load-env-vars
-                              magit make-project marginalia
-                              markdown-toc orderless org-auto-tangle
-                              pcmpl-args peep-dired perspective
-                              plantuml-mode popper posframe
-                              prettier-js pulsar rainbow-mode request
-                              ruff-format rust-docs rust-mode
+                              gcmh ggtags git-gutter go-mode
+                              golden-ratio graphql graphql-mode
+                              helpful indent-guide json-mode
+                              load-env-vars magit make-project
+                              marginalia markdown-toc orderless
+                              org-auto-tangle pcmpl-args peep-dired
+                              perspective plantuml-mode popper
+                              posframe prettier-js pulsar rainbow-mode
+                              request ruff-format rust-docs rust-mode
                               screenshot sqlformat sudo-edit toc-org
                               typescript-mode undo-tree vertico
                               visual-regexp-steroids vterm-toggle

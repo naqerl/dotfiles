@@ -194,9 +194,9 @@ Updates project's TAGS file on every save."
                 (nil)))))
         (if (file-exists-p ".git")
             (my/inhibit-sentinel-messages
-             #'async-shell-command "git ls-files | /usr/local/bin/ctags -ReL -")
-          (project-ext:info
-           "Project etags will be generated only for git repository.")))
+             #'async-shell-command "/usr/local/bin/ctags -Re --exclude='*.json' .")
+            (project-ext:info
+             "Project etags will be generated only for git repository.")))
     (project-ext:info
      "Etags will be generated only inside a project.")))
 
@@ -209,17 +209,18 @@ Updates project's TAGS file on every save."
   (defvar project-ext:dotenv-file-name "^.env$"
     "The name of the .env file.")
 
-  (defun project-ext:dotenv-load ()
+  (defun project-ext:dotenv-load (&optional max-depth)
     "Export all environment variables in the closest .env file,
 searching up to MAX-DEPTH directories."
     (interactive "p")
     (when (project-current)
-      (dolist (env-file (project-ext:dotenv--find-files))
-        (load-env-vars env-file)
-        (project-ext:info "Loaded environment from %s" env-file))))
+      (let ((default-directory (project-root (project-current))))
+        (dolist (env-file (project-ext:dotenv--find-files))
+          (load-env-vars env-file)
+          (project-ext:info "Loaded environment from %s" env-file)))))
 
   (defun project-ext:dotenv--find-files ()
-    "Recursively searches for .env files up to MAX-DEPTH directories."
+    "Recursively searches for .env files"
     (directory-files-recursively
      default-directory project-ext:dotenv-file-name))
 
