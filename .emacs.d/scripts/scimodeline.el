@@ -76,17 +76,6 @@
   "Mode line construct to display LSP active status.")
 (put 'my-modeline-lsp 'risky-local-variable t)
 
-(defvar-local my-persp-name
-    '(:eval
-      (when (mode-line-window-selected-p)
-        (concat
-         (propertize "| " 'face 'mode-line)
-         (propertize (format "󰖯 %s" (persp-current-name))
-                     'face
-                     'italic))))
-  "Mode line construct to display current perspective name.")
-(put 'my-persp-name 'risky-local-variable t)
-
 (defvar-local my-compilation-in-progress
     '(:eval
       (when (and (boundp 'compilation-in-progress)
@@ -119,8 +108,6 @@ or not."
                 my-modeline-buffer-name
                 "  "
                 my-modeline-major-mode
-                " "
-                my-persp-name
                 " "
                 my-compilation-in-progress
                 my-modeline-timer))

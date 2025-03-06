@@ -9,7 +9,9 @@
   - Python: poetry
 - Simulate single mode-line when multiple windows opened
 - Check spell using treesitter and ispell/aspell. The key is to check only custom named nodes (like class, function, variable, string and etc.). Make it independent from emacs to use as pre-commit hook or in any CI/CD pipeline
+
 * Important things to load first
+
 ** Path
 #+begin_src elisp
 (add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
@@ -23,6 +25,7 @@
 (native-compile-async "~/.emacs.d" 'recursively)
 (custom-set-variables '(warning-suppress-types '((comp))))
 #+end_src
+
 ** Loading scripts
 #+begin_src elisp
 (dolist (path '("~/.emacs.d/scripts" "~/dotfiles/.emacs.d/themes"))
@@ -31,11 +34,12 @@
 (require 'project-ext)
 (require 'my-extensions)
 (require 'ssh)
-(require 'app-launcher)
 #+end_src
+
 ** Upgrade GC
 #+begin_src elisp
 (use-package gcmh
+  :diminish gcmh-mode
   :init
   (gcmh-mode 1))
 #+end_src
@@ -47,7 +51,7 @@
 
 ** Profiling
 #+begin_src elisp
-(setq use-package-compute-statistics t)
+(setq use-package-compute-statistics nil)
 
 (defun my/display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."
@@ -56,27 +60,35 @@
 
 (add-hook 'emacs-startup-hook #'my/display-startup-time)
 #+end_src
-* Dev
-** Common
-*** Docs pop up
+
+*** All the icons
 #+begin_src elisp
-(use-package eldoc-box
-  :disabled
+(use-package all-the-icons)
+(use-package all-the-icons-dired
+  :after all-the-icons
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+#+end_src
+
+*** Diminish
+#+begin_src elisp
+(use-package diminish)
+#+end_src
+
+* Dev
+
+** Common
+
+*** Dumb jump
+#+begin_src elisp
+(use-package dumb-jump
   :config
-  (defun suzu/eldoc-box-scroll-up ()
-    "Scroll up in `eldoc-box--frame'"
-    (interactive)
-    (with-current-buffer eldoc-box--buffer
-      (with-selected-frame eldoc-box--frame
-        (scroll-down 3))))
-  (defun suzu/eldoc-box-scroll-down ()
-    "Scroll down in `eldoc-box--frame'"
-    (interactive)
-    (with-current-buffer eldoc-box--buffer
-      (with-selected-frame eldoc-box--frame
-        (scroll-up 3))))
-  (setq max-mini-window-height 0)
-  (setq eldoc-idle-delay 0))
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+#+end_src
+
+*** Eldoc
+#+begin_src elisp
+(use-package eldoc
+  :diminish eldoc-mode)
 #+end_src
 
 *** Treesitter
@@ -103,7 +115,9 @@
   :bind
   ("C-x /" . comment-or-uncomment-region))
 #+end_src
+
 ** Languages
+
 *** Rust
 #+begin_src elisp
 (use-package rust-mode)
@@ -115,19 +129,17 @@
 
 *** Python
 #+begin_src elisp
-(use-package python)
-
 (use-package
- ruff-format
- :after python
- :config (setq ruff-format-command "ruff check --fix --select I")
- :hook (python-mode . ruff-format-on-save-mode))
+ python
+ :bind (:map python-mode-map ("C-x t r" . python-tests-run))
+ :config
+ (require 'python-tests)
+ (setq-default python-indent-def-block-scale 1))
 #+end_src
 
 *** Yuck
 #+begin_src elisp
-(use-package yuck-mode
-  :ensure t)
+(use-package yuck-mode)
 #+end_src
 
 *** SQL
@@ -173,14 +185,7 @@ Generate table of contents
 #+begin_src elisp
 (setq-default js-indent-level 2)
 
-(use-package
- jtsx
- :disabled ;; Slow load as f
- :config
- (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
- (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode)))
-
-(use-package typescript-mode :ensure t)
+(use-package typescript-mode :disabled)
 
 (defun my/prettier ()
   "Formats given file with prettier."
@@ -250,23 +255,12 @@ Generate table of contents
 (use-package css-mode)
 #+end_src
 
-*** Go
-#+begin_src elisp
-(use-package go-mode)
-#+end_src
-
 *** Docker
 #+begin_src elisp
 (use-package dockerfile-mode)
 #+end_src
 
-*** ELF
-#+begin_src elisp
-(use-package elf-mode)
-#+end_src
-
 *** Plant UML
-
 #+begin_src elisp
 (use-package
  plantuml-mode
@@ -280,42 +274,24 @@ Generate table of contents
  (plantuml-mode-hook . display-line-numbers-mode))
 #+end_src
 
-*** Yaml
-#+begin_src elisp
-(use-package yaml-mode
-  :config
-  (add-hook 'yaml-mode-hook 'display-line-numbers-mode))
-#+end_src
-
-*** PHP
-#+begin_src elisp
-(use-package php-mode :disabled) ;; Really slow to start
-#+end_src
-
-*** JSON
-#+begin_src elisp
-(use-package json-mode)
-#+end_src
-
 ** Working with ~.env~ files
 Install package for loading ~.env~ & setup hooks
 #+begin_src elisp
 (use-package load-env-vars
   :hook
-  ((eshell-mode shell-mode) . project-ext:dotenv-load))
+  ((eshell-mode shell-mode compilation-mode) . project-ext:dotenv-load))
 #+end_src
 
 ** Compilation
 *** Ansi colors
 #+begin_src elisp
-(use-package ansi-color
-  :config
-  (defun my/ansi-colorize-buffer ()
-  (let ((buffer-read-only nil))
-    (ansi-color-apply-on-region (point-min) (point-max))))
-  :hook
-  (compilation-filter-hook . my/ansi-colorize-buffer))
-
+(use-package
+ ansi-color
+ :config
+ (defun my/ansi-colorize-buffer ()
+   (let ((buffer-read-only nil))
+     (ansi-color-apply-on-region (point-min) (point-max))))
+ :hook (compilation-filter-hook . my/ansi-colorize-buffer))
 #+end_src
 
 *** Unified list jumps
@@ -373,18 +349,19 @@ Install package for loading ~.env~ & setup hooks
  ("M-]" . my/next-error)
  ("M-[" . my/previous-error))
 #+end_src
+
 ** Snippets
+
 *** Yasnippet
 #+begin_src elisp
 (use-package
  yasnippet
+ :diminish (yas-minor-mode yas-global-mode)
  :config
  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
  (yas-global-mode 1))
-
-(use-package consult-yasnippet
-  :after yasnippet)
 #+end_src
+
 *** Region search
 #+begin_src elisp
 (defun my/occur-regions ()
@@ -424,37 +401,6 @@ Install package for loading ~.env~ & setup hooks
  right-margin-width 0)
 (add-to-list 'default-frame-alist '(left-fringe . 0))
 (add-to-list 'default-frame-alist '(right-fringe . 0))
-
-(use-package
- grayscale-theme
- :disabled
- :init (require 'grayscale-ansi)
- (set-face-attribute
-  'org-block nil
-  :background
-  (plist-get koi-theme-colors :bg+1))
- (custom-set-faces
-  '(font-lock-doc-face ((t (:inherit italic :foreground "#868686"))))
-  '(font-lock-keyword-face
-    ((t (:inherit italic :foreground "#BEC3C6" :weight bold))))
-  '(font-lock-string-face
-    ((t (:inherit italic :foreground "#738678"))))
-  `(org-table
-    ((t
-      (:inherit
-       default
-       :foreground ,(plist-get grayscale-theme-colors :fg)))))
-  `(org-code
-    ((t
-      (:inherit
-       default
-       :background "black"
-       :foreground ,(plist-get grayscale-theme-colors :fg+1)
-       :box
-       (:line-width
-        (1 . 1)
-        :color ,(plist-get grayscale-theme-colors :fg-1)
-        :style released-button)))))))
 #+end_src
 
 *** Current
@@ -462,19 +408,17 @@ Install package for loading ~.env~ & setup hooks
 (load-theme 'koi :no-confirm)
 #+end_src
 
+*** Splash screen
+#+begin_src elisp
+(setq-default inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
+(setq initial-scratch-message "")
+#+end_src
+
 *** Line numbers width
 #+begin_src elisp
 (setq-default display-line-numbers-width 3)
-#+end_src
-
-*** Dim inactive buffers
-#+begin_src elisp
-(use-package auto-dim-other-buffers
-  :disabled
-  :custom
-  (auto-dim-other-buffers-dim-on-switch-to-minibuffer nil)
-  (auto-dim-other-buffers-affected-faces '((default . auto-dim-other-buffers-face)
-                                           (org-hide . auto-dim-other-buffers-hide-face))))
 #+end_src
 
 *** Golden ratio
@@ -482,6 +426,7 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (use-package
  golden-ratio
+ :diminish golden-ratio-mode
  :init (golden-ratio-mode 1)
  :config
  (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
@@ -490,19 +435,10 @@ Automatically resizes windows to fit golden ratio
  (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*" "*Async Shell Command*")))
 #+end_src
 
-*** Zen mode
-#+begin_src elisp
-(use-package zen-mode
-  :disabled)
-#+end_src
-
-** Modeline
-#+begin_src elisp
-(require 'scimodeline)
-#+end_src
-
 ** Fonts
+
 *** Main setup
+
 #+begin_src elisp
 (set-face-attribute 'default nil
                     :font "Iosevka NF"
@@ -524,16 +460,8 @@ Automatically resizes windows to fit golden ratio
 (setq-default line-spacing 0)
 #+end_src
 
-*** All the icons
-#+begin_src elisp
-(use-package all-the-icons
-  :ensure t)
-
-(use-package all-the-icons-dired
-  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
-#+end_src
-
 ** Essential small tweaks
+
 *** Cursor
 #+begin_src elisp
 (blink-cursor-mode t)
@@ -550,30 +478,21 @@ Automatically resizes windows to fit golden ratio
  emacs
  :bind ("C-+" . text-scale-increase) ("C--" . text-scale-decrease))
 #+end_src
+
 *** System clipboard to kill ring integration
 #+begin_src elisp
 (setq save-interprogram-paste-before-kill t)
 #+end_src
 
-*** Delete trailing whitespaces
-#+begin_src elisp
-(use-package
- ws-butler
- :config (add-hook 'prog-mode-hook #'ws-butler-mode))
-#+end_src
 ** Completion
 *** Dabbrev
 #+begin_src elisp
 (use-package
  dabbrev
- ;; Swap M-/ and C-M-/
- :bind (("M-/" . dabbrev-expand) ("C-M-/" . dabbrev-completion))
- :config (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
- ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
+ :config
  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
  (defun my/dabbrev-select-buffer (other-buffer)
-   (message "Checking %s for completion" other-buffer)
    (get-buffer-window other-buffer))
  (setq dabbrev-friend-buffer-function #'my/dabbrev-select-buffer))
 #+end_src
@@ -595,7 +514,7 @@ Automatically resizes windows to fit golden ratio
  (setq
   completions-format 'one-column
   completions-header-format nil
-  completions-max-height 20
+  completions-max-height 7
   completion-auto-select t
   completion-show-help nil)
  :bind
@@ -640,179 +559,10 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (use-package consult
   :bind
-   ("C-x B"  . consult-buffer)
-   ("C-x b"  . consult-project-buffer)
-   ("M-i"  . imenu)
-   ("M-I" . consult-imenu)
+   ("M-i" . consult-imenu)
    ("C-c i"  . consult-line)
    ("C-c e"  . consult-ripgrep))
 #+end_src
-
-** Workspaces
-*** Perspective
-#+begin_src elisp
-(use-package
- perspective
- :init
- (setq persp-suppress-no-prefix-key-warning t)
- (persp-mode)
- :bind
- ("C-z" . perspective-map)
- ("C-z l" . persp-switch-last)
- ("C-z p" . project-ext:persp-switch))
-#+end_src
-
-*** Group buffers in ibuffer by perspective
-#+begin_src elisp
-(add-hook 'ibuffer-hook
-          (lambda ()
-            (persp-ibuffer-filter-groups)
-            (unless (eq ibuffer-sorting-mode 'alphabetic)
-              (ibuffer-do-sort-by-alphabetic))))
-#+end_src
-
-** Dashboard
-#+begin_src elisp
-(use-package
- dashboard
- :disabled
- :custom
- (dashboard-set-init-info t)
- (dashboard-set-navigator t)
- (dashboard-show-shortcuts t)
- (dashboard-center-content t)
- (dashboard-startup-banner
-  (expand-file-name "~/.emacs.d/banners/anime/1.png"))
- (dashboard-set-heading-icons t)
- (dashboard-set-file-icons nil)
- (dashboard-startupify-list
-  '(suzu/dashboard-insert-banner
-    dashboard-insert-newline
-    dashboard-insert-footer
-    dashboard-insert-newline
-    dashboard-insert-init-info
-    dashboard-insert-newline
-    end-of-buffer))
- :config
- (dashboard-setup-startup-hook)
- (add-hook 'dashboard-after-initialize-hook 'end-of-buffer)
- (setq-default initial-buffer-choice
-               (lambda () (get-buffer "*dashboard*"))))
-
-(setq initial-scratch-message
-      (concat
-       (format-time-string ";; Created at: %Y-%m-%dT%H:%M:%S+00:00\n"
-                           nil t)
-       ";; Happy coding!\n\n"))
-
-(setq-default initial-buffer-choice
-              (lambda () (get-buffer "*scratch*")))
-#+end_src
-
-** Banners
-#+begin_src
-⡆⣿⣿⣦⠹⣳⣳⣕⢅⠈⢗⢕⢕⢕⢕⢕⢈⢆⠟⠋⠉⠁⠉⠉⠁⠈⠼⢐⢕
-⡝⡄⢻⢟⣿⣿⣷⣕⣕⣅⣿⣔⣕⣵⣵⣿⣿⢠⣿⢠⣮⡈⣌⠨⠅⠹⣷⡀⢱
-⡝⠁⣠⣾⠟⡉⡉⡉⠻⣦⣻⣿⣿⣿⣿⣿⣿⣿⣿⣧⠸⣿⣦⣥⣿⡇⡿⣰⢗
-⡀⢻⣿⡇⢙⠁⠴⢿⡟⣡⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣵⣵
-⣷⢄⠻⣿⣟⠿⠦⠍⠉⣡⣾⣿⣿⣿⣿⣿⣿⢸⣿⣦⠙⣿⣿⣿⣿⣿⣿⣿⣿
-
-⡗⢰⣶⣶⣦⣝⢝⢕⢕⠅⡆⢕⢕⢕⢕⢕⣴⠏⣠⡶⠛⡉⡉⡛⢶⣦⡀⠐⣕
-⡝⡵⠟⠈⢀⣀⣀⡀⠉⢿⣿⣿⣿⣿⣿⣿⣿⣼⣿⢈⡋⠴⢿⡟⣡⡇⣿⡇⡀
-⠁⢰⣿⡏⣴⣌⠈⣌⠡⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣬⣉⣉⣁⣄⢖⢕⢕
-⡻⣄⣻⣿⣌⠘⢿⣷⣥⣿⠇⣿⣿⣿⣿⣿⣿⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ 
-⡕⡑⣑⣈⣻⢗⢟⢞⢝⣻⣿⣿⣿⣿⣿⣿⣿⠸⣿⠿⠃⣿⣿⣿⣿⣿⣿⡿⠁#+end_src
-
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡒⣢⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⠃⠀⠀⠀⠉⣁⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠈⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣶⣟⣛⠛⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠙⢛⣛⣷⡦⢀⣤⣶⡶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⣴⣶⣶⠂⠤⢄⣀⠀⠀⠀⠈⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠋⠉⣰⣿⣿⣿⣇⢹⡄⠀⠀⠀⣀⠀⣠⠤⠠⡄⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣀⡯⠹⢲⡄⠀⠀⠀⣿⣿⣿⣷⣤⡀⠈⣹⣶⠦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⠀⢷⠀⠀⢰⡇⠋⠀⠀⢠⠇⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠛⠒⣎⡏⠀⠀⠀⠀⣿⣿⣿⡏⠙⠛⢦⡙⠉⠀⠀⠉⠓⢦⣀⠀⠀⢀⣀⣀⣀⣀⣀⡀⠀⢠⣿⣿⣿⠟⠻⣿⣿⡇⢸⡇⠀⠀⠓⠒⣦⠀⠛⢦⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠿⠓⠂⠀⡠⠽⢦⡀⠀⠀⠀⠈⠛⢛⡉⢉⠉⠀⠀⠙⠛⠋⢛⣿⢯⡉⠛⠀⠀⠘⠈⢿⠗⢻⠀⠀⠀⠀⠛⠦⠶⠋⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣇⠀⠀⢠⠋⠀⢀⡾⢛⡆⠀⠀⠀⢉⡽⠛⠁⠈⣏⢦⠐⢶⣤⡹⣿⠒⠁⠀⠀⢀⡠⠤⢼⢣⢸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⡴⠲⢤⡀⣀⣀⠀⠀⢸⣿⡗⠀⡇⠀⣠⣾⠟⠛⠡⣾⡴⢶⡯⠀⠤⠀⠀⢸⠸⡇⠀⡙⣿⣌⠻⣤⣀⡠⠋⠀⠀⢸⡏⢠⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⡇⠀⠀⠉⠁⣸⠀⠀⠀⢿⣿⠤⣫⡾⣿⣿⢱⣀⡼⠛⢒⡿⠀⠀⠀⠀⠀⠸⡇⢳⠐⠛⠉⠻⣇⢹⢿⣟⣦⣀⣸⣍⣷⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⡴⠄⠀⢰⠚⠁⠀⠀⠀⠘⢿⣿⡿⣤⠉⠁⣠⡿⠁⠀⣼⠁⠀⠀⣀⣀⡤⠂⡇⢸⡀⠀⠀⠀⠹⡆⠀⠀⠀⢿⣿⣤⣿⣿⣿⡇⠀⠀⠀⢀⢤⡀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠸⣄⣀⣀⡼⠀⠀⠀⠀⠀⠀⣼⣿⡶⠟⠀⣴⣿⠶⢦⢰⡟⡆⠀⣀⣩⣀⠀⢰⡇⣸⡓⠄⢀⣀⡀⢿⡀⡴⠛⢶⠘⣿⣿⣿⣿⣿⡀⠀⠘⢧⣀⡕⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⠃⠀⠀⢠⣿⠷⣤⡾⣼⡇⠁⢸⣏⠁⢘⡷⢘⡗⣿⣧⠆⣿⣈⡿⢺⣇⠉⢳⠟⠀⢸⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣽⡓⠀⠠⣼⢺⡅⠀⠂⣿⡩⡧⠀⠀⠛⠶⡛⠉⠁⣿⡏⠻⣬⠄⠨⠀⠀⢻⠀⠐⡄⠂⠀⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⡄⠀⢸⣿⣿⠁⣀⣿⣟⣀⣇⠆⢠⣀⣤⣄⠀⠀⢿⣿⣶⣻⣮⡀⠀⠀⣼⠀⠀⡏⠁⠀⢸⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⣿⢿⠀⠀⣿⣿⣿⠀⣿⠟⠉⠀⢹⡄⢸⣿⣿⣿⣿⣦⣸⡟⠀⠈⢻⣷⣆⡐⣿⡂⠀⡇⠀⠀⠘⣿⣿⣿⣿⣿⠀⠀⠀⠀⢀⡶⡄⠀⠀
-⢀⣦⡀⠀⠀⠀⠠⠴⠾⠛⠋⠉⠀⣿⠀⠀⠀⣿⠁⣿⣿⠉⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠙⢿⣿⣿⠀⠀⣅⠁⠀⠀⣿⣿⣿⣿⣿⠀⠀⠀⠸⡍⣰⣧⠀⠀
-⠈⣇⠙⢦⡀⠀⠀⠀⠀⠀⠀⠀⢰⣿⠀⠀⠀⣿⠄⣿⠃⠀⠀⠀⠀⠀⢹⣿⣿⣿⠟⠛⠿⠛⢇⠀⠀⠀⠀⠀⠻⣿⠀⢸⣇⠀⠀⣼⣿⣿⣿⣿⣿⠀⠀⠀⠐⠷⠃⠉⠀⠀
-⠀⢹⡀⠀⠙⢄⠀⠀⠀⠀⠀⠀⣾⣿⠀⠀⠀⣿⣆⣿⣠⣴⣶⣶⣤⣅⡒⢻⡀⠉⠳⣾⣷⣦⣸⣭⣴⡶⢶⣤⣤⣾⠀⣸⠧⠀⣸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⢻⡷⠀⠀⠈⠳⣄⠀⠀⠀⣸⣿⣿⣀⠄⠀⣿⣷⣿⠛⣋⣉⣀⡀⠉⠉⠀⠀⠀⠀⠀⠉⠈⠉⣉⣈⡉⠉⠛⠿⡿⠆⣿⠂⢰⣿⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⣤⣳⡕⠄⠀⣦⠘⣦⠀⢠⣿⣿⣿⣿⣆⠀⠘⣿⣿⣜⠿⢳⠻⠁⠀⠀⢠⣠⢄⣀⣠⡄⠀⢚⢏⢎⣿⡿⡴⣸⣧⣾⣏⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀
-⠀⢻⡌⡛⠀⢀⣘⣿⣿⣄⣾⣿⣿⣿⣿⣿⣷⣤⣽⠟⠉⠉⠙⠒⢤⡀⠀⠘⢆⠀⠀⢠⠃⠀⠈⢈⡤⠞⠋⠉⠉⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣼⣆⠀⠀⠀⠀⠀⠀
-⠀⠀⠻⣮⣀⣺⣿⣿⣿⣟⣿⣿⣿⣿⣿⡻⢿⡿⠏⠀⠀⠀⠀⠀⠀⠙⢦⠀⠈⠑⠒⠋⠀⢀⡴⠋⠀⠀⠀⠀⠀⠀⢀⠈⠻⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀
-⠀⠀⢺⣿⣿⣿⣿⣿⣿⣿⣵⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⢸⣷⣶⣦⣤⣶⣶⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀
-⠀⠀⠀⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣍⣉⣽⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀
-⠀⠀⠀⠘⣿⣿⣿⣿⣿⢟⣱⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣖
-⠀⠀⠀⢀⣽⣿⣿⡿⣉⣸⣿⣿⣿⣿⣿⣿⣏⠻⠧⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷
-⠀⠀⣴⣿⣿⣿⣿⣿⠛⣽⣿⣿⣿⣿⣿⣿⠻⣷⣤⣀⠀⠀⠀⠀⠀⠀⢠⣿⣿⠿⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿
-⠀⠸⠿⠿⠿⠻⡿⠿⠴⠿⠿⠿⠿⢿⣿⣿⣷⣆⡉⠛⠿⢷⣶⣶⣶⣶⣿⣿⣿⣄⡊⠛⠿⢷⣶⣲⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠿⡷⠹⠿⠿⠿⠿⠿⡞
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠒⠽⠷⠶⠶⠴⠾⠿⠟⠛⠿⠟⠛⠛⠻⠲⠦⠤⠤⠤⠤⠤⠤⠶⠿⠛⠿⠟⠓⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
-⡏⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿
-⣿⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠉⠁⠀⣿
-⣿⣧⡀⠀⠀⠀⠀⠙⠿⠿⠿⠻⠿⠿⠟⠿⠛⠉⠀⠀⠀⠀⠀⣸⣿
-⣿⣿⣷⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿
-⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣴⣿⣿⣿⣿
-⣿⣿⣿⡟⠀⠀⢰⣹⡆⠀⠀⠀⠀⠀⠀⣭⣷⠀⠀⠀⠸⣿⣿⣿⣿
-⣿⣿⣿⠃⠀⠀⠈⠉⠀⠀⠤⠄⠀⠀⠀⠉⠁⠀⠀⠀⠀⢿⣿⣿⣿
-⣿⣿⣿⢾⣿⣷⠀⠀⠀⠀⡠⠤⢄⠀⠀⠀⠠⣿⣿⣷⠀⢸⣿⣿⣿
-⣿⣿⣿⡀⠉⠀⠀⠀⠀⠀⢄⠀⢀⠀⠀⠀⠀⠉⠉⠁⠀⠀⣿⣿⣿
-⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿
-⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿
-
-⠤⠤⠤⠤⠤⠤⢤⣄⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠤⠶⠶⠶⠦⠤⠤⠤⠤⠤⢤⣤⣀⣀⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⠄⢂⣠⣭⣭⣕⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠀⠀⠀⠤⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠉⠉⠉
-⠀⠀⢀⠜⣳⣾⡿⠛⣿⣿⣿⣦⡠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣤⣤⣤⣤⣤⣤⣤⣤⣤⣍⣀⣦⠦⠄⣀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠠⣄⣽⣿⠋⠀⡰⢿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⡿⠛⠛⡿⠿⣿⣿⣿⣿⣿⣿⣷⣶⣿⣁⣂⣤⡄⠀⠀⠀⠀⠀⠀
-⢳⣶⣼⣿⠃⠀⢀⠧⠤⢜⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⠟⠁⠀⠀⠀⡇⠀⣀⡈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠁⠐⠀⣀⠀⠀
-⠀⠙⠻⣿⠀⠀⠀⠀⠀⠀⢹⣿⣿⡝⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡿⠋⠀⠀⠀⠀⠠⠃⠁⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣿⡿⠋⠀⠀
-⠀⠀⠀⠙⡄⠀⠀⠀⠀⠀⢸⣿⣿⡃⢼⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡏⠉⠉⠻⣿⡿⠋⠀⠀⠀⠀
-⠀⠀⠀⠀⢰⠀⠀⠰⡒⠊⠻⠿⠋⠐⡼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⠀⠀⠀⠀⣿⠇⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠸⣇⡀⠀⠑⢄⠀⠀⠀⡠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢖⠠⠤⠤⠔⠙⠻⠿⠋⠱⡑⢄⠀⢠⠟⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠈⠉⠒⠒⠻⠶⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠡⢀⡵⠃⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠦⣀⠀⠀⠀⠀⠀⢀⣤⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠙⠛⠓⠒⠲⠿⢍⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⠟⠻⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⠀⠀⠈⠻⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣶⣦⡀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⡇⠀⠀⠀⠀⠈⠙⢷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠾⠋⠁⢸⣿⡇⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⡇⠀⠀⠀⠀⠀⠀⠀⠙⢷⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠛⠁⠀⠀⠀⣿⣼⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡏⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠛⠁⠀⠀⠀⠀⠀⣸⡿⣿⠂⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⣿⠀⠀⠀⠀⠀⠶⠶⠶⠶⠶⠶⠿⠷⠶⠶⠤⣤⣤⣀⣀⡀⢀⣤⡾⠛⠁⠀⠀⠀⠀⠀⠀⠀⢠⣿⢣⡟⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⣽⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡷⣸⠇⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⢣⡿⠁⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣼⠃⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠇⠀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡏⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣿⣿⡾⠛⠉⣉⣽⣿⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⠶⠛⢛⣿⣿⣷⣶⣤⣀⠀⠀⠀⠀⠀⠀⢸⣿⡀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⢰⣾⠛⢉⣵⡟⣃⣤⣶⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⣠⣾⠏⣡⣴⣾⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⢈⡹⣇⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠙⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣰⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠶⠖⠲⠾⣿⣿⣦⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⣠⣴⡾⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠀⠀⠀⠀⠀⠈⠙⢿⣄⠀⠀⠀⠀
-⠀⠀⣿⡛⠉⠁⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢷⣄⠀⠀
-⠀⠀⣾⣷⣦⣀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣧⠀
-⠀⡀⠈⠻⢿⣿⣿⣷⠆⠀⠙⠻⠿⣿⣿⡿⢿⣿⠋⠀⠀⠀⣴⠇⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡆
-⠀⠻⣟⠛⠛⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠿⣿⣆⣀⣠⣼⢿⣧⠀⠀⠀⢀⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⠿⣛⠹⣮⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣷
-⠀⠀⠈⠻⢦⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⢩⠿⠻⣯⢻⣷⣶⣿⡿⠋⠀⠀⠀⠉⠉⠉⠉⠁⠀⣐⣭⣾⡿⠋⢻⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿
-⠀⠀⠀⢀⣰⣿⣻⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⡿⠛⣍⠡⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡟
-⠀⠀⠀⠛⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡿⠁
-⠀⠀⠀⢐⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠀⠀
-⠀⠀⠀⣼⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡾⠃⠀⠀⠀
-⠀⠀⠀⣸⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣶⡟⠀⠀⠀⠀⠀
-⠀⠀⣰⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠛⠀⠀⠀⠀⠀⠀
-⢠⣾⢿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⡏⠀⠀⠀⠀⠀⠀⠀
-⠀⣰⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣿⠀⠀⠀⠀⠀⠀⠀⠀
-⣾⢿⣾⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠛⠀⠀⠀⠀⠀⠀⠀⠀
-⢀⣾⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀
-
-
-
 
 *** Indents
 #+begin_src elisp
@@ -822,27 +572,22 @@ Automatically resizes windows to fit golden ratio
 (setq backward-delete-char-untabify-method 'hungry)
 #+end_src
 
-#+begin_src elisp
-(use-package
- indent-guide
- :custom (indent-guide-char "│")
- :config (add-hook 'prog-mode-hook 'indent-guide-mode))
-#+end_src
-
 *** Line numbers
 #+begin_src elisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'org-mode-hook 'display-line-numbers-mode)
-(add-hook 'compilation-mode-hook 'display-line-numbers-mode)
-(add-hook 'conf-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode 'display-line-numbers-mode)
-(dolist (mode '(pdf-view-mode-hook
-                term-mode-hook
-                eshell-mode-hook
-                vterm-mode-hook
-                imenu-list-minor-mode-hook
-                imenu-list-major-mode-hook))
+(dolist (mode
+         '(prog-mode-hook
+           org-mode-hook
+           compilation-mode-hook
+           conf-mode-hook
+           text-mode
+           fundamental-mode))
+  (add-hook mode 'display-line-numbers-mode))
+
+(dolist (mode
+         '(pdf-view-mode-hook
+           imenu-list-minor-mode-hook imenu-list-major-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode -1))))
+
 (setq-default display-line-numbers-type 'visual)
 #+end_src
 
@@ -873,7 +618,7 @@ Automatically resizes windows to fit golden ratio
 (setq-default delete-selection-mode t)
 #+end_src
 
-*** Stop wierd files creation 
+*** Stop weird files creation 
 #+begin_src elisp
 (setq create-lockfiles nil)
 (setq-default auto-save-default nil)
@@ -889,7 +634,7 @@ Automatically resizes windows to fit golden ratio
 (setq help-window-select t)
 #+end_src
 
-*** Do not truncate lines
+*** Do not wrap lines
 #+begin_src elisp
 (setq-default truncate-lines t)
 #+end_src
@@ -910,23 +655,12 @@ Automatically resizes windows to fit golden ratio
 (setq use-dialog-box nil)
 #+end_src
 
-*** Update changed files automaticaaly
-#+begin_src elisp
-(global-auto-revert-mode 1)
-#+end_src
-
-*** Regex Replace
-#+begin_src elisp
-(use-package
- visual-regexp-steroids
- :bind ("C-c r" . vr/replace) ("C-c q" . vr/replace))
-#+end_src
-
 ** Navigation
 *** Windows layout
 #+begin_src elisp
 (winner-mode +1) ;; Allows to restores layout after maximizing
 #+end_src
+
 *** Vertical split
 #+begin_src elisp
 (defun my/split-right-and-switch ()
@@ -936,10 +670,12 @@ Automatically resizes windows to fit golden ratio
 (window-divider-mode 1)
 (use-package emacs :bind ("C-x 3" . my/split-right-and-switch))
 #+end_src
+
 *** SciMotions
 #+begin_src elisp
 (require 'scimotions)
 #+end_src
+
 *** Moving between windows and buffers
 #+begin_src elisp
 (use-package
@@ -966,6 +702,7 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+begin_src elisp
 (use-package
  better-jumper
+ :diminish better-jumper-local-mode
  :init
  (better-jumper-mode +1)
  (defun my/better-jumper-advice-set (&rest r)
@@ -973,7 +710,14 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
      (better-jumper-set-jump)))
  (dolist (fn
           '(xref-find-definitions
-            find-file next-error previous-error project-find-file))
+            find-file
+            next-error
+            previous-error
+            project-find-file
+            project-switch-to-buffer
+            switch-to-buffer
+            isearch-forward
+            isearch-backward))
    (advice-add fn :before #'my/better-jumper-advice-set))
  :bind
  ("C-," . better-jumper-jump-backward)
@@ -997,6 +741,7 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
   ("C-v" . my/scroll-half-up)
   ("M-v" . my/scroll-half-down))
 #+end_src
+
 ** Motions
 *** Select inner word
 #+begin_src elisp
@@ -1006,10 +751,12 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
   (search-backward-regexp " \\|^")
   (forward-char)
   (set-mark (point))
-  (search-forward-regexp " \\|$"))
+  (search-forward-regexp " \\|$")
+  (backward-char))
 
 (use-package emacs :bind ("C-c W" . my/visual-inner-WORD))
 #+end_src
+
 *** Duplicate line
 #+begin_src elisp
 (use-package emacs :bind ("C-c d" . duplicate-line))
@@ -1067,6 +814,7 @@ The resize pertains to the maximum and minimum values"
 #+begin_src elisp
 (setq-default async-shell-command-buffer 'new-buffer)
 #+end_src
+
 ** Stop yank on ~<C-backspace>~
 #+begin_src elisp
 (defun my-delete-backward-word ()
@@ -1079,36 +827,11 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 * Helper packages
-*** Undo tree
-#+begin_src elisp
-(use-package undo-tree :ensure t)
-#+end_src
-
 *** Emoji
 #+begin_src elisp
-(use-package emojify)
-;; :hook (after-init . global-emojify-mode)
-#+end_src
-
-*** Visual fill column (center buffer)
-#+begin_src elisp
-(defun suzu/visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :disabled
-  :config
-  :hook
-  (org-mode . suzu/visual-fill)
-  (dired-mode . suzu/visual-fill)
-  (eshell-mode . suzu/visual-fill)
-  (term-mode . suzu/visual-fill)
-  (shell-mode . suzu/visual-fill)
-  (prog-mode . suzu/visual-fill)
-  (info-mode . suzu/visual-fill)
-  (text-mode . suzu/visual-fill))
+(use-package
+  emojify
+  :disabled)
 #+end_src
 
 *** Sudo edit
@@ -1161,13 +884,6 @@ The resize pertains to the maximum and minimum values"
   :vc (:url "https://github.com/Fuco1/free-keys"))
 #+end_src
 
-*** Rainbow mode
-#+begin_src elisp
-(use-package rainbow-mode
-  :hook
-  ((org-mode prog-mode) . rainbow-mode))
-#+end_src
-
 * Org
 ** Base
 *** Main setup function
@@ -1217,11 +933,12 @@ The resize pertains to the maximum and minimum values"
 #+begin_src elisp
 (use-package
  org
- :pin org
- :commands (org-capture org-agenda)
+ :diminish org-auto-tangle-mode
+ :diminish org-indent-mode
  :config (suzu/org-mode-setup)
  :hook (org-mode . suzu/org-mode-hook)
  :bind
+ (:map org-mode-map ("C-," . nil))
  ("C-c l" . org-store-link)
  ("M-n" . org-next-link)
  ("M-p" . org-previous-link)
@@ -1269,62 +986,10 @@ The resize pertains to the maximum and minimum values"
   :hook (org-mode . org-auto-tangle-mode))
 #+end_src
 
-*** Run source block hook
-Sometimes I want run some scripts on saving files
-So it'll be nice to run them automatically
-
-#+begin_src elisp
-(defun suzu/run-after-tangle-hook ()
-    (add-hook 'org-bable-tangle-finished-hook (lambda () (org-babel-ref-resolve "run-after-save"))))
-
-;; (add-hook 'org-mode-hook 'suzu/org-babel-run-after-save-hook)
-#+end_src
-
 *** Plant UML
 #+begin_src elisp
-;; (setq org-plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
-;; (setq plantuml-exec-mode 'jar)
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
-#+end_src
-
-*** Results regexp
-#+begin_src elisp
-;; (use-package
-;;  org
-;;  :config
-;;  (setq
-;;   org-babel-result-regexp
-;;   "^[     ]*#\\+results\\(?:\\[[[:digit:]]\\{4\\}\\(?:-[[:digit:]]\\{2\\}\\)\\{2\\}\\(?: [[:digit:]]\\{2\\}\\(?::[[:digit:]]\\{2\\}\\)\\{2\\}\\)?\\(?: \\([[:xdigit:]]+\\)\\)?\\]\\)?:[   ]*$"))
-#+end_src
-** Roam
-#+begin_src elisp
-(use-package org-roam
-  :disabled
-  :config
-  (org-roam-db-autosync-mode))
-#+end_src
-
-** Present
-#+begin_src elisp
-(use-package
- org-present
- :disabled
- :config
- (add-hook
-  'org-present-mode-hook
-  (lambda ()
-    (org-present-big)
-    (org-display-inline-images)
-    (org-present-hide-cursor)
-    (org-present-read-only)))
- (add-hook
-  'org-present-mode-quit-hook
-  (lambda ()
-    (org-present-small)
-    (org-remove-inline-images)
-    (org-present-show-cursor)
-    (org-present-read-write))))
 #+end_src
 
 ** Agenda
@@ -1422,15 +1087,8 @@ So it'll be nice to run them automatically
   (add-to-list 'org-structure-template-alist '("pu" . "src plantuml :file ")))
 #+end_src
 
-#+begin_src elisp
-;; (add-hook 'org-mode-hook
-;;   (lambda ()
-;;     (setq-local electric-pair-inhibit-predicate
-;;       `(lambda (c)
-;;         (if (char-equal c "<") t (electric-pair-inhibit-predicate c))))))
-#+end_src
-
 * Shells and terminals
+
 ** Shell
 Turn off duplicating lines on execution
 #+begin_src elisp
@@ -1439,63 +1097,55 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Eshell
-*** Add git to the prompt
-#+begin_src elisp
-(use-package eshell-git-prompt
-  :ensure t)
-#+end_src
 
-q*** Aliases
+*** Aliases
 #+begin_src elisp
-(setq suzu/eshell-aliases
+(setq my/eshell-aliases
       '((g  . magit)
         (gl . magit-log)
         (d  . dired)
-        (o  . find-file)  
-        (oo . find-file-other-window)))
+        (o  . find-file-other-window)))
 
 (mapc (lambda (alias)
         (defalias (car alias) (cdr alias)))
-      suzu/eshell-aliases)
+      my/eshell-aliases)
 #+end_src
 
 *** Main setup function
 #+begin_src elisp
-(defun suzu/configure-eshell ()
+(defun my/configure-eshell ()
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history))
 #+end_src
 
 *** Setup eshell
 #+begin_src elisp
-(use-package eshell
-  :hook (eshell-first-time-mode . suzu/configure-eshell)
-  :config
-  ;; (eshell-git-prompt-use-theme 'powerline)
-  (setq eshell-history-size         10000
-        eshell-buffer-maximum-lines 10000
-        eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t
-        eshell-rc-script (concat user-emacs-directory "eshell/profile")
-        eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-        eshell-destroy-buffer-when-process-dies t
-        ;; eshell-prompt-function 'suzu/eshell-prompt
-        ;; eshell-prompt-regexp suzu/eshell-prompt-regexp
-        eshell-prompt-function (lambda () "A simple prompt." "󰘧 ")
-        eshell-prompt-regexp "^󰘧 "
-        eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
-#+end_src
-
-*** Fish like prompt highlight
-#+begin_src elisp
-(use-package eshell-syntax-highlighting
-  :config
-  (eshell-syntax-highlighting-global-mode +1))
+(use-package
+ eshell
+ :hook
+ (eshell-first-time-mode . my/configure-eshell)
+ (eshell-mode . completion-preview-mode)
+ :config
+ ;; (eshell-git-prompt-use-theme 'powerline)
+ (setq
+  eshell-history-size 10000
+  eshell-buffer-maximum-lines 10000
+  eshell-hist-ignoredups t
+  eshell-scroll-to-bottom-on-input t
+  eshell-rc-script (concat user-emacs-directory "eshell/profile")
+  eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+  eshell-destroy-buffer-when-process-dies t
+  eshell-prompt-function
+  (lambda ()
+    "A simple prompt."
+    "󰘧 ")
+  eshell-prompt-regexp "^󰘧 "
+  eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
 #+end_src
 
 *** Better completions
 #+begin_src elisp
 (use-package pcmpl-args
-  :ensure t)
+  :disabled)
 #+end_src
 
 *** Run command in background
@@ -1519,53 +1169,11 @@ q*** Aliases
  eshell
  :bind
  (:map
-  eshell-mode-map ("C-r" . my/eshell-history)
+  eshell-command-mode-map
   ("C-l" .
    (lambda ()
      (interactive)
      (eshell/clear-scrollback)))))
-#+end_src
-
-** Vterm
-#+begin_src elisp
-(use-package vterm
-  :disabled
-  :config
-  (setq 
-        vterm-max-scrollback 5000)
-
-  (defun vterm-completion ()
-    (interactive)
-    (vterm-directory-sync)
-    (setq vterm-chosen-item (vterm-completion-choose-item))
-    (when (thing-at-point 'word)
-      (vterm-send-meta-backspace))
-    (vterm-send-string vterm-chosen-item))
-
-  (defun vterm-directory-sync ()
-    "Synchronize current working directory."
-    (interactive)
-    (when vterm--process
-      (let* ((pid (process-id vterm--process))
-             (dir (file-truename (format "/proc/%d/cwd/" pid))))
-        (setq default-directory dir)))))
-#+end_src
-
-** Vterm-toggle
-#+begin_src elisp
-(use-package
- vterm-toggle
- :vc (:url "https://github.com/scipunch/vterm-toggle")
- :after vterm
- :config
- (setq vterm-toggle-fullscreen-p nil)
- (setq vterm-toggle-scope 'project)
- (add-to-list
-  'display-buffer-alist
-  '("\\*vterm\\*.*"
-    (display-buffer-reuse-window display-buffer-in-side-window)
-    (reusable-frames . visible)
-    (side . top))))
 #+end_src
 
 ** Eat
@@ -1581,6 +1189,7 @@ q*** Aliases
 #+begin_src elisp
 (setq-default ispell-program-name "aspell")
 #+end_src
+
 ** PDF
 #+begin_src elisp
 (defun suzu/pdf-setup-hook ()
@@ -1661,11 +1270,6 @@ q*** Aliases
     ("https://systemcrafters.net/rss/news.xml" emacs)
     ("https://hnrss.org/frontpage" hackernews)
     ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
-
-(use-package
- elfeed-goodies
- :init (elfeed-goodies/setup)
- :config (setq elfeed-goodies/entry-pane-size 0.5))
 #+end_src
 
 ** Magit
@@ -1685,6 +1289,7 @@ Actually added some
 #+begin_src elisp
 (use-package
  git-gutter
+ :diminish git-gutter-mode
  :custom
  (git-gutter:modified-sign "~")
  (git-gutter:added-sign "+")
@@ -1718,9 +1323,7 @@ Actually added some
 *** Merge
 #+begin_src elisp
 (use-package smerge-mode
-  :ensure nil
-  :hook
-  (prog-mode . smerge-mode))
+  :diminish smerge-mode)
 #+end_src
 
 *** Ediff
@@ -1736,6 +1339,7 @@ Actually added some
 
 (add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
 #+end_src
+
 ** Project
 *** Register not only ~.git~ dirs
 #+begin_src elisp
@@ -1779,9 +1383,17 @@ Actually added some
       (project-eshell)
     (eshell)))
 
-(use-package project :bind
+(use-package project
+  :config
+  (defun my/project-switch ()
+    (interactive)
+    (let ((project-dir (project-prompt-project-dir)))
+      (setq-local project-current-directory-override project-dir)
+      (project-find-file)))
+  :bind
   ("C-x p e" . my/project-or-default-eshell)
-  ("C-x p F" . project-root-find-file))
+  ("C-x p F" . project-root-find-file)
+  ("C-x p p" . my/project-switch))
 #+end_src
 
 ** Dired
@@ -1811,6 +1423,7 @@ Actually added some
 #+begin_src elisp
 (use-package
  popper
+ :disabled
  :bind
  (("C-~" . popper-cycle)
   ("C-`" . popper-toggle)
@@ -1818,35 +1431,16 @@ Actually added some
  :init
  (setq popper-reference-buffers
        '("\\*Async Shell Command\\*" shell-mode eshell-mode eat-mode))
- (setq popper-group-function #'popper-group-by-perspective) ; group by perspective
+ (setq popper-group-function #'popper-group-by-project) ; group by perspective
  (popper-mode +1)
  (popper-echo-mode +1)) ; For echo area hints
 #+end_src
 
-** Screenshot
-#+begin_src elisp
-(require 'screenshot)
-#+end_src
 ** GraphQL
 #+begin_src elisp
 (use-package graphql-mode)
 (use-package graphql)
 (use-package request)
-#+end_src
-
-** Emacs application framework
-#+begin_src elisp
-(use-package eaf
-  :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
-  :custom
-  ; See https://github.com/emacs-eaf/emacs-application-framework/wiki/Customization
-  (eaf-browser-continue-where-left-off t)
-  (eaf-browser-enable-adblocker t)
-  (browse-url-browser-function 'eaf-open-browser))
-
-(use-package eaf-browser
-  :after eaf
-  :load-path "~/.emacs.d/site-lisp/eaf-browser")
 #+end_src
 
 * Final
