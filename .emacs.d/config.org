@@ -51,7 +51,7 @@
 
 ** Profiling
 #+begin_src elisp
-(setq use-package-compute-statistics nil)
+(setq use-package-compute-statistics t)
 
 (defun my/display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."
@@ -121,10 +121,6 @@
 *** Rust
 #+begin_src elisp
 (use-package rust-mode)
-
-(use-package
- rust-docs
- :vc (:url "https://github.com/scipunch/rust-docs"))
 #+end_src
 
 *** Python
@@ -143,18 +139,6 @@
 #+end_src
 
 *** SQL
-Format
-
-#+begin_src elisp
-(use-package
- sqlformat
- :config
- (setq sqlformat-command 'pgformatter)
- (setq sqlformat-args '("-s2" "-g"))
- :hook (sql-mode . sqlformat-on-save-mode)
- :bind (:map sql-mode-map ("C-c C-f" . sqlformat-buffer)))
-#+end_src
-
 Literate SQL programming
 
 #+begin_src elisp
@@ -216,8 +200,6 @@ Generate table of contents
  compile-eslint
  :vc (:url "https://github.com/Fuco1/compile-eslint")
  :config (push 'eslint compilation-error-regexp-alist))
-
-(use-package prettier-js :ensure t)
 
 (use-package
  js
@@ -555,13 +537,11 @@ Automatically resizes windows to fit golden ratio
   (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
 #+end_src
 
-*** Better vertico search something
+*** Flatten imenu
 #+begin_src elisp
-(use-package consult
-  :bind
-   ("M-i" . consult-imenu)
-   ("C-c i"  . consult-line)
-   ("C-c e"  . consult-ripgrep))
+(use-package flimenu
+  :config
+  (flimenu-global-mode))
 #+end_src
 
 *** Indents
@@ -606,11 +586,6 @@ Automatically resizes windows to fit golden ratio
 (menu-bar-mode -1)           ;; Disable the menu bar
 (scroll-bar-mode -1)         ;; Disable the scroll bar
 (tool-bar-mode -1)           ;; Disable the tool bar
-#+end_src
-
-*** Pulse current line
-#+begin_src elisp
-(use-package pulsar :bind ("C-x l" . pulsar-pulse-line-cyan))
 #+end_src
 
 *** Delete on paste
@@ -1142,6 +1117,7 @@ Turn off duplicating lines on execution
   eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
 #+end_src
 
+
 *** Better completions
 #+begin_src elisp
 (use-package pcmpl-args
@@ -1230,13 +1206,6 @@ Turn off duplicating lines on execution
  :config (setq gptel-log-level 'info)
  :config (setq gptel-default-mode 'org-mode)
  :bind ("C-c g" . gptel-menu))
-
-(use-package
- elysium
- :custom
- (elysium-window-size 0.33)
- (elysium-window-style 'vertical)
- :bind ("C-c p" . elysium-query))
 #+end_src
 
 ** Elfeed
@@ -1400,40 +1369,15 @@ Actually added some
 *** Base
 #+begin_src elisp
 (use-package dired-open
-  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :custom ((dired-listing-switches "-agho --group-directories-first")
+           (dired-kill-when-opening-new-dired-buffer t))
   :config
-  ;; (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
-  ;;  (EVIL-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file)
   (setq dired-open-extensions '(("gif" . "feh")
                                 ("jpg" . "feh")
                                 ("jpeg" . "feh")
                                 ("png" . "feh")
                                 ("mkv" . "mpv")
                                 ("mp4" . "mpv"))))
-
-(use-package peep-dired
-  :after dired
-  :hook (evil-normalize-keymaps . peep-dired-hook))
-
-(setf dired-kill-when-opening-new-dired-buffer t)
-(setq-default dired-listing-switches "-aBhl  --group-directories-first")
-#+end_src
-
-** Popper
-#+begin_src elisp
-(use-package
- popper
- :disabled
- :bind
- (("C-~" . popper-cycle)
-  ("C-`" . popper-toggle)
-  ("C-M-`" . popper-toggle-type))
- :init
- (setq popper-reference-buffers
-       '("\\*Async Shell Command\\*" shell-mode eshell-mode eat-mode))
- (setq popper-group-function #'popper-group-by-project) ; group by perspective
- (popper-mode +1)
- (popper-echo-mode +1)) ; For echo area hints
 #+end_src
 
 ** GraphQL
