@@ -31,7 +31,7 @@ settings:
   content.notifications.enabled:
     https://www.youtube.com: false
   downloads.location.directory:
-    global: /home/suzumenobu/Downloads
+    global: /home/user/Downloads
   statusbar.position:
     global: top
   statusbar.show:

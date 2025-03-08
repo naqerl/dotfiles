@@ -65,6 +65,7 @@
 #+begin_src elisp
 (use-package all-the-icons)
 (use-package all-the-icons-dired
+  :diminish all-the-icons-dired-mode
   :after all-the-icons
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 #+end_src
@@ -369,7 +370,7 @@ Install package for loading ~.env~ & setup hooks
 * UI\UX
 ** Theme
 #+begin_src elisp
-(require 'koi-theme)
+;; (require 'koi-theme)
 #+end_src
 
 #+begin_src elisp
@@ -386,8 +387,15 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 *** Current
+
 #+begin_src elisp
-(load-theme 'koi :no-confirm)
+(use-package
+ solarized-theme
+ :custom
+ (solarized-high-contrast-mode-line t)
+ (solarized-use-variable-pitch nil)
+ :config
+ (load-theme 'solarized-dark :no-confirm))
 #+end_src
 
 *** Splash screen
@@ -777,14 +785,6 @@ The resize pertains to the maximum and minimum values"
     (body-function . my-window-select-fit-size)))
 #+end_src
 
-*** Shell and Emacs shell
-#+begin_src elisp
-(add-to-list
- 'display-buffer-alist
- '("\\*\\([a-z-]+\\)?shell\\*" (display-buffer-reuse-mode-window
-    display-buffer-below-selected)))
-#+end_src
-
 ** Async shell command
 #+begin_src elisp
 (setq-default async-shell-command-buffer 'new-buffer)
@@ -841,16 +841,16 @@ The resize pertains to the maximum and minimum values"
   (interactive)
   (message
    (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
-
-(use-package emacs :bind ("M-t" . my/display-current-time))
 #+end_src
 
 *** Auth source
 #+begin_src elisp
 (use-package auth-source
+  :custom
+  (auth-sources '("~/.authinfo.gpg"))
+  (auth-source-debug 'trivia)
   :config
-  (auth-source-pass-enable)
-  (setq auth-source-debug 'trivia))
+  (auth-source-pass-enable))
 #+end_src
 
 *** Free keys
@@ -875,29 +875,12 @@ The resize pertains to the maximum and minimum values"
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 #+end_src
 
-*** Prettify symbols
-#+begin_src elisp
-(defun suzu/org-icons ()
-  "Beautify org mode keywords."
-  (setq prettify-symbols-alist
-        '(("[ ]" . "☐")
-          ("[X]" . "☑")
-          ("[-]" . "❍")
-          ("#+begin_src" . "")
-          ("#+end_src" . "")
-          ("#+title: " . "")
-          ("#+author:" . "")
-          ("#+description:" . "󰦨")))
-  (prettify-symbols-mode))
-#+end_src
-
 *** Custom hook
 #+begin_src elisp
 (defun suzu/org-mode-hook ()
   (require 'suzu-org-indent)
   (setq org-indent-mode-turns-on-hiding-stars nil)
   (org-indent-mode)
-  (suzu/org-icons)
   (set-face-attribute 'org-level-1 nil :height 1.5)
   (set-face-attribute 'org-level-2 nil :height 1.35)
   (set-face-attribute 'org-level-2 nil :height 1.2)
@@ -1065,7 +1048,9 @@ The resize pertains to the maximum and minimum values"
 * Shells and terminals
 
 ** Shell
+
 Turn off duplicating lines on execution
+
 #+begin_src elisp
 (setq comint-input-ignoredups t)
 (setq shell-file-name "bash")
@@ -1074,6 +1059,7 @@ Turn off duplicating lines on execution
 ** Eshell
 
 *** Aliases
+
 #+begin_src elisp
 (setq my/eshell-aliases
       '((g  . magit)
@@ -1086,45 +1072,33 @@ Turn off duplicating lines on execution
       my/eshell-aliases)
 #+end_src
 
-*** Main setup function
-#+begin_src elisp
-(defun my/configure-eshell ()
-  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history))
-#+end_src
-
 *** Setup eshell
+
 #+begin_src elisp
 (use-package
  eshell
  :hook
- (eshell-first-time-mode . my/configure-eshell)
  (eshell-mode . completion-preview-mode)
+ (eshell-pre-command-hook . eshell-save-some-history)
+ :bind
+ (:map
+  eshell-command-mode-map
+  ("C-l" .
+   (lambda ()
+     (interactive)
+     (eshell/clear-scrollback))))
  :config
- ;; (eshell-git-prompt-use-theme 'powerline)
  (setq
   eshell-history-size 10000
   eshell-buffer-maximum-lines 10000
   eshell-hist-ignoredups t
   eshell-scroll-to-bottom-on-input t
   eshell-rc-script (concat user-emacs-directory "eshell/profile")
-  eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-  eshell-destroy-buffer-when-process-dies t
-  eshell-prompt-function
-  (lambda ()
-    "A simple prompt."
-    "󰘧 ")
-  eshell-prompt-regexp "^󰘧 "
-  eshell-visual-commands '("bash" "fish" "htop" "ssh" "top" "zsh")))
-#+end_src
-
-
-*** Better completions
-#+begin_src elisp
-(use-package pcmpl-args
-  :disabled)
+  eshell-visual-commands '("bash" "btop" "ssh" "psql")))
 #+end_src
 
 *** Run command in background
+
 #+begin_src elisp
 (defun eshell/asc (cmd)
   "Runs `cmd` in async bash shell"
@@ -1140,21 +1114,13 @@ Turn off duplicating lines on execution
    (completing-read
     "Eshell history: "
     (delete-dups (ring-elements eshell-history-ring)))))
-
-(use-package
- eshell
- :bind
- (:map
-  eshell-command-mode-map
-  ("C-l" .
-   (lambda ()
-     (interactive)
-     (eshell/clear-scrollback)))))
 #+end_src
 
 ** Eat
 #+begin_src elisp
 (use-package eat
+  :diminish
+  eat-eshell-mode
   :config
   (add-hook 'eshell-mode-hook #'eat-eshell-mode)
   (add-hook 'eshell-mode-hook #'eat-eshell-visual-command-mode))
@@ -1202,9 +1168,16 @@ Turn off duplicating lines on execution
 #+begin_src elisp
 (use-package
  gptel
- :ensure t
- :config (setq gptel-log-level 'info)
- :config (setq gptel-default-mode 'org-mode)
+ :config
+ (setq
+  gptel-log-level 'info
+  gptel-default-mode 'org-mode
+  gptel-model 'gemini-2.0-flash
+  gptel-backend
+  (gptel-make-gemini
+   "Gemini"
+   :key 'gptel-api-key-from-auth-source
+   :stream t))
  :bind ("C-c g" . gptel-menu))
 #+end_src
 
@@ -1264,12 +1237,12 @@ Actually added some
  (git-gutter:added-sign "+")
  (git-gutter:deleted-sign "-")
  :config
- (set-face-foreground
-  'git-gutter:modified (plist-get koi-theme-colors :yellow))
- (set-face-foreground
-  'git-gutter:added (plist-get koi-theme-colors :green))
- (set-face-foreground
-  'git-gutter:deleted (plist-get koi-theme-colors :red))
+ ;; (set-face-foreground
+ ;;  'git-gutter:modified (plist-get koi-theme-colors :yellow))
+ ;; (set-face-foreground
+ ;;  'git-gutter:added (plist-get koi-theme-colors :green))
+ ;; (set-face-foreground
+ ;;  'git-gutter:deleted (plist-get koi-theme-colors :red))
  (defun my/stage-hunk ()
    "Wrapper around git-gutter:stage-hunk but without confirm requirement"
    (interactive)
@@ -1353,6 +1326,8 @@ Actually added some
     (eshell)))
 
 (use-package project
+  :custom
+  (project-mode-line t)
   :config
   (defun my/project-switch ()
     (interactive)
@@ -1385,6 +1360,17 @@ Actually added some
 (use-package graphql-mode)
 (use-package graphql)
 (use-package request)
+#+end_src
+
+** Emacs Application Framework (EAF)
+#+begin_src elisp
+(use-package eaf
+  :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
+  :custom
+  (eaf-browser-enable-adblocker t)
+  (browse-url-browser-function 'eaf-open-browser)
+  :config
+  (defalias 'browse-web #'eaf-open-browser))
 #+end_src
 
 * Final

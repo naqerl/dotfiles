@@ -158,3 +158,6 @@ catppuccin.setup(c, "modus-vivendi", True)
 config.bind("M", "hint links spawn mpv {hint-url}")
 # config.set("auto_save.session", True)
 # config.set("colors.webpage.preferred_color_scheme", "dark")
+
+config.source("qutemacs.py")
+config.source("base16-solarized-dark.config.py")

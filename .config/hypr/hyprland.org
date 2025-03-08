@@ -16,6 +16,7 @@
   - [[#start-apps][Start apps]]
   - [[#idle-daemon][Idle daemon]]
   - [[#pipewire][Pipewire]]
+  - [[#emacs-1][Emacs]]
 - [[#input][Input]]
 - [[#xwayland][Xwayland]]
 - [[#general][General]]
@@ -72,6 +73,7 @@ $mainShiftMod = SUPER SHIFT
 ** Emacs
 #+begin_src conf
 $emacs = $HOME/.local/bin/emacs
+$emacsclient = $HOME/.local/bin/emacsclient -c -a ""
 $terminal = foot
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
@@ -108,8 +110,8 @@ exec-once = hyprland-per-window-layout
 
 ** Start apps
 #+begin_src conf
-exec-once = [workspace 1 silent] $emacs
-exec-once = [workspace 2 silent] chromium --enable-features=TouchpadOverscrollHistoryNavigation --profile-directory=Default --restore-last-session
+exec-once = [workspace 1 silent] $emacsclient
+exec-once = [workspace 2 silent] qutebrowser
 exec-once = [workspace 5 silent] telegram-desktop
 exec-once = [workspace 6 silent] $terminal btop
 #+end_src
@@ -122,6 +124,11 @@ exec-once = wl-idle --time 5 --file /tmp/idle
 ** Pipewire
 #+begin_src conf
 exec-once = pipewire
+#+end_src
+
+** Emacs
+#+begin_src conf
+exec-once = $emacs --daemon
 #+end_src
 * Input
 #+begin_src conf
@@ -286,7 +293,6 @@ bind = $mainShiftMod, Q, exec, hyprctl dispatch exit
 ** App launchers
 #+begin_src conf
 bind = $mainMod, T, exec, $terminal
-
 bind = $mainMod, B, exec, [float; size 30% 30%; center] $HOME/.config/bin/choose-google-profile
 bind = $mainMod, SPACE, exec, [float; size 30% 30%; center] $HOME/.config/bin/run-desktop
 bind = $mainShiftMod, P, exec,notify-send "Picking color" &&  wl-color-picker clipboard && notify-send "Color copied to clipboard"
@@ -297,7 +303,7 @@ bind = $mainMod, M, exec, [float; size 40% 40%] kitty pulsemixer
 
 *** Emacs
 #+begin_src conf
-bind = $mainMod, E, exec, $HOME/.local/bin/emacs
+bind = $mainMod, E, exec, $emacsclient
 #+end_src
 
 ** Workspaces
@@ -340,6 +346,13 @@ bind = $mainShiftMod, C, exec, hyprctl dispatch movetoworkspace $($HOME/.config/
 #+end_src
 
 ** Windows
+*** Tab group
+#+begin_src conf
+bind = $mainMod, g, togglegroup
+bind = $mainMod, TAB, changegroupactive, f
+bind = $mainShiftMod, TAB, changegroupactive, b
+#+end_src
+
 *** Navigate
 #+begin_src conf
 bind = $mainMod, h, movefocus, l
