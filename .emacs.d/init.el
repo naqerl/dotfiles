@@ -22,11 +22,18 @@
                               git-gutter golden-ratio graphql
                               graphql-mode helpful load-env-vars magit
                               make-project marginalia markdown-toc
-                              orderless org-auto-tangle peep-dired
-                              plantuml-mode prettier-js pulsar request
-                              rust-docs rust-mode solarized-theme
-                              sqlformat sudo-edit toc-org vertico
-                              web-mode yasnippet yuck-mode))
+                              orderless org-auto-tangle org-tempo
+                              peep-dired plantuml-mode prettier-js
+                              pulsar request rust-docs rust-mode
+                              solarized-theme sqlformat sudo-edit
+                              toc-org vertico web-mode yasnippet
+                              yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")))
  '(warning-suppress-types '((comp))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

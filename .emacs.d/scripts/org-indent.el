@@ -434,5 +434,5 @@ This function is meant to be called by `after-change-functions'."
 ;; generated-autoload-file: "org-loaddefs.el"
 ;; End:
 
-(provide 'suzu-org-indent)
-;;; suzu-org-indent.el ends here
+(provide 'org-indent)
+;;; org-indent.el ends here

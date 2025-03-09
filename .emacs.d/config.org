@@ -13,6 +13,7 @@
 * Important things to load first
 
 ** Path
+
 #+begin_src elisp
 (add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
@@ -20,6 +21,7 @@
 #+end_src
 
 ** Native compile
+
 #+begin_src elisp
 (setq native-comp-speed 2) ;; maximum native Elisp speed!
 (native-compile-async "~/.emacs.d" 'recursively)
@@ -27,16 +29,14 @@
 #+end_src
 
 ** Loading scripts
+
 #+begin_src elisp
-(dolist (path '("~/.emacs.d/scripts" "~/dotfiles/.emacs.d/themes"))
-  (add-to-list 'load-path (expand-file-name path)))
+(add-to-list 'load-path (expand-file-name "scripts/" user-emacs-directory))
 (require 'package-manager)
-(require 'project-ext)
-(require 'my-extensions)
-(require 'ssh)
 #+end_src
 
 ** Upgrade GC
+
 #+begin_src elisp
 (use-package gcmh
   :diminish gcmh-mode
@@ -45,23 +45,19 @@
 #+end_src
 
 ** Debug on error
+
 #+begin_src elisp
 (setq-default debug-on-error nil)
 #+end_src
 
 ** Profiling
+
 #+begin_src elisp
-(setq use-package-compute-statistics t)
-
-(defun my/display-startup-time ()
-  (message "Emacs loaded in %s with %d garbage collections."
-           (emacs-init-time)
-           gcs-done))
-
-(add-hook 'emacs-startup-hook #'my/display-startup-time)
+(setq use-package-compute-statistics nil)
 #+end_src
 
 *** All the icons
+
 #+begin_src elisp
 (use-package all-the-icons)
 (use-package all-the-icons-dired
@@ -71,6 +67,7 @@
 #+end_src
 
 *** Diminish
+
 #+begin_src elisp
 (use-package diminish)
 #+end_src
@@ -80,6 +77,7 @@
 ** Common
 
 *** Dumb jump
+
 #+begin_src elisp
 (use-package dumb-jump
   :config
@@ -87,12 +85,14 @@
 #+end_src
 
 *** Eldoc
+
 #+begin_src elisp
 (use-package eldoc
   :diminish eldoc-mode)
 #+end_src
 
 *** Treesitter
+
 #+begin_src elisp
 (setq treesit-language-source-alist
       '((rust "https://github.com/tree-sitter/tree-sitter-rust")
@@ -111,62 +111,82 @@
 #+end_src
 
 *** Toggle comments
+
 #+begin_src elisp
 (use-package emacs
   :bind
   ("C-x /" . comment-or-uncomment-region))
 #+end_src
 
+*** Auto SSH connections
+
+#+begin_src elisp
+(use-package ssh
+  :load-path (lambda () (expand-file-name "scripts/ssh.el" user-emacs-directory)))
+#+end_src
+
 ** Languages
 
 *** Rust
+
 #+begin_src elisp
 (use-package rust-mode)
 #+end_src
 
 *** Python
+
 #+begin_src elisp
 (use-package
  python
- :bind (:map python-mode-map ("C-x t r" . python-tests-run))
  :config
- (require 'python-tests)
  (setq-default python-indent-def-block-scale 1))
+
+(use-package python-tests
+  :load-path (lambda () (expand-file-name "scripts/python-tests.el" user-emacs-directory))
+  :after python
+  :bind (:map python-mode-map ("C-x t r" . python-tests-run)))
 #+end_src
 
 *** Yuck
+
 #+begin_src elisp
 (use-package yuck-mode)
 #+end_src
 
 *** SQL
+
 Literate SQL programming
 
 #+begin_src elisp
 (use-package async)
-(require 'ob-async-sql)
+(use-package ob-async-sql
+  :load-path (lambda () (expand-file-name "scripts/ob-async-sql.el" user-emacs-directory))
+  :after async)
 #+end_src
 
 *** Markdown
+
 Required for better LSP docs rendering
+
 #+begin_src elisp
-(use-package markdown-mode
-  :ensure t)
+(use-package markdown-mode)
 #+end_src
 
 Generate table of contents
+
 #+begin_src elisp
 (use-package markdown-toc
-  :ensure t)
+  :after markdown-mode)
 #+end_src
 
 *** CSV
+
 #+begin_src elisp
-(use-package csv-mode
-  :ensure t)
+(use-package csv-mode)
 #+end_src
 
 *** Javascript
+
 #+begin_src elisp
 (setq-default js-indent-level 2)
 
@@ -209,6 +229,7 @@ Generate table of contents
 #+end_src
 
 *** Emacs Lisp
+
 #+begin_src elisp
 (defun my/eval-buffer-and-print ()
   (interactive)
@@ -228,22 +249,26 @@ Generate table of contents
   (setq elisp-flymake-byte-compile-load-path load-path))
 #+end_src
 
-*** Tex 
+*** Tex
+
 #+begin_src elisp
 (use-package tex-mode)
 #+end_src
 
 *** CSS
+
 #+begin_src elisp
 (use-package css-mode)
 #+end_src
 
 *** Docker
+
 #+begin_src elisp
 (use-package dockerfile-mode)
 #+end_src
 
 *** Plant UML
+
 #+begin_src elisp
 (use-package
  plantuml-mode
@@ -258,7 +283,9 @@ Generate table of contents
 #+end_src
 
 ** Working with ~.env~ files
+
 Install package for loading ~.env~ & setup hooks
+
 #+begin_src elisp
 (use-package load-env-vars
   :hook
@@ -266,7 +293,9 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 ** Compilation
+
 *** Ansi colors
+
 #+begin_src elisp
 (use-package
  ansi-color
@@ -278,6 +307,7 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 *** Unified list jumps
+
 #+begin_src elisp
 (defvar my/global-compilation-buffer-names-list nil
   "List of names of each compilation buffer")
@@ -313,16 +343,19 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 *** Increase line length to hide
+
 #+begin_src elisp
 (setq-default compilation-max-output-line-length 5000)
 #+end_src
 
 *** Follow compilation
+
 #+begin_src elisp
 (setq compilation-scroll-output t)
 #+end_src
 
 *** Binds
+
 #+begin_src elisp
 (use-package
  emacs
@@ -336,6 +369,7 @@ Install package for loading ~.env~ & setup hooks
 ** Snippets
 
 *** Yasnippet
+
 #+begin_src elisp
 (use-package
  yasnippet
@@ -346,6 +380,7 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 *** Region search
+
 #+begin_src elisp
 (defun my/occur-regions ()
   (interactive)
@@ -357,6 +392,7 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 ** Flymake
+
 #+begin_src elisp
 (defun my/show-buffer-diagnostics ()
   (interactive)
@@ -368,7 +404,9 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 * UI\UX
+
 ** Theme
+
 #+begin_src elisp
 ;; (require 'koi-theme)
 #+end_src
@@ -399,6 +437,7 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 *** Splash screen
+
 #+begin_src elisp
 (setq-default inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
@@ -407,12 +446,15 @@ Install package for loading ~.env~ & setup hooks
 #+end_src
 
 *** Line numbers width
+
 #+begin_src elisp
 (setq-default display-line-numbers-width 3)
 #+end_src
 
 *** Golden ratio
+
 Automatically resizes windows to fit golden ratio
+
 #+begin_src elisp
 (use-package
  golden-ratio
@@ -453,16 +495,19 @@ Automatically resizes windows to fit golden ratio
 ** Essential small tweaks
 
 *** Cursor
+
 #+begin_src elisp
 (blink-cursor-mode t)
 #+end_src
 
 *** No backups (or `~` files)
+
 #+begin_src elisp
 (setq make-backup-files nil)
 #+end_src
 
 *** Zoom in & out
+
 #+begin_src elisp
 (use-package
  emacs
@@ -470,12 +515,15 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** System clipboard to kill ring integration
+
 #+begin_src elisp
 (setq save-interprogram-paste-before-kill t)
 #+end_src
 
 ** Completion
+
 *** Dabbrev
+
 #+begin_src elisp
 (use-package
  dabbrev
@@ -488,6 +536,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Orderless
+
 #+begin_src elisp
 (use-package orderless
   :init
@@ -497,6 +546,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Default completion system
+
 #+begin_src elisp
 (use-package
  completion
@@ -515,6 +565,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Vertico
+
 #+begin_src elisp
 (use-package vertico
   :custom
@@ -526,6 +577,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Add annotations to completion
+
 #+begin_src elisp
 (use-package marginalia
   :custom
@@ -536,6 +588,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Add icons
+
 #+begin_src elisp
 (use-package all-the-icons-completion
   :after (marginalia all-the-icons)
@@ -590,6 +643,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** UI tweaks
+
 #+begin_src elisp
 (menu-bar-mode -1)           ;; Disable the menu bar
 (scroll-bar-mode -1)         ;; Disable the scroll bar
@@ -597,54 +651,65 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Delete on paste
+
 #+begin_src elisp
 (setq-default delete-selection-mode t)
 #+end_src
 
-*** Stop weird files creation 
+*** Stop weird files creation
+
 #+begin_src elisp
 (setq create-lockfiles nil)
 (setq-default auto-save-default nil)
 #+end_src
 
-*** Automatically update buffer contents 
+*** Automatically update buffer contents
+
 #+begin_src elisp
 (global-auto-revert-mode t)
 #+end_src
 
 *** Automatically select help frame
+
 #+begin_src elisp
 (setq help-window-select t)
 #+end_src
 
 *** Do not wrap lines
+
 #+begin_src elisp
 (setq-default truncate-lines t)
 #+end_src
 
 *** Remember command history
+
 #+begin_src elisp
 (setq-default history-length 25)
 (savehist-mode 1)
 #+end_src
 
 *** Remember last location in files
+
 #+begin_src elisp
 (save-place-mode 1)
 #+end_src
 
 *** Do not use dialogue box
+
 #+begin_src elisp
 (setq use-dialog-box nil)
 #+end_src
 
 ** Navigation
+
 *** Windows layout
+
 #+begin_src elisp
 (winner-mode +1) ;; Allows to restores layout after maximizing
 #+end_src
 
 *** Vertical split
+
 #+begin_src elisp
 (defun my/split-right-and-switch ()
   (interactive)
@@ -655,11 +720,14 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** SciMotions
+
 #+begin_src elisp
-(require 'scimotions)
+(use-package scimotions
+  :load-path (lambda () (expand-file-name "scripts/scimotions.el" user-emacs-directory)))
 #+end_src
 
 *** Moving between windows and buffers
+
 #+begin_src elisp
 (use-package
  buffer-move
@@ -681,6 +749,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 *** Better jumper
+
 TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+begin_src elisp
 (use-package
@@ -708,6 +777,7 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+end_src
 
 *** Scroll
+
 #+begin_src elisp
 (defun my/scroll-half-down ()
   "Scroll down half a window."
@@ -726,7 +796,9 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+end_src
 
 ** Motions
+
 *** Select inner word
+
 #+begin_src elisp
 (defun my/visual-inner-WORD ()
   "Select the inner word at point."
@@ -741,12 +813,15 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+end_src
 
 *** Duplicate line
+
 #+begin_src elisp
 (use-package emacs :bind ("C-c d" . duplicate-line))
 #+end_src
 
 ** Display buffer alist
+
 *** Helpers
+
 #+begin_src elisp
 (defun my-window-select-fit-size (window)
   "Select WINDOW and resize it.
@@ -757,6 +832,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Occur
+
 #+begin_src elisp
 (add-to-list
   'display-buffer-alist
@@ -767,6 +843,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Xref
+
 #+begin_src elisp
 (add-to-list
   'display-buffer-alist
@@ -777,6 +854,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Async shell command
+
 #+begin_src elisp
 (add-to-list
   'display-buffer-alist
@@ -786,11 +864,13 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 ** Async shell command
+
 #+begin_src elisp
 (setq-default async-shell-command-buffer 'new-buffer)
 #+end_src
 
 ** Stop yank on ~<C-backspace>~
+
 #+begin_src elisp
 (defun my-delete-backward-word ()
   (interactive "*")
@@ -802,7 +882,9 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 * Helper packages
+
 *** Emoji
+
 #+begin_src elisp
 (use-package
   emojify
@@ -810,6 +892,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Sudo edit
+
 #+begin_src elisp
 (use-package
  sudo-edit
@@ -824,6 +907,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Helpful
+
 #+begin_src elisp
 (use-package helpful
   :commands (helpful-callable helpful-variable helpful-command helpful-key)
@@ -835,6 +919,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Show current datetime
+
 #+begin_src elisp
 (defun my/display-current-time ()
   "Display the current time in the minibuffer."
@@ -844,6 +929,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Auth source
+
 #+begin_src elisp
 (use-package auth-source
   :custom
@@ -854,16 +940,21 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Free keys
+
 #+begin_src elisp
 (use-package free-keys
   :vc (:url "https://github.com/Fuco1/free-keys"))
 #+end_src
 
 * Org
+
 ** Base
+
 *** Main setup function
+
 #+begin_src elisp
-(defun suzu/org-mode-setup ()
+(defun my/org-mode-setup ()
+  (require 'org-tempo)
   (setq org-ellipsis " ▾")
   (setq org-return-follows-link t)
   (setq org-edit-src-content-indentetion 0)
@@ -875,10 +966,17 @@ The resize pertains to the maximum and minimum values"
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 #+end_src
 
-*** Custom hook
+*** Indents
+
 #+begin_src elisp
-(defun suzu/org-mode-hook ()
-  (require 'suzu-org-indent)
+(use-package org-indent
+  :load-path (lambda () (expand-file-name "scripts/org-indent.el" user-emacs-directory)))
+#+end_src
+
+*** Custom hook
+
+#+begin_src elisp
+(defun my/org-mode-hook ()
   (setq org-indent-mode-turns-on-hiding-stars nil)
   (org-indent-mode)
   (set-face-attribute 'org-level-1 nil :height 1.5)
@@ -888,13 +986,14 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Actual setup
+
 #+begin_src elisp
 (use-package
  org
  :diminish org-auto-tangle-mode
  :diminish org-indent-mode
- :config (suzu/org-mode-setup)
- :hook (org-mode . suzu/org-mode-hook)
+ :config (my/org-mode-setup)
+ :hook (org-mode . my/org-mode-hook)
  :bind
  (:map org-mode-map ("C-," . nil))
  ("C-c l" . org-store-link)
@@ -905,12 +1004,14 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Tags
+
 #+begin_src elisp
 (setq org-tag-alist
       '(("project") ("idea") ("post") ("feature") ("improve") ("bug") ("mvp") ("backlog") ("noexport")))
 #+end_src
 
 ** Table of contents
+
 #+begin_src elisp
 (use-package toc-org
   :commands toc-org-enable
@@ -918,7 +1019,9 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 ** Babel
+
 *** Base
+
 #+begin_src elisp
 (setq org-confirm-babel-evaluate nil)
 
@@ -939,19 +1042,23 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Auto tangle
+
 #+begin_src elisp
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))
 #+end_src
 
 *** Plant UML
+
 #+begin_src elisp
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 #+end_src
 
 ** Agenda
+
 *** Base
+
 #+begin_src elisp
 (setq org-directory (expand-file-name "~/notes/org"))
 (setq org-agenda-files (directory-files-recursively "~/notes/org/" "\\.org$"))
@@ -961,6 +1068,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Custom todo states
+
 #+begin_src elisp
 (setq org-todo-keywords
   '((sequence "TODO(t)" "|" "DONE(d!)")
@@ -969,6 +1077,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 *** Custom view
+
 #+begin_src elisp
 (setq org-agenda-custom-commands
   '(("d" "Dashboard"
@@ -1020,6 +1129,7 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 ** Templates
+
 #+begin_src elisp
 (setq org-capture-templates
   '(    ;; ... other templates
@@ -1034,15 +1144,18 @@ The resize pertains to the maximum and minimum values"
 #+end_src
 
 ** Source code block tag expansion
+
 #+begin_src elisp
-(with-eval-after-load 'org
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src elisp"))
-  (add-to-list 'org-structure-template-alist '("sq" . "src sql"))
-  (add-to-list 'org-structure-template-alist '("sqt" . "src sql :var table=table-name"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("pu" . "src plantuml :file ")))
+(use-package org
+ :config
+ (dolist (setup
+          '(("sh" . "src shell")
+            ("el" . "src elisp")
+            ("sq" . "src sql")
+            ("sqt" . "src sql :var table=table-name")
+            ("py" . "src python")
+            ("pu" . "src plantuml :file ")))
+   (add-to-list 'org-structure-template-alist setup)))
 #+end_src
 
 * Shells and terminals
@@ -1107,6 +1220,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 *** History search
+
 #+begin_src elisp
 (defun my/eshell-history ()
   (interactive)
@@ -1117,6 +1231,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Eat
+
 #+begin_src elisp
 (use-package eat
   :diminish
@@ -1127,34 +1242,15 @@ Turn off duplicating lines on execution
 #+end_src
 
 * Tools
+
 ** Ispell
+
 #+begin_src elisp
 (setq-default ispell-program-name "aspell")
 #+end_src
 
-** PDF
-#+begin_src elisp
-(defun suzu/pdf-setup-hook ()
-  (setq blink-cursor-mode nil))
-
-(use-package pdf-tools
-  :disabled
-  :config
-  (pdf-tools-install)
-  (add-hook 'pdf-view-mode-hook 'suzu/pdf-setup-hook))
-#+end_src
-
-#+begin_src elisp
-(defun suzu/find-pdf-file ()
-  (interactive)
-  (let* ((places '("~/Downloads" "~/Documents/books"))
-         (files-from-places (mapcar (lambda (place) (directory-files place t "\\.pdf$")) places))
-         (files (my/flatten-list files-from-places))
-         (file (completing-read "Choose PDF file: " files)))
-    (find-file file)))
-#+end_src
-
 ** Tramp
+
 #+begin_src elisp
 (setq remote-file-name-inhibit-cache nil)
 (setq vc-ignore-dir-regexp
@@ -1165,6 +1261,7 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** GPTel
+
 #+begin_src elisp
 (use-package
  gptel
@@ -1215,19 +1312,22 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Magit
+
 *** Magit
+
 #+begin_src elisp
 (use-package
  magit
- :config (setq magit-status-buffer-switch-function 'switch-to-buffer)
- (setq magit-display-buffer-function
-       'magit-display-buffer-same-window-except-diff-v1)
+ :custom (magit-status-buffer-switch-function 'switch-to-buffer)
+ (magit-display-buffer-function
+  'magit-display-buffer-same-window-except-diff-v1)
  :bind ("C-x g o" . magit) ("C-x g c" . magit-commit))
 #+end_src
 
 Actually added some
 
 *** Gutter
+
 #+begin_src elisp
 (use-package
  git-gutter
@@ -1237,12 +1337,6 @@ Actually added some
  (git-gutter:added-sign "+")
  (git-gutter:deleted-sign "-")
  :config
- ;; (set-face-foreground
- ;;  'git-gutter:modified (plist-get koi-theme-colors :yellow))
- ;; (set-face-foreground
- ;;  'git-gutter:added (plist-get koi-theme-colors :green))
- ;; (set-face-foreground
- ;;  'git-gutter:deleted (plist-get koi-theme-colors :red))
  (defun my/stage-hunk ()
    "Wrapper around git-gutter:stage-hunk but without confirm requirement"
    (interactive)
@@ -1270,19 +1364,22 @@ Actually added some
 
 *** Ediff
 #+begin_src elisp
-(setq ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-windows-plain)
+(defun my/ediff-hook ()
+  (ediff-setup-keymap)
+  (define-key ediff-mode-map "j" 'ediff-next-difference)
+  (define-key ediff-mode-map "k" 'ediff-previous-difference)
+  (golden-ratio-mode nil))
 
-(defun suzu/ediff-hook ()
-(ediff-setup-keymap)
-(define-key ediff-mode-map "j" 'ediff-next-difference)
-(define-key ediff-mode-map "k" 'ediff-previous-difference)
-(golden-ratio-mode nil))
-
-(add-hook 'ediff-mode-hook 'suzu/ediff-hook nil t)
+(use-package
+ ediff
+ :custom
+ (ediff-split-window-function 'split-window-horizontally)
+ (ediff-window-setup-function 'ediff-setup-windows-plain)
+ :hook (ediff-mode . my/ediff-hook))
 #+end_src
 
 ** Project
+
 *** Register not only ~.git~ dirs
 #+begin_src elisp
 (defun my/dir-contains-project-marker (dir)
@@ -1296,19 +1393,15 @@ Actually added some
                               #'my/dir-contains-project-marker))
 #+end_src
 
-*** Project extension setup
-#+begin_src elisp
-(defun my/project-new-created-hook (project-path)
-  (message "My project new created hook with %s" project-path)
-  (project-ext:persp-switch project-path))
-(add-hook 'project-ext:new-created-hook 'my/project-new-created-hook)
+*** Project extensions
 
-(with-eval-after-load 'perspective
-  (setq compilation-buffer-name-function
-        'project-ext:persp-compilation-buffer-name-function))
+#+begin_src elisp
+(use-package project-ext
+  :load-path (lambda () (expand-file-name "scripts/project-ext.el" user-emacs-directory)))
 #+end_src
 
 *** Build from ~Makefile~
+
 #+begin_src elisp
 (use-package
  make-project
@@ -1317,6 +1410,7 @@ Actually added some
 #+end_src
 
 *** Binds
+
 #+begin_src elisp
 (defun my/project-or-default-eshell ()
   "Open eshell in project root or in the current."
@@ -1341,6 +1435,7 @@ Actually added some
 #+end_src
 
 ** Dired
+
 *** Base
 #+begin_src elisp
 (use-package dired-open
@@ -1356,6 +1451,7 @@ Actually added some
 #+end_src
 
 ** GraphQL
+
 #+begin_src elisp
 (use-package graphql-mode)
 (use-package graphql)
@@ -1363,6 +1459,7 @@ Actually added some
 #+end_src
 
 ** Emacs Application Framework (EAF)
+
 #+begin_src elisp
 (use-package eaf
   :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
