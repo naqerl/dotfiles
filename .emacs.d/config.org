@@ -32,6 +32,11 @@
 
 #+begin_src elisp
 (add-to-list 'load-path (expand-file-name "scripts/" user-emacs-directory))
+#+end_src
+
+** Setup package manager
+
+#+begin_src elisp
 (require 'package-manager)
 #+end_src
 
@@ -56,7 +61,13 @@
 (setq use-package-compute-statistics nil)
 #+end_src
 
-*** All the icons
+** Diminish
+
+#+begin_src elisp
+(use-package diminish)
+#+end_src
+
+** All the icons
 
 #+begin_src elisp
 (use-package all-the-icons)
@@ -64,12 +75,6 @@
   :diminish all-the-icons-dired-mode
   :after all-the-icons
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
-#+end_src
-
-*** Diminish
-
-#+begin_src elisp
-(use-package diminish)
 #+end_src
 
 * Dev
@@ -123,6 +128,28 @@
 #+begin_src elisp
 (use-package ssh
   :load-path (lambda () (expand-file-name "scripts/ssh.el" user-emacs-directory)))
+#+end_src
+
+*** Working with ~.env~ files
+
+Install package for loading ~.env~ & setup hooks
+
+#+begin_src elisp
+(use-package load-env-vars
+  :hook
+  ((eshell-mode shell-mode compilation-mode) . project-ext:dotenv-load))
+#+end_src
+
+*** Region search
+
+#+begin_src elisp
+(defun my/occur-regions ()
+  (interactive)
+  (occur (format "^%s begin-region -- .*$" comment-start)))
+
+(use-package
+ emacs
+ :bind ("M-s r" . my/occur-regions))
 #+end_src
 
 ** Languages
@@ -282,16 +309,6 @@ Generate table of contents
  (plantuml-mode-hook . display-line-numbers-mode))
 #+end_src
 
-** Working with ~.env~ files
-
-Install package for loading ~.env~ & setup hooks
-
-#+begin_src elisp
-(use-package load-env-vars
-  :hook
-  ((eshell-mode shell-mode compilation-mode) . project-ext:dotenv-load))
-#+end_src
-
 ** Compilation
 
 *** Ansi colors
@@ -379,18 +396,6 @@ Install package for loading ~.env~ & setup hooks
  (yas-global-mode 1))
 #+end_src
 
-*** Region search
-
-#+begin_src elisp
-(defun my/occur-regions ()
-  (interactive)
-  (occur (format "^%s begin-region -- .*$" comment-start)))
-
-(use-package
- emacs
- :bind ("M-s r" . my/occur-regions))
-#+end_src
-
 ** Flymake
 
 #+begin_src elisp
@@ -405,11 +410,7 @@ Install package for loading ~.env~ & setup hooks
 
 * UI\UX
 
-** Theme
-
-#+begin_src elisp
-;; (require 'koi-theme)
-#+end_src
+** Default frame setup
 
 #+begin_src elisp
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -424,7 +425,7 @@ Install package for loading ~.env~ & setup hooks
 (add-to-list 'default-frame-alist '(right-fringe . 0))
 #+end_src
 
-*** Current
+** Theme
 
 #+begin_src elisp
 (use-package
@@ -436,7 +437,7 @@ Install package for loading ~.env~ & setup hooks
  (load-theme 'solarized-dark :no-confirm))
 #+end_src
 
-*** Splash screen
+** Splash screen
 
 #+begin_src elisp
 (setq-default inhibit-startup-screen t)
@@ -445,13 +446,13 @@ Install package for loading ~.env~ & setup hooks
 (setq initial-scratch-message "")
 #+end_src
 
-*** Line numbers width
+** Line numbers width
 
 #+begin_src elisp
 (setq-default display-line-numbers-width 3)
 #+end_src
 
-*** Golden ratio
+** Golden ratio
 
 Automatically resizes windows to fit golden ratio
 
@@ -469,8 +470,6 @@ Automatically resizes windows to fit golden ratio
 
 ** Fonts
 
-*** Main setup
-
 #+begin_src elisp
 (set-face-attribute 'default nil
                     :font "Iosevka NF"
@@ -484,6 +483,7 @@ Automatically resizes windows to fit golden ratio
                     :font "Iosevka NF"
                     :height 1.0
                     :weight 'medium)
+
 (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
 
@@ -751,6 +751,7 @@ Automatically resizes windows to fit golden ratio
 *** Better jumper
 
 TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
+
 #+begin_src elisp
 (use-package
  better-jumper
@@ -795,8 +796,6 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
   ("M-v" . my/scroll-half-down))
 #+end_src
 
-** Motions
-
 *** Select inner word
 
 #+begin_src elisp
@@ -816,51 +815,6 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 
 #+begin_src elisp
 (use-package emacs :bind ("C-c d" . duplicate-line))
-#+end_src
-
-** Display buffer alist
-
-*** Helpers
-
-#+begin_src elisp
-(defun my-window-select-fit-size (window)
-  "Select WINDOW and resize it.
-The resize pertains to the maximum and minimum values"
-  (select-window window)
-  (fit-window-to-buffer
-   window (floor (frame-height) 4) 10 (floor (frame-width) 4) 20))
-#+end_src
-
-*** Occur
-
-#+begin_src elisp
-(add-to-list
-  'display-buffer-alist
-  '("\\*Occur\\*"
-    (display-buffer-reuse-mode-window display-buffer-below-selected)
-    (dedicated . t)
-    (body-function . my-window-select-fit-size)))
-#+end_src
-
-*** Xref
-
-#+begin_src elisp
-(add-to-list
-  'display-buffer-alist
-  '("\\*xref\\*"
-    (display-buffer-reuse-mode-window display-buffer-below-selected)
-    (dedicated . t)
-    (body-function . my-window-select-fit-size)))
-#+end_src
-
-*** Async shell command
-
-#+begin_src elisp
-(add-to-list
-  'display-buffer-alist
-  '("\\*Async Shell Command\\*"
-    (display-buffer-reuse-mode-window display-buffer-below-selected)
-    (body-function . my-window-select-fit-size)))
 #+end_src
 
 ** Async shell command
@@ -1357,12 +1311,14 @@ Actually added some
 #+end_src
 
 *** Merge
+
 #+begin_src elisp
 (use-package smerge-mode
   :diminish smerge-mode)
 #+end_src
 
 *** Ediff
+
 #+begin_src elisp
 (defun my/ediff-hook ()
   (ediff-setup-keymap)
@@ -1381,6 +1337,7 @@ Actually added some
 ** Project
 
 *** Register not only ~.git~ dirs
+
 #+begin_src elisp
 (defun my/dir-contains-project-marker (dir)
   "Checks if `.project' file is present in directory at DIR path."
@@ -1436,7 +1393,6 @@ Actually added some
 
 ** Dired
 
-*** Base
 #+begin_src elisp
 (use-package dired-open
   :custom ((dired-listing-switches "-agho --group-directories-first")
@@ -1471,6 +1427,7 @@ Actually added some
 #+end_src
 
 * Final
+
 #+begin_src elisp
 (message "Config fully loaded")
 #+end_src
