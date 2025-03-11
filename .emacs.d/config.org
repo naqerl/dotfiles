@@ -3,12 +3,12 @@
 #+description: My personal config
 
 * Ideas
-- Open project's makefile by keybind
+- Open project's makefile by key bind
 - Add to makefile default language specific commands
   - Rust: cargo, shuttle
   - Python: poetry
 - Simulate single mode-line when multiple windows opened
-- Check spell using treesitter and ispell/aspell. The key is to check only custom named nodes (like class, function, variable, string and etc.). Make it independent from emacs to use as pre-commit hook or in any CI/CD pipeline
+- Check spell using tree-sitter and Ispell/Aspell. The key is to check only custom named nodes (like class, function, variable, string and etc.). Make it independent from Emacs to use as pre-commit hook or in any CI/CD pipeline
 
 * Important things to load first
 
@@ -1197,10 +1197,14 @@ Turn off duplicating lines on execution
 
 * Tools
 
-** Ispell
+** Jinx (spell checker)
 
 #+begin_src elisp
-(setq-default ispell-program-name "aspell")
+(use-package
+ jinx
+ :config
+ (dolist (hook '(text-mode-hook prog-mode-hook conf-mode-hook))
+   (add-hook hook #'jinx-mode)))
 #+end_src
 
 ** Tramp
@@ -1336,7 +1340,7 @@ Actually added some
 
 ** Project
 
-*** Register not only ~.git~ dirs
+*** Register not only ~.git~ directories
 
 #+begin_src elisp
 (defun my/dir-contains-project-marker (dir)

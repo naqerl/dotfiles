@@ -95,6 +95,12 @@ cursor {
 exec-once = swaybg --image $HOME/Pictures/wallpapers/my-wallpaper.png
 #+end_src
 
+*** Kanshi
+
+#+begin_src conf
+exec-once = kanshi --config ~/dotfiles/.config/kanshi/config 
+#+end_src
+
 ** Run xwayland apps that require root
 It's needed for apps like gnome-disk-utility
 
