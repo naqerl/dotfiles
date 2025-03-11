@@ -111,7 +111,7 @@ exec-once = hyprland-per-window-layout
 ** Start apps
 #+begin_src conf
 exec-once = [workspace 1 silent] $emacsclient
-exec-once = [workspace 2 silent] qutebrowser
+exec-once = [workspace 2 silent] zen
 exec-once = [workspace 5 silent] telegram-desktop
 exec-once = [workspace 6 silent] $terminal btop
 #+end_src

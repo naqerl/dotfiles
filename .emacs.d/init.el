@@ -30,10 +30,25 @@
                               yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")))
+ '(safe-local-variable-directories '("/home/user/code/work/aishift/project-research/"))
+ '(safe-local-variable-values
+   '((eval progn (add-to-list 'gptel-directives `
+                              (aishift-project-analysist \
+
+                               ,(with-temp-buffer
+                                  (insert-file-contents
+                                   (expand-file-name
+                                    "aishift-project-analysist-prompt.org"
+                                    (project-root
+                                     (project-current))))
+                                  (buffer-string)))))))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(line-number ((((class color) (min-colors 89)) (:weight regular :underline nil :foreground "#586e75" :background "#002b36"))))
+ '(line-number-current-line ((t (:inherit line-number :background "#002b36" :foreground "#839496" :weight bold))))
+ '(org-block-begin-line ((t (:inherit org-meta-line :underline nil))))
+ '(org-block-end-line ((t (:inherit org-meta-line :overline nil)))))

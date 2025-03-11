@@ -434,7 +434,25 @@ Generate table of contents
  (solarized-high-contrast-mode-line t)
  (solarized-use-variable-pitch nil)
  :config
- (load-theme 'solarized-dark :no-confirm))
+ (load-theme 'solarized-dark :no-confirm)
+ (custom-set-faces
+  '(line-number
+    ((((class color) (min-colors 89))
+      (:weight
+       regular
+       :underline nil
+       :foreground "#586e75"
+       :background "#002b36"))))
+  '(line-number-current-line
+    ((t
+      (:inherit
+       line-number
+       :background "#002b36"
+       :foreground "#839496"
+       :weight bold))))
+  '(org-block-begin-line
+    ((t (:inherit org-meta-line :underline nil))))
+  '(org-block-end-line ((t (:inherit org-meta-line :overline nil))))))
 #+end_src
 
 ** Splash screen
@@ -708,6 +726,16 @@ Automatically resizes windows to fit golden ratio
 (winner-mode +1) ;; Allows to restores layout after maximizing
 #+end_src
 
+*** Buffers
+#+begin_src elisp
+(use-package emacs
+  :bind
+  ("C-," . previous-buffer)
+  ("C-." . next-buffer)
+  ("C-x k" . kill-current-buffer)
+  ("C-x K" . kill-buffer))
+#+end_src
+
 *** Vertical split
 
 #+begin_src elisp
@@ -746,35 +774,6 @@ Automatically resizes windows to fit golden ratio
  ("<C-right>" . windmove-right)
  ("<C-left>" . windmove-left)
  ("<C-down>" . windmove-down))
-#+end_src
-
-*** Better jumper
-
-TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
-
-#+begin_src elisp
-(use-package
- better-jumper
- :diminish better-jumper-local-mode
- :init
- (better-jumper-mode +1)
- (defun my/better-jumper-advice-set (&rest r)
-   (when (called-interactively-p)
-     (better-jumper-set-jump)))
- (dolist (fn
-          '(xref-find-definitions
-            find-file
-            next-error
-            previous-error
-            project-find-file
-            project-switch-to-buffer
-            switch-to-buffer
-            isearch-forward
-            isearch-backward))
-   (advice-add fn :before #'my/better-jumper-advice-set))
- :bind
- ("C-," . better-jumper-jump-backward)
- ("C-." . better-jumper-jump-forward))
 #+end_src
 
 *** Scroll
@@ -944,9 +943,10 @@ TODO: Migrate to smart jumper and unify ~M-,~ and ~M-.~
 #+begin_src elisp
 (use-package
  org
- :diminish org-auto-tangle-mode
- :diminish org-indent-mode
- :config (my/org-mode-setup)
+ :config
+ (my/org-mode-setup)
+ (diminish 'org-auto-tangle-mode)
+ (diminish 'org-indent-mode)
  :hook (org-mode . my/org-mode-hook)
  :bind
  (:map org-mode-map ("C-," . nil))
