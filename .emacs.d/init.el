@@ -23,11 +23,11 @@
                               graphql-mode helpful jinx load-env-vars
                               magit make-project marginalia
                               markdown-toc orderless org-auto-tangle
-                              org-tempo peep-dired plantuml-mode
-                              prettier-js pulsar request rust-docs
-                              rust-mode solarized-theme sqlformat
-                              sudo-edit toc-org vertico web-mode
-                              yasnippet yuck-mode))
+                              org-download org-tempo peep-dired
+                              plantuml-mode prettier-js pulsar request
+                              rust-docs rust-mode solarized-theme
+                              sqlformat sudo-edit toc-org treesit
+                              vertico web-mode yasnippet yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")))
  '(safe-local-variable-directories '("/home/user/code/work/aishift/project-research/"))
