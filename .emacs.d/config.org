@@ -259,8 +259,9 @@ Generate table of contents
 *** Javascript
 
 #+begin_src elisp
-(setq-default js-indent-level 2)
-(setq-default web-mode-code-indent-offset 2)
+(setq-default js-indent-level 4)
+(setq-default web-mode-code-indent-offset 4)
+(setq-default typescript-ts-mode-indent-offset 4)
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-ts-mode))
@@ -596,8 +597,6 @@ Automatically resizes windows to fit golden ratio
  (setq
   completions-format 'one-column
   completions-header-format nil
-  completions-max-height 7
-  completion-auto-select t
   completion-show-help nil)
  :bind
  (:map
@@ -606,38 +605,13 @@ Automatically resizes windows to fit golden ratio
   ("C-p" . 'minibuffer-previous-completion)))
 #+end_src
 
-*** Vertico
+*** Icomplete
 
 #+begin_src elisp
-(use-package vertico
-  :custom
-  (vertico-count 13)
-  (vertico-resize nil)
-  (vertico-cycle nil)
-  :config
-  (vertico-mode))
-#+end_src
-
-*** Add annotations to completion
-
-#+begin_src elisp
-(use-package marginalia
-  :custom
-  (marginalia-max-relative-age 0)
-  (marginalia-align 'left)
-  :init
-  (marginalia-mode))
-#+end_src
-
-*** Add icons
-
-#+begin_src elisp
-(use-package all-the-icons-completion
-  :after (marginalia all-the-icons)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode)
-  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
+(use-package
+ icomplete
+ :custom (icomplete-show-matches-on-no-input t)
+ :config (icomplete-vertical-mode))
 #+end_src
 
 *** Flatten imenu
@@ -860,14 +834,6 @@ Automatically resizes windows to fit golden ratio
 
 * Helper packages
 
-*** Emoji
-
-#+begin_src elisp
-(use-package
-  emojify
-  :disabled)
-#+end_src
-
 *** Sudo edit
 
 #+begin_src elisp
@@ -881,18 +847,6 @@ Automatically resizes windows to fit golden ratio
      (setenv "SHELL" "/usr/bin/bash")
      (call-interactively 'sudo-edit-find-file)
      (setenv "SHELL" SHELL))))
-#+end_src
-
-*** Helpful
-
-#+begin_src elisp
-(use-package helpful
-  :commands (helpful-callable helpful-variable helpful-command helpful-key)
-  :bind
-  ([remap describe-function] . helpful-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . helpful-variable)
-  ([remap describe-key] . helpful-key))
 #+end_src
 
 *** Show current datetime
@@ -1227,7 +1181,7 @@ Turn off duplicating lines on execution
 (use-package
  jinx
  :config
- (dolist (hook '(org-mode-hook prog-mode-hook conf-mode-hook))
+ (dolist (hook '(org-mode-hook conf-mode-hook))
    (add-hook hook #'jinx-mode)))
 #+end_src
 
@@ -1437,15 +1391,16 @@ Actually added some
 ** GraphQL
 
 #+begin_src elisp
-(use-package graphql-mode)
-(use-package graphql)
-(use-package request)
+(use-package graphql-mode :disabled)
+(use-package graphql :disabled)
+(use-package request :disabled)
 #+end_src
 
 ** Emacs Application Framework (EAF)
 
 #+begin_src elisp
 (use-package eaf
+  :disabled
   :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
   :custom
   (eaf-browser-enable-adblocker t)
