@@ -1268,7 +1268,6 @@ Turn off duplicating lines on execution
     ("https://fabiensanglard.net/rss.xml" software)
     ("www.redblobgames.com/blog/posts.xml" math algorithms)
     ("https://www.reddit.com/r/emacsporn.rss" reddit emacs)
-    ("https://hackaday.com/blog/feed/" hackaday linux)
     ("https://opensource.com/feed" opensource linux)
     ("https://linux.softpedia.com/backend.xml" softpedia linux)
     ("https://itsfoss.com/feed/" itsfoss linux)
@@ -1280,10 +1279,10 @@ Turn off duplicating lines on execution
     ("https://www.techrepublic.com/rssfeeds/topic/open-source/"
      techrepublic
      linux)
-    ("https://betanews.com/feed" betanews linux)
     ("https://systemcrafters.net/rss/news.xml" emacs)
     ("https://hnrss.org/frontpage" hackernews)
-    ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)))))
+    ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)
+    ("https://rss.arxiv.org/rss/cs" computer-science news)))))
 #+end_src
 
 ** Magit
