@@ -1278,7 +1278,8 @@ Turn off duplicating lines on execution
     ("https://systemcrafters.net/rss/news.xml" emacs)
     ("https://hnrss.org/frontpage" hackernews)
     ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)
-    ("https://rss.arxiv.org/rss/cs" computer-science news)))))
+    ("https://rss.arxiv.org/rss/cs" computer-science news)
+    ("https://www.reddit.com/r/aipromptprogramming.rss" reddit ml)))))
 #+end_src
 
 ** Magit
