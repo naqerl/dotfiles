@@ -259,9 +259,9 @@ Generate table of contents
 *** Javascript
 
 #+begin_src elisp
-(setq-default js-indent-level 4)
-(setq-default web-mode-code-indent-offset 4)
-(setq-default typescript-ts-mode-indent-offset 4)
+(setq-default js-indent-level 2)
+(setq-default web-mode-code-indent-offset 2)
+(setq-default typescript-ts-mode-indent-offset 2)
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-ts-mode))
@@ -278,6 +278,15 @@ Generate table of contents
  web-mode
  :mode (("\\.html?\\'" . web-mode))
  :hook (web-mode-hook . my/web-mode-hook))
+#+end_src
+
+#+begin_src elisp
+(add-to-list
+ 'compilation-error-regexp-alist-alist
+ '(biome-lint
+   "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$"
+   1 2 3 2 1))
+(add-to-list 'compilation-error-regexp-alist 'biome-lint)
 #+end_src
 
 *** Emacs Lisp
@@ -605,13 +614,38 @@ Automatically resizes windows to fit golden ratio
   ("C-p" . 'minibuffer-previous-completion)))
 #+end_src
 
-*** Icomplete
+*** Vertico
 
 #+begin_src elisp
-(use-package
- icomplete
- :custom (icomplete-show-matches-on-no-input t)
- :config (icomplete-vertical-mode))
+(use-package vertico
+  :custom
+  (vertico-count 13)
+  (vertico-resize nil)
+  (vertico-cycle nil)
+  :config
+  (vertico-mode))
+#+end_src
+
+*** Add annotations to completion
+
+#+begin_src elisp
+(use-package marginalia
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'left)
+  :init
+  (marginalia-mode))
+#+end_src
+
+*** Add icons
+
+#+begin_src elisp
+(use-package all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
 #+end_src
 
 *** Flatten imenu
