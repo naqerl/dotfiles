@@ -1273,12 +1273,8 @@ Turn off duplicating lines on execution
     ("https://itsfoss.com/feed/" itsfoss linux)
     ("https://www.zdnet.com/topic/linux/rss.xml" zdnet linux)
     ("https://www.computerworld.com/index.rss" computerworld linux)
-    ("https://www.networkworld.com/category/linux/index.rss"
-     networkworld
-     linux)
-    ("https://www.techrepublic.com/rssfeeds/topic/open-source/"
-     techrepublic
-     linux)
+    ("https://www.networkworld.com/category/linux/index.rss" networkworld linux)
+    ("https://www.techrepublic.com/rssfeeds/topic/open-source/" techrepublic linux)
     ("https://systemcrafters.net/rss/news.xml" emacs)
     ("https://hnrss.org/frontpage" hackernews)
     ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)
