@@ -284,9 +284,14 @@ Generate table of contents
 (add-to-list
  'compilation-error-regexp-alist-alist
  '(biome-lint
-   "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$"
-   1 2 3 2 1))
+   "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1))
 (add-to-list 'compilation-error-regexp-alist 'biome-lint)
+
+(add-to-list
+ 'compilation-error-regexp-alist-alist
+ '(tsc
+   "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1))
+(add-to-list 'compilation-error-regexp-alist 'tsc)
 #+end_src
 
 *** Emacs Lisp
