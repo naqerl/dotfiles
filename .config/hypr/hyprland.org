@@ -92,7 +92,7 @@ cursor {
 
 *** Wallpaper
 #+begin_src conf
-exec-once = swaybg --image $HOME/Pictures/wallpapers/my-wallpaper.png
+exec-once = swaybg --image $HOME/Pictures/wallpapers/mountains.png
 #+end_src
 
 *** Kanshi
