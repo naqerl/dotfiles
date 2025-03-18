@@ -769,6 +769,7 @@ Automatically resizes windows to fit golden ratio
   :bind
   ("C-," . previous-buffer)
   ("C-." . next-buffer)
+  ("C-x C-b" . ibuffer)
   ("C-x k" . kill-current-buffer)
   ("C-x K" . kill-buffer))
 #+end_src
