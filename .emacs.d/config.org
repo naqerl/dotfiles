@@ -1458,6 +1458,12 @@ Actually added some
   (defalias 'browse-web #'eaf-open-browser))
 #+end_src
 
+** PDF tools
+
+#+begin_src elisp
+(use-package pdf-tools)
+#+end_src
+
 * Final
 
 #+begin_src elisp
