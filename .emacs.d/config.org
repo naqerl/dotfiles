@@ -1445,9 +1445,15 @@ Actually added some
 (use-package eaf
   :disabled
   :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
+  :config
+  (setq eaf-python-command (expand-file-name "site-lisp/.venv/bin/python3" user-emacs-directory)))
+
+(use-package eaf-browser
+  :disabled
+  :after eaf
+  :load-path "~/.emacs.d/site-lisp/eaf-browser"
   :custom
   (eaf-browser-enable-adblocker t)
-  (browse-url-browser-function 'eaf-open-browser)
   :config
   (defalias 'browse-web #'eaf-open-browser))
 #+end_src
