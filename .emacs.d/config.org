@@ -872,6 +872,12 @@ Automatically resizes windows to fit golden ratio
   :bind ("<C-backspace>" . my-delete-backward-word))
 #+end_src
 
+** Use eww as browser by default
+
+#+begin_src elisp
+(setq browse-url-browser-function 'eww-browse-url)
+#+end_src
+
 * Helper packages
 
 *** Sudo edit
@@ -1279,8 +1285,9 @@ Turn off duplicating lines on execution
     ("https://systemcrafters.net/rss/news.xml" emacs)
     ("https://hnrss.org/frontpage" hackernews)
     ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)
-    ("https://rss.arxiv.org/rss/cs" computer-science news)
-    ("https://www.reddit.com/r/aipromptprogramming.rss" reddit ml)))))
+    ("https://rss.arxiv.org/rss/cs.MA" news multiagent-systems)
+    ("https://www.reddit.com/r/aipromptprogramming.rss" reddit ml)
+    ("https://blog.python.org/feeds/posts/default?alt=rss" python news)))))
 #+end_src
 
 ** Magit
