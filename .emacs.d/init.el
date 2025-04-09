@@ -64,12 +64,13 @@
                               git-gutter golden-ratio graphql
                               graphql-mode helpful jinx load-env-vars
                               magit make-project marginalia
-                              markdown-toc orderless org-auto-tangle
-                              org-download org-tempo peep-dired
-                              plantuml-mode prettier-js pulsar request
-                              rust-docs rust-mode solarized-theme
-                              sqlformat sudo-edit toc-org treesit
-                              vertico web-mode yasnippet yuck-mode))
+                              markdown-toc nginx-mode orderless
+                              org-auto-tangle org-download org-tempo
+                              pdf-tools peep-dired plantuml-mode
+                              prettier-js pulsar request rust-docs
+                              rust-mode solarized-theme sqlformat
+                              sudo-edit toc-org treesit vertico
+                              web-mode ws-butler yasnippet yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")))
  '(safe-local-variable-directories '("/home/user/code/work/aishift/project-research/"))
@@ -90,6 +91,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(gptel-context-highlight-face ((t (:extend t))))
  '(line-number ((((class color) (min-colors 89)) (:weight regular :underline nil :foreground "#586e75" :background "#002b36"))))
  '(line-number-current-line ((t (:inherit line-number :background "#002b36" :foreground "#839496" :weight bold))))
  '(org-block-begin-line ((t (:inherit org-meta-line :underline nil))))

@@ -2,6 +2,7 @@
 #+author: SciPunch
 #+description: My personal config
 
+
 * Ideas
 - Open project's makefile by key bind
 - Add to makefile default language specific commands
@@ -209,13 +210,16 @@ Install package for loading ~.env~ & setup hooks
 #+begin_src elisp
 (use-package
  python
- :config
- (setq-default python-indent-def-block-scale 1))
+ :config (setq-default python-indent-def-block-scale 1)
+ :hook (before-save-hook . delete-trailing-whitespace))
 
-(use-package python-tests
-  :load-path (lambda () (expand-file-name "scripts/python-tests.el" user-emacs-directory))
-  :after python
-  :bind (:map python-mode-map ("C-x t r" . python-tests-run)))
+(use-package
+ python-tests
+ :load-path
+ (lambda ()
+   (expand-file-name "scripts/python-tests.el" user-emacs-directory))
+ :after python
+ :bind (:map python-mode-map ("C-x t r" . python-tests-run)))
 #+end_src
 
 *** Yuck
@@ -344,9 +348,20 @@ Generate table of contents
  (plantuml-jar-path org-plantuml-jar-path)
  (plantuml-indent-level 2)
  (plantuml-output-type "png")
- :hook
- (plantuml-mode-hook . display-line-numbers-mode))
+ (plantuml-jar-args
+  `("-charset"
+   "UTF-8"
+   "-config"
+   ,(expand-file-name "plantuml.cfg" user-emacs-directory)))
+ (org-plantuml-args
+  `("-headless"
+   "-config"
+   ,(expand-file-name "plantuml.cfg" user-emacs-directory)))
+ :hook (plantuml-mode-hook . display-line-numbers-mode))
 #+end_src
+
+#+RESULTS:
+| display-line-numbers-mode | plantuml-deprecation-warning |
 
 ** Compilation
 
@@ -534,7 +549,7 @@ Automatically resizes windows to fit golden ratio
                     :weight 'medium)
 (set-face-attribute 'variable-pitch nil
                     :font "Iosevka NF"
-                    :height 130                    
+                    :height 130
                     :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
                     :font "Iosevka NF"
@@ -1030,7 +1045,20 @@ Automatically resizes windows to fit golden ratio
 
 #+begin_src elisp
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+(add-to-list 'org-src-lang-modes '("tsx" . tsx-ts-mode))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+#+end_src
+
+*** Execute all blocks
+
+#+begin_src elisp
+(defun my/org-babel-execute-all-src-blocks ()
+  "Execute all source code blocks in the current Org buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward-regexp org-babel-src-block-regexp nil t)
+      (org-babel-execute-src-block))))
 #+end_src
 
 ** Agenda
@@ -1136,6 +1164,12 @@ Automatically resizes windows to fit golden ratio
    (add-to-list 'org-structure-template-alist setup)))
 #+end_src
 
+** Paste images
+
+#+begin_src elisp
+(use-package org-download)
+#+end_src
+
 * Shells and terminals
 
 ** Shell
@@ -1238,6 +1272,7 @@ Turn off duplicating lines on execution
 (setq vc-ignore-dir-regexp
       (format "%s\\|%s"
                     vc-ignore-dir-regexp
+
                     tramp-file-name-regexp))
 (setq tramp-verbose 1)
 #+end_src
@@ -1257,6 +1292,7 @@ Turn off duplicating lines on execution
    "Gemini"
    :key 'gptel-api-key-from-auth-source
    :stream t))
+ (add-to-list 'gptel-directives '(frontend . "You are a senior frontend developer focused on React, TypeScript, TailwindCSS and Feature sliced design. You prefer use pnpm and biome and your main editor is GNU Emacs. Write code without comments. Answer with text only to the theoretical questions."))
  :bind ("C-c g" . gptel-menu))
 #+end_src
 
@@ -1287,7 +1323,8 @@ Turn off duplicating lines on execution
     ("http://feeds.feedburner.com/blogspot/vEnU" music jazz)
     ("https://rss.arxiv.org/rss/cs.MA" news multiagent-systems)
     ("https://www.reddit.com/r/aipromptprogramming.rss" reddit ml)
-    ("https://blog.python.org/feeds/posts/default?alt=rss" python news)))))
+    ("https://blog.python.org/feeds/posts/default?alt=rss" python news)
+    ("https://abdullin.substack.com/feed" llm)))))
 #+end_src
 
 ** Magit
@@ -1464,9 +1501,16 @@ Actually added some
 (use-package pdf-tools)
 #+end_src
 
+** Execute selected shell command
+
+#+begin_src elisp
+(defun my/async-shell-command-on-region ()
+  (interactive)
+  (async-shell-command (buffer-substring (region-beginning) (region-end))))
+#+end_src
+
 * Final
 
 #+begin_src elisp
 (message "Config fully loaded")
 #+end_src
-

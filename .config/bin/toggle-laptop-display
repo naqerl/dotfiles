@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+LAPTOP_MONITOR="eDP-1"
+LAPTOP_RESOLUTION="2560x1440"
+LAPTOP_SCALE="1.6"
+
+monitors_count=$(hyprctl monitors -j | jq '. | length')
+
+if [[ "$monitors_count" -eq 0 ]]; then
+  keyword="$LAPTOP_MONITOR, $LAPTOP_RESOLUTION, 0x0, $LAPTOP_SCALE"
+else
+  if hyprctl monitors | grep -q "$LAPTOP_MONITOR"; then
+    notify-send "Disabling $LAPTOP_MONITOR monitor"
+    keyword="$LAPTOP_MONITOR, disable"
+  else
+    notify-send "Enabling $LAPTOP_MONITOR monitor"
+    keyword="$LAPTOP_MONITOR, $LAPTOP_RESOLUTION, ${LAPTOP_RESOLUTION}x0, $LAPTOP_SCALE"
+  fi
+fi
+
+hyprctl keyword monitor "$keyword"

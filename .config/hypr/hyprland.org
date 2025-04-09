@@ -16,7 +16,6 @@
   - [[#start-apps][Start apps]]
   - [[#idle-daemon][Idle daemon]]
   - [[#pipewire][Pipewire]]
-  - [[#emacs-1][Emacs]]
 - [[#input][Input]]
 - [[#xwayland][Xwayland]]
 - [[#general][General]]
@@ -51,7 +50,7 @@
 Currently game mode needs manual config change
 
 #+begin_src conf
-source = $HOME/.config/hypr/platform/current.conf 
+source = $HOME/.config/hypr/platform/current.conf
 #+end_src
 
 * Env setup
@@ -60,7 +59,7 @@ env = PATH,$HOME/.roswell/bin:$PATH
 env = PATH,$HOME/.local/share/uv/tools:$PATH
 env = PATH,$HOME/.local/bin:$PATH
 env = GTAGSLABEL,pygments
-env = PATH,/opt/texlive/2024/bin/x86_64-linux/:$PATH
+env = PATH,/opt/texlive/2025/bin/x86_64-linux/:$PATH
 #+end_src
 
 * Alisaes
@@ -73,7 +72,6 @@ $mainShiftMod = SUPER SHIFT
 ** Emacs
 #+begin_src conf
 $emacs = $HOME/.local/bin/emacs
-$emacsclient = $HOME/.local/bin/emacsclient -c -a ""
 $terminal = foot
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
@@ -98,7 +96,7 @@ exec-once = swaybg --image $HOME/Pictures/wallpapers/mountains.png
 *** Kanshi
 
 #+begin_src conf
-exec-once = kanshi --config ~/dotfiles/.config/kanshi/config 
+exec-once = kanshi --config ~/dotfiles/.config/kanshi/config
 #+end_src
 
 ** Run xwayland apps that require root
@@ -116,7 +114,7 @@ exec-once = hyprland-per-window-layout
 
 ** Start apps
 #+begin_src conf
-exec-once = [workspace 1 silent] $emacsclient
+exec-once = [workspace 1 silent] $emacs
 exec-once = [workspace 2 silent] zen
 exec-once = [workspace 5 silent] telegram-desktop
 exec-once = [workspace 6 silent] $terminal btop
@@ -132,10 +130,6 @@ exec-once = wl-idle --time 5 --file /tmp/idle
 exec-once = pipewire
 #+end_src
 
-** Emacs
-#+begin_src conf
-exec-once = $emacs --daemon
-#+end_src
 * Input
 #+begin_src conf
 input {
@@ -303,13 +297,14 @@ bind = $mainMod, B, exec, [float; size 30% 30%; center] $HOME/.config/bin/choose
 bind = $mainMod, SPACE, exec, [float; size 30% 30%; center] $HOME/.config/bin/run-desktop
 bind = $mainShiftMod, P, exec,notify-send "Picking color" &&  wl-color-picker clipboard && notify-send "Color copied to clipboard"
 bind = $mainMod, TAB, exec, eww open --toggle powermenu
-bind = $mainMode, O, exec, thunar
-bind = $mainMod, M, exec, [float; size 40% 40%] kitty pulsemixer
+bind = $mainMod, O, exec, thunar
+bind = $mainMod, M, exec, [float; size 40% 40%] $terminal pulsemixer
+bind = $mainMod, D, exec, 'bash ~/.config/bin/toggle-laptop-display'
 #+end_src
 
 *** Emacs
 #+begin_src conf
-bind = $mainMod, E, exec, $emacsclient
+bind = $mainMod, E, exec, $emacs
 #+end_src
 
 ** Workspaces
@@ -405,7 +400,6 @@ bindm = $mainMod, mouse:273, resizewindow
 #+begin_src conf
 bind = $mainMod, V, togglefloating,
 bind = $mainMod, U, pseudo,
-bind = $mainMod, D, togglesplit,
 #+end_src
 
 ** Screenshot
