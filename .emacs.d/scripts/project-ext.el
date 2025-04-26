@@ -194,9 +194,10 @@ Updates project's TAGS file on every save."
                 (nil)))))
         (if (file-exists-p ".git")
             (my/inhibit-sentinel-messages
-             #'async-shell-command "/usr/local/bin/ctags -Re --exclude='*.json' --exclude='.venv' .")
-            (project-ext:info
-             "Project etags will be generated only for git repository.")))
+             #'async-shell-command
+             "/usr/local/bin/ctags -Re --exclude='*.json' --exclude='.venv' .")
+          (project-ext:info
+           "Project etags will be generated only for git repository.")))
     (project-ext:info
      "Etags will be generated only inside a project.")))
 
@@ -229,11 +230,7 @@ searching up to MAX-DEPTH directories."
 REST ommited."
     (when (project-current)
       (let ((default-directory (project-root (project-current))))
-        (project-ext:dotenv-load))))
-
-  (advice-add
-   'compilation-start
-   :before 'project-ext:dotenv--load-advice))
+        (project-ext:dotenv-load)))))
 
 ; end-region   -- Environment
 

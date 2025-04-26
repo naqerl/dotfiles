@@ -2,7 +2,6 @@
 #+author: SciPunch
 #+description: My personal config
 
-
 * Ideas
 - Open project's makefile by key bind
 - Add to makefile default language specific commands
@@ -16,6 +15,7 @@
 ** Path
 
 #+begin_src elisp
+;; -*- lexical-binding: t; -*-
 (add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 (setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
@@ -141,12 +141,12 @@
              (tsx
               .
               ("https://github.com/tree-sitter/tree-sitter-typescript"
-               "v0.20.3"
+               "v0.23.2"
                "tsx/src"))
              (typescript
               .
               ("https://github.com/tree-sitter/tree-sitter-typescript"
-               "v0.20.3"
+               "v0.23.2"
                "typescript/src"))
              (yaml
               .
@@ -175,16 +175,6 @@
   :load-path (lambda () (expand-file-name "scripts/ssh.el" user-emacs-directory)))
 #+end_src
 
-*** Working with ~.env~ files
-
-Install package for loading ~.env~ & setup hooks
-
-#+begin_src elisp
-(use-package load-env-vars
-  :hook
-  ((eshell-mode shell-mode compilation-mode) . project-ext:dotenv-load))
-#+end_src
-
 *** Region search
 
 #+begin_src elisp
@@ -195,6 +185,14 @@ Install package for loading ~.env~ & setup hooks
 (use-package
  emacs
  :bind ("M-s r" . my/occur-regions))
+#+end_src
+
+*** Replace string
+
+#+begin_src elisp
+(use-package
+ emacs
+ :bind ("C-c r" . replace-regexp) ("C-c R" . replace-string))
 #+end_src
 
 ** Languages
@@ -265,12 +263,11 @@ Generate table of contents
 #+begin_src elisp
 (setq-default js-indent-level 2)
 (setq-default web-mode-code-indent-offset 2)
-(setq-default typescript-ts-mode-indent-offset 2)
 
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-ts-mode))
+(use-package jtsx
+  :config
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode)))
 
 (defun my/web-mode-hook ()
   "Hooks for Web mode."
@@ -362,6 +359,26 @@ Generate table of contents
 
 #+RESULTS:
 | display-line-numbers-mode | plantuml-deprecation-warning |
+
+*** Solidity
+
+#+begin_src elisp
+(use-package
+ solidity-mode
+ :config
+ (defun solidity-at-vsemi-p (&optional pos)
+   (let ((rpos (or pos (point))))
+     (save-excursion
+       (goto-char rpos)
+       (ignore-errors
+         ;; Try to jump back to the word "struct", as if we're at the end of a
+         ;; syntactically-correct struct. Struct body, struct name, the keyword "struct".
+         (forward-sexp -3)
+         (looking-at-p "\\bstruct\\b")))))
+ (add-hook
+  'solidity-mode-hook
+  (lambda () (setq-local c-at-vsemi-p-fn 'solidity-at-vsemi-p))))
+#+end_src
 
 ** Compilation
 
@@ -484,6 +501,7 @@ Generate table of contents
 #+begin_src elisp
 (use-package
  solarized-theme
+ :disabled
  :custom
  (solarized-high-contrast-mode-line t)
  (solarized-use-variable-pitch nil)
@@ -507,6 +525,11 @@ Generate table of contents
   '(org-block-begin-line
     ((t (:inherit org-meta-line :underline nil))))
   '(org-block-end-line ((t (:inherit org-meta-line :overline nil))))))
+
+(use-package koi-theme
+  :load-path (lambda () (expand-file-name "scripts/koi-theme.el" user-emacs-directory))
+  :config
+  (load-theme 'koi :no-confirm))
 #+end_src
 
 ** Splash screen
@@ -685,11 +708,15 @@ Automatically resizes windows to fit golden ratio
 
 *** Line numbers
 #+begin_src elisp
+(global-display-line-numbers-mode 1)
+
 (dolist (mode
          '(prog-mode-hook
            org-mode-hook
+           magit-status-mode
            compilation-mode-hook
            conf-mode-hook
+           eshell-mode-hook
            text-mode
            fundamental-mode))
   (add-hook mode 'display-line-numbers-mode))
@@ -869,6 +896,14 @@ Automatically resizes windows to fit golden ratio
 (use-package emacs :bind ("C-c d" . duplicate-line))
 #+end_src
 
+*** Expand region
+
+#+begin_src elisp
+(use-package expand-region
+  :bind
+  ("C-;" . er/expand-region))
+#+end_src
+
 ** Async shell command
 
 #+begin_src elisp
@@ -1045,7 +1080,6 @@ Automatically resizes windows to fit golden ratio
 
 #+begin_src elisp
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-(add-to-list 'org-src-lang-modes '("tsx" . tsx-ts-mode))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 #+end_src
 
@@ -1183,20 +1217,6 @@ Turn off duplicating lines on execution
 
 ** Eshell
 
-*** Aliases
-
-#+begin_src elisp
-(setq my/eshell-aliases
-      '((g  . magit)
-        (gl . magit-log)
-        (d  . dired)
-        (o  . find-file-other-window)))
-
-(mapc (lambda (alias)
-        (defalias (car alias) (cdr alias)))
-      my/eshell-aliases)
-#+end_src
-
 *** Setup eshell
 
 #+begin_src elisp
@@ -1204,7 +1224,6 @@ Turn off duplicating lines on execution
  eshell
  :hook
  (eshell-mode . completion-preview-mode)
- (eshell-pre-command-hook . eshell-save-some-history)
  :bind
  (:map
   eshell-command-mode-map
@@ -1214,32 +1233,10 @@ Turn off duplicating lines on execution
      (eshell/clear-scrollback))))
  :config
  (setq
-  eshell-history-size 10000
   eshell-buffer-maximum-lines 10000
-  eshell-hist-ignoredups t
   eshell-scroll-to-bottom-on-input t
-  eshell-rc-script (concat user-emacs-directory "eshell/profile")
+  eshell-history-append t
   eshell-visual-commands '("bash" "btop" "ssh" "psql")))
-#+end_src
-
-*** Run command in background
-
-#+begin_src elisp
-(defun eshell/asc (cmd)
-  "Runs `cmd` in async bash shell"
-  (async-shell-command cmd))
-(put 'eshell/asc 'eshell-no-numeric-conversions t)
-#+end_src
-
-*** History search
-
-#+begin_src elisp
-(defun my/eshell-history ()
-  (interactive)
-  (insert
-   (completing-read
-    "Eshell history: "
-    (delete-dups (ring-elements eshell-history-ring)))))
 #+end_src
 
 ** Eat
@@ -1337,7 +1334,8 @@ Turn off duplicating lines on execution
  :custom (magit-status-buffer-switch-function 'switch-to-buffer)
  (magit-display-buffer-function
   'magit-display-buffer-same-window-except-diff-v1)
- :bind ("C-x g o" . magit) ("C-x g c" . magit-commit))
+ :bind ("C-x g o" . magit) ("C-x g c" . magit-commit)
+ :hook (magit-status-mode-hook . display-line-numbers-mode))
 #+end_src
 
 Actually added some
@@ -1507,6 +1505,21 @@ Actually added some
 (defun my/async-shell-command-on-region ()
   (interactive)
   (async-shell-command (buffer-substring (region-beginning) (region-end))))
+#+end_src
+
+** EWW extensions
+
+#+begin_src elisp
+(use-package
+ eww-ext
+ :load-path
+ (lambda ()
+   (expand-file-name "scripts/eww-ext.el" user-emacs-directory))
+ :custom
+ (eww-ext:search-engines
+  '(("pyTelegramBotAPI docs"
+     .
+     "https://pytba.readthedocs.io/en/latest/search.html?q=%s&check_keywords=yes&area=default"))))
 #+end_src
 
 * Final

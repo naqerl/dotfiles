@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 
 
 
@@ -50,7 +51,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1"
+   '("36e728f560ec792e07a1841be9000838663c7c72261a99680f8093a0d7048320"
+     "484b2930ebd7cebd5067873a46d7fbe1068e8c19cef082285040cae33ff7c264"
+     "8b930da64b71739120544acb5241f760cbf4d9706eef433cf7b83372dff01334"
+     "01b76cfdc16573ae3364c3103aba3f2eea4150ba7707c434cac06ce6b14fdfdf"
+     "8f5d0d65e26f964f511f271a7b79b9846059d7dd200344a1c09b11b43f1c3661"
+     "830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1"
      "b49f66a2e1724db880692485a5d5bcb9baf28ed2a3a05c7a799fa091f24321da"
      "833ddce3314a4e28411edf3c6efde468f6f2616fc31e17a62587d6a9255f4633"
      "7fea145741b3ca719ae45e6533ad1f49b2a43bf199d9afaee5b6135fd9e6f9b8"
@@ -60,17 +66,19 @@
                               buffer-move compile-eslint csv-mode
                               diminish dired-open dockerfile-mode
                               dumb-jump eat elfeed elisp-autofmt
-                              elysium flimenu free-keys gcmh
-                              git-gutter golden-ratio graphql
-                              graphql-mode helpful jinx load-env-vars
-                              magit make-project marginalia
-                              markdown-toc nginx-mode orderless
-                              org-auto-tangle org-download org-tempo
+                              elysium expand-region flimenu free-keys
+                              gcmh git-gutter github-explorer
+                              golden-ratio graphql graphql-mode
+                              helpful jinja2-mode jinx jtsx
+                              load-env-vars magit make-project
+                              marginalia markdown-toc nginx-mode
+                              orderless org-auto-tangle org-download
                               pdf-tools peep-dired plantuml-mode
                               prettier-js pulsar request rust-docs
-                              rust-mode solarized-theme sqlformat
-                              sudo-edit toc-org treesit vertico
-                              web-mode ws-butler yasnippet yuck-mode))
+                              rust-mode solarized-theme solidity-mode
+                              sqlformat sudo-edit toc-org vertico
+                              web-mode ws-butler yaml-mode yasnippet
+                              yuck-mode))
  '(package-vc-selected-packages
    '((make-project :url "https://github.com/scipunch/make-project")))
  '(safe-local-variable-directories '("/home/user/code/work/aishift/project-research/"))
@@ -92,7 +100,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(gptel-context-highlight-face ((t (:extend t))))
- '(line-number ((((class color) (min-colors 89)) (:weight regular :underline nil :foreground "#586e75" :background "#002b36"))))
- '(line-number-current-line ((t (:inherit line-number :background "#002b36" :foreground "#839496" :weight bold))))
  '(org-block-begin-line ((t (:inherit org-meta-line :underline nil))))
  '(org-block-end-line ((t (:inherit org-meta-line :overline nil)))))

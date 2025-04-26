@@ -118,6 +118,9 @@
    (orderless-match-face-0						:foreground green)
    (orderless-match-face-1						:foreground blue)
    (orderless-match-face-2						:foreground red)
+   (git-gutter:modified                          :foreground yellow)
+   (git-gutter:added                          :foreground green)
+   (git-gutter:deleted                          :foreground red)
   ))
 
 ;;;###autoload
