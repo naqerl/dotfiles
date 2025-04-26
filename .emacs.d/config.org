@@ -380,6 +380,12 @@ Generate table of contents
   (lambda () (setq-local c-at-vsemi-p-fn 'solidity-at-vsemi-p))))
 #+end_src
 
+*** Yaml
+
+#+begin_src elisp
+(use-package yaml-mode)
+#+end_src
+
 ** Compilation
 
 *** Ansi colors
