@@ -628,12 +628,28 @@ Automatically resizes windows to fit golden ratio
 #+begin_src elisp
 (use-package
  dabbrev
+ :custom
+ (dabbrev-case-fold-search nil)
+ (dabbrev-abbrev-char-regexp "")
  :config
  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
  (defun my/dabbrev-select-buffer (other-buffer)
    (get-buffer-window other-buffer))
  (setq dabbrev-friend-buffer-function #'my/dabbrev-select-buffer))
+
+(use-package hippie-exp :bind ("M-/" . hippie-expand))
+
+(use-package
+ upcase-abbrev-expand
+ :after hippie-exp
+ :load-path
+ (lambda ()
+   (expand-file-name "scripts/upcase-abbrev-expand.el"
+                     user-emacs-directory))
+ :config
+ (add-to-list
+  'hippie-expand-try-functions-list 'try-complete-upcase-abbrev))
 #+end_src
 
 *** Orderless
@@ -753,7 +769,7 @@ Automatically resizes windows to fit golden ratio
 (tool-bar-mode -1)           ;; Disable the tool bar
 #+end_src
 
-*** Delete on paste
+*** Replace region when typing
 
 #+begin_src elisp
 (setq-default delete-selection-mode t)
@@ -914,18 +930,6 @@ Automatically resizes windows to fit golden ratio
 
 #+begin_src elisp
 (setq-default async-shell-command-buffer 'new-buffer)
-#+end_src
-
-** Stop yank on ~<C-backspace>~
-
-#+begin_src elisp
-(defun my-delete-backward-word ()
-  (interactive "*")
-  (push-mark)
-  (backward-word)
-  (delete-region (point) (mark)))
-(use-package emacs
-  :bind ("<C-backspace>" . my-delete-backward-word))
 #+end_src
 
 ** Use eww as browser by default
