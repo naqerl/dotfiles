@@ -1,48 +1,6 @@
 ;; -*- lexical-binding: t; -*-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(org-babel-load-file
- (expand-file-name "config.org" user-emacs-directory))
+(load-file
+ (expand-file-name "config.el" user-emacs-directory))
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (custom-set-variables
@@ -61,38 +19,11 @@
      "833ddce3314a4e28411edf3c6efde468f6f2616fc31e17a62587d6a9255f4633"
      "7fea145741b3ca719ae45e6533ad1f49b2a43bf199d9afaee5b6135fd9e6f9b8"
      default))
- '(package-selected-packages
-   '(all-the-icons-completion all-the-icons-dired better-jumper
-                              buffer-move compile-eslint csv-mode
-                              diminish dired-open dockerfile-mode
-                              dumb-jump eat elfeed elisp-autofmt
-                              elysium expand-region flimenu free-keys
-                              gcmh git-gutter github-explorer
-                              golden-ratio graphql graphql-mode
-                              helpful jinja2-mode jinx jtsx
-                              load-env-vars magit make-project
-                              marginalia markdown-toc nginx-mode
-                              orderless org-auto-tangle org-download
-                              pdf-tools peep-dired plantuml-mode
-                              prettier-js pulsar request rust-docs
-                              rust-mode solarized-theme solidity-mode
-                              sqlformat sudo-edit toc-org vertico
-                              web-mode ws-butler yaml-mode yasnippet
-                              yuck-mode))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((make-project :url "https://github.com/scipunch/make-project")))
+   '((org-super-links :url "https://github.com/toshism/org-super-links")
+     (make-project :url "https://github.com/scipunch/make-project")))
  '(safe-local-variable-directories '("/home/user/code/work/aishift/project-research/"))
- '(safe-local-variable-values
-   '((eval progn (add-to-list 'gptel-directives `
-                              (aishift-project-analysist \
-
-                               ,(with-temp-buffer
-                                  (insert-file-contents
-                                   (expand-file-name
-                                    "aishift-project-analysist-prompt.org"
-                                    (project-root
-                                     (project-current))))
-                                  (buffer-string)))))))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

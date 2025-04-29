@@ -1,158 +1,108 @@
-#+title: GNU Emacs Config
-#+author: SciPunch
-#+description: My personal config
-#+PROPERTY: header-args :tangle config.el
-
-* Ideas
-- Open project's makefile by key bind
-- Add to makefile default language specific commands
-  - Rust: cargo, shuttle
-  - Python: poetry
-- Simulate single mode-line when multiple windows opened
-- Check spell using tree-sitter and Ispell/Aspell. The key is to check only custom named nodes (like class, function, variable, string and etc.). Make it independent from Emacs to use as pre-commit hook or in any CI/CD pipeline
-
-* Important things to load first
-
-** Path
-
-#+begin_src elisp
 ;; -*- lexical-binding: t; -*-
-(add-to-list 'exec-path (expand-file-name "~/.pyenv/bin"))
+(require 'treesit)
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 (setenv "PATH" (concat (mapconcat #'identity exec-path path-separator) (getenv "PATH")))
-#+end_src
 
-** Native compile
-
-#+begin_src elisp
-(setq native-comp-speed 3) ;; maximum native Elisp speed!
+(setq native-comp-speed 2) ;; maximum native Elisp speed!
+(native-compile-async "~/.emacs.d" 'recursively)
 (custom-set-variables '(warning-suppress-types '((comp))))
-#+end_src
 
-** Setup package manager
+(require 'package-manager)
 
-#+begin_src elisp
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")
-                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-(require 'package)
-(setq package-quickstart t)
-(package-initialize)
-(require 'use-package)
-(setq use-package-always-ensure t)
-#+end_src
+(use-package gcmh
+  :diminish gcmh-mode
+  :init
+  (gcmh-mode 1))
 
-** Debug on error
+(setq-default debug-on-error t)
 
-#+begin_src elisp
-(setq-default debug-on-error nil)
-#+end_src
-
-** Profiling
-
-#+begin_src elisp
 (setq use-package-compute-statistics nil)
-#+end_src
 
-** Diminish
-
-#+begin_src elisp
 (use-package diminish)
-#+end_src
 
-* Dev
+(use-package all-the-icons)
+(use-package all-the-icons-dired
+  :diminish all-the-icons-dired-mode
+  :after all-the-icons
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
-** Common
-
-*** Dumb jump
-
-#+begin_src elisp
 (use-package dumb-jump
   :custom
   (dumb-jump-rg-search-args "--pcre2 --max-filesize 80M --no-ignore --hidden")
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
-#+end_src
 
-*** Treesitter
+(use-package eldoc
+  :diminish eldoc-mode)
 
-#+begin_src elisp
-  (setq treesit-font-lock-level 4)
-  (defun my/treesit-install-grammars ()
-    "Install Tree-sitter grammars if they are absent."
-    (interactive)
-    (require 'treesit)
-    (dolist (grammar
-             '((css
-                .
-                ("https://github.com/tree-sitter/tree-sitter-css"
-                 "v0.20.0"))
-               (bash "https://github.com/tree-sitter/tree-sitter-bash")
-               (html
-                .
-                ("https://github.com/tree-sitter/tree-sitter-html"
-                 "v0.20.1"))
-               (javascript
-                .
-                ("https://github.com/tree-sitter/tree-sitter-javascript"
-                 "v0.21.2"
-                 "src"))
-               (json
-                .
-                ("https://github.com/tree-sitter/tree-sitter-json"
-                 "v0.20.2"))
-               (python
-                .
-                ("https://github.com/tree-sitter/tree-sitter-python"
-                 "v0.20.4"))
-               (go
-                "https://github.com/tree-sitter/tree-sitter-go"
-                "v0.20.0")
-               (markdown
-                "https://github.com/ikatyang/tree-sitter-markdown")
-               (make "https://github.com/alemuller/tree-sitter-make")
-               (toml "https://github.com/tree-sitter/tree-sitter-toml")
-               (tsx
-                .
-                ("https://github.com/tree-sitter/tree-sitter-typescript"
-                 "v0.23.2"
-                 "tsx/src"))
-               (typescript
-                .
-                ("https://github.com/tree-sitter/tree-sitter-typescript"
-                 "v0.23.2"
-                 "typescript/src"))
-               (yaml
-                .
-                ("https://github.com/ikatyang/tree-sitter-yaml"
-                 "v0.5.0"))
-               ))
-      (setq treesit-language-source-alist '())
-      (add-to-list 'treesit-language-source-alist grammar)
-      (unless (treesit-language-available-p (car grammar))
-        (treesit-install-language-grammar (car grammar)))))
-  (my/treesit-install-grammars)
-#+end_src
+(setq treesit-font-lock-level 4)
+(defun my/treesit-install-grammars ()
+  "Install Tree-sitter grammars if they are absent."
+  (interactive)
+  (require 'treesit)
+  (dolist (grammar
+           '((css
+              .
+              ("https://github.com/tree-sitter/tree-sitter-css"
+               "v0.20.0"))
+             (bash "https://github.com/tree-sitter/tree-sitter-bash")
+             (html
+              .
+              ("https://github.com/tree-sitter/tree-sitter-html"
+               "v0.20.1"))
+             (javascript
+              .
+              ("https://github.com/tree-sitter/tree-sitter-javascript"
+               "v0.21.2"
+               "src"))
+             (json
+              .
+              ("https://github.com/tree-sitter/tree-sitter-json"
+               "v0.20.2"))
+             (python
+              .
+              ("https://github.com/tree-sitter/tree-sitter-python"
+               "v0.20.4"))
+             (go
+              "https://github.com/tree-sitter/tree-sitter-go"
+              "v0.20.0")
+             (markdown
+              "https://github.com/ikatyang/tree-sitter-markdown")
+             (make "https://github.com/alemuller/tree-sitter-make")
+             (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+             (cmake "https://github.com/uyha/tree-sitter-cmake")
+             (c "https://github.com/tree-sitter/tree-sitter-c")
+             (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+             (toml "https://github.com/tree-sitter/tree-sitter-toml")
+             (tsx
+              .
+              ("https://github.com/tree-sitter/tree-sitter-typescript"
+               "v0.23.2"
+               "tsx/src"))
+             (typescript
+              .
+              ("https://github.com/tree-sitter/tree-sitter-typescript"
+               "v0.23.2"
+               "typescript/src"))
+             (yaml
+              .
+              ("https://github.com/ikatyang/tree-sitter-yaml"
+               "v0.5.0"))
+             (prisma
+              "https://github.com/victorhqc/tree-sitter-prisma")))
+    (setq treesit-language-source-alist '())
+    (add-to-list 'treesit-language-source-alist grammar)
+    (unless (treesit-language-available-p (car grammar))
+      (treesit-install-language-grammar (car grammar)))))
+(my/treesit-install-grammars)
 
-*** Toggle comments
-
-#+begin_src elisp
 (use-package emacs
   :bind
   ("C-x /" . comment-or-uncomment-region))
-#+end_src
 
-*** Auto SSH connections
-
-#+begin_src elisp
 (use-package ssh
   :load-path (lambda () (expand-file-name "scripts/ssh.el" user-emacs-directory)))
-#+end_src
 
-*** Region search
-
-#+begin_src elisp
 (defun my/occur-regions ()
   (interactive)
   (occur (format "^%s begin-region -- .*$" comment-start)))
@@ -160,21 +110,13 @@
 (use-package
  emacs
  :bind ("M-s r" . my/occur-regions))
-#+end_src
 
-*** Replace string
-
-#+begin_src elisp
 (use-package
  emacs
  :bind ("C-c r" . replace-regexp) ("C-c R" . replace-string))
-#+end_src
 
-** Languages
+(use-package rust-mode)
 
-*** Python
-
-#+begin_src elisp
 (use-package
  python
  :config (setq-default python-indent-def-block-scale 1)
@@ -187,43 +129,21 @@
    (expand-file-name "scripts/python-tests.el" user-emacs-directory))
  :after python
  :bind (:map python-mode-map ("C-x t r" . python-tests-run)))
-#+end_src
 
-*** SQL
+(use-package yuck-mode)
 
-Literate SQL programming
-
-#+begin_src elisp
 (use-package async)
 (use-package ob-async-sql
   :load-path (lambda () (expand-file-name "scripts/ob-async-sql.el" user-emacs-directory))
   :after async)
-#+end_src
 
-*** Markdown
-
-Required for better LSP docs rendering
-
-#+begin_src elisp
 (use-package markdown-mode)
-#+end_src
 
-Generate table of contents
-
-#+begin_src elisp
 (use-package markdown-toc
   :after markdown-mode)
-#+end_src
 
-*** CSV
-
-#+begin_src elisp
 (use-package csv-mode)
-#+end_src
 
-*** Javascript
-
-#+begin_src elisp
 (setq-default js-indent-level 2)
 (setq-default web-mode-code-indent-offset 2)
 
@@ -242,9 +162,7 @@ Generate table of contents
  web-mode
  :mode (("\\.html?\\'" . web-mode))
  :hook (web-mode-hook . my/web-mode-hook))
-#+end_src
 
-#+begin_src elisp
 (add-to-list
  'compilation-error-regexp-alist-alist
  '(biome-lint
@@ -256,11 +174,7 @@ Generate table of contents
  '(tsc
    "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1))
 (add-to-list 'compilation-error-regexp-alist 'tsc)
-#+end_src
 
-*** Emacs Lisp
-
-#+begin_src elisp
 (defun my/eval-buffer-and-print ()
   (interactive)
   (eval-buffer)
@@ -277,29 +191,13 @@ Generate table of contents
 
 (with-eval-after-load 'flymake
   (setq elisp-flymake-byte-compile-load-path load-path))
-#+end_src
 
-*** Tex
-
-#+begin_src elisp
 (use-package tex-mode)
-#+end_src
 
-*** CSS
-
-#+begin_src elisp
 (use-package css-mode)
-#+end_src
 
-*** Docker
-
-#+begin_src elisp
 (use-package dockerfile-mode)
-#+end_src
 
-*** Plant UML
-
-#+begin_src elisp
 (use-package
  plantuml-mode
  :custom
@@ -318,11 +216,7 @@ Generate table of contents
    "-config"
    ,(expand-file-name "plantuml.cfg" user-emacs-directory)))
  :hook (plantuml-mode-hook . display-line-numbers-mode))
-#+end_src
 
-*** Solidity
-
-#+begin_src elisp
 (use-package
  solidity-mode
  :config
@@ -338,19 +232,9 @@ Generate table of contents
  (add-hook
   'solidity-mode-hook
   (lambda () (setq-local c-at-vsemi-p-fn 'solidity-at-vsemi-p))))
-#+end_src
 
-*** YAML
-
-#+begin_src elisp
 (use-package yaml-mode)
-#+end_src
 
-** Compilation
-
-*** ANSI colors
-
-#+begin_src elisp
 (use-package
  ansi-color
  :config
@@ -358,84 +242,85 @@ Generate table of contents
    (let ((buffer-read-only nil))
      (ansi-color-apply-on-region (point-min) (point-max))))
  :hook (compilation-filter-hook . my/ansi-colorize-buffer))
-#+end_src
 
-*** Increase line length to hide
+(defvar my/global-compilation-buffer-names-list nil
+  "List of names of each compilation buffer")
 
-#+begin_src elisp
+(defun my/next-error ()
+  "Navigates to the next xref or flymake."
+  (interactive)
+  (if (seq-some
+       #'my/window-with-name-visible-p
+       (append
+        '("*xref*" "*Occur*")
+        my/global-compilation-buffer-names-list))
+      (next-error)
+    (flymake-goto-next-error)))
+
+(defun my/previous-error ()
+  "Navigates to the previous xref or flymake."
+  (interactive)
+  (if (seq-some
+       #'my/window-with-name-visible-p
+       (append
+        '("*xref*" "*Occur*")
+        my/global-compilation-buffer-names-list))
+      (previous-error)
+    (flymake-goto-prev-error)))
+
+(defun my/compilation-hook (process)
+  (unless (member
+           (buffer-name) my/global-compilation-buffer-names-list)
+    (push (buffer-name) my/global-compilation-buffer-names-list)))
+
+(add-hook 'compilation-start-hook 'my/compilation-hook)
+
 (setq-default compilation-max-output-line-length 5000)
-#+end_src
 
-*** Follow compilation
-
-#+begin_src elisp
 (setq compilation-scroll-output t)
-#+end_src
 
-*** Binds
-
-#+begin_src elisp
 (use-package
  emacs
  :bind
  ("<f8>" . recompile)
- ("<f9>" . project-compile))
-#+end_src
+ ("<f9>" . project-compile)
+ ("M-]" . my/next-error)
+ ("M-[" . my/previous-error))
 
-** Snippets
-
-*** Yasnippet
-
-#+begin_src elisp
 (use-package
  yasnippet
  :diminish (yas-minor-mode yas-global-mode)
  :config
  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
  (yas-global-mode 1))
-#+end_src
 
-* UI\UX
+(defun my/show-buffer-diagnostics ()
+  (interactive)
+  (flymake-show-buffer-diagnostics)
+  (message "Buffer diagnostics")
+  (other-window 1))
 
-** Default frame setup
+(use-package flymake :bind ("<f5>" . my/show-buffer-diagnostics))
 
-#+begin_src elisp
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(undecorated . t))
+
 (setq-default
  left-margin-width 1
  right-margin-width 0)
 (add-to-list 'default-frame-alist '(left-fringe . 0))
 (add-to-list 'default-frame-alist '(right-fringe . 0))
-#+end_src
 
-** Theme
-
-#+begin_src elisp
 (load-file (expand-file-name "scripts/koi-theme.el" user-emacs-directory))
 (load-theme 'koi :no-confirm)
-#+end_src
 
-** Splash screen
-
-#+begin_src elisp
 (setq-default inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message "")
-#+end_src
 
-** Line numbers width
-
-#+begin_src elisp
 (setq-default display-line-numbers-width 3)
-#+end_src
 
-** Golden ratio
-
-Automatically resizes windows to fit golden ratio
-
-#+begin_src elisp
 (use-package
  golden-ratio
  :diminish golden-ratio-mode
@@ -445,11 +330,7 @@ Automatically resizes windows to fit golden ratio
  :custom
  (golden-ratio-auto-scale t)
  (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*" "*Async Shell Command*")))
-#+end_src
 
-** Fonts
-
-#+begin_src elisp
 (set-face-attribute 'default nil
                     :font "Iosevka NF"
                     :height 130
@@ -469,35 +350,17 @@ Automatically resizes windows to fit golden ratio
 (add-to-list 'default-frame-alist '(font . "Iosevka NF 13"))
 
 (setq-default line-spacing 0)
-#+end_src
 
-** Essential small tweaks
-
-*** Cursor
-
-#+begin_src elisp
 (blink-cursor-mode t)
-#+end_src
 
-*** No backups (or `~` files)
-
-#+begin_src elisp
 (setq make-backup-files nil)
-(setq create-lockfiles nil)
-(setq-default auto-save-default nil)
-#+end_src
 
-*** System clipboard to kill ring integration
+(use-package
+ emacs
+ :bind ("C-+" . text-scale-increase) ("C--" . text-scale-decrease))
 
-#+begin_src elisp
 (setq save-interprogram-paste-before-kill t)
-#+end_src
 
-** Completion
-
-*** Dabbrev
-
-#+begin_src elisp
 (use-package
  dabbrev
  :custom
@@ -516,21 +379,13 @@ Automatically resizes windows to fit golden ratio
   (load-file (expand-file-name "scripts/upcase-abbrev-expand.el" user-emacs-directory))
   (add-to-list
    'hippie-expand-try-functions-list 'try-complete-upcase-abbrev))
-#+end_src
 
-*** Orderless
-
-#+begin_src elisp
 (use-package orderless
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
-#+end_src
 
-*** Default completion system
-
-#+begin_src elisp
 (use-package
  completion
  :config
@@ -543,11 +398,7 @@ Automatically resizes windows to fit golden ratio
   completion-in-region-mode-map
   ("C-n" . 'minibuffer-next-completion)
   ("C-p" . 'minibuffer-previous-completion)))
-#+end_src
 
-*** Vertico
-
-#+begin_src elisp
 (use-package vertico
   :custom
   (vertico-count 13)
@@ -555,40 +406,31 @@ Automatically resizes windows to fit golden ratio
   (vertico-cycle nil)
   :config
   (vertico-mode))
-#+end_src
 
-*** Add annotations to completion
-
-#+begin_src elisp
 (use-package marginalia
   :custom
   (marginalia-max-relative-age 0)
   (marginalia-align 'left)
   :init
   (marginalia-mode))
-#+end_src
 
-*** Flatten imenu
+(use-package all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
 
-#+begin_src elisp
 (use-package flimenu
   :disabled
   :config
   (flimenu-global-mode))
-#+end_src
 
-*** Indents
-
-#+begin_src elisp
 (setq-default indent-tabs-mode nil)
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
 (setq backward-delete-char-untabify-method 'hungry)
-#+end_src
 
-*** Line numbers
-
-#+begin_src elisp
 (global-display-line-numbers-mode 1)
 
 (dolist (mode
@@ -608,75 +450,35 @@ Automatically resizes windows to fit golden ratio
   (add-hook mode (lambda () (display-line-numbers-mode -1))))
 
 (setq-default display-line-numbers-type 'visual)
-#+end_src
 
-*** Scroll margin
-
-#+begin_src elisp
 (setq-default scroll-margin 7)
-#+end_src
 
-*** Auto pairs
-
-#+begin_src elisp
 (electric-pair-mode 1)
-#+end_src
 
-*** UI tweaks
-
-#+begin_src elisp
 (menu-bar-mode -1)           ;; Disable the menu bar
 (scroll-bar-mode -1)         ;; Disable the scroll bar
 (tool-bar-mode -1)           ;; Disable the tool bar
-#+end_src
 
-*** Replace region when typing
-
-#+begin_src elisp
 (setq-default delete-selection-mode t)
-#+end_src
 
-*** Automatically update buffer contents
+(setq create-lockfiles nil)
+(setq-default auto-save-default nil)
 
-#+begin_src elisp
 (global-auto-revert-mode t)
-#+end_src
 
-*** Automatically select help frame
-
-#+begin_src elisp
 (setq help-window-select t)
-#+end_src
 
-*** Remember command history
+(setq-default truncate-lines t)
 
-#+begin_src elisp
 (setq-default history-length 25)
 (savehist-mode 1)
-#+end_src
 
-*** Remember last location in files
-
-#+begin_src elisp
 (save-place-mode 1)
-#+end_src
 
-*** Do not use dialogue box
-
-#+begin_src elisp
 (setq use-dialog-box nil)
-#+end_src
 
-** Navigation
-
-*** Windows layout
-
-#+begin_src elisp
 (winner-mode +1) ;; Allows to restores layout after maximizing
-#+end_src
 
-*** Buffers
-#+begin_src elisp
 (use-package emacs
   :bind
   ("C-," . previous-buffer)
@@ -684,29 +486,33 @@ Automatically resizes windows to fit golden ratio
   ("C-x C-b" . ibuffer)
   ("C-x k" . kill-current-buffer)
   ("C-x K" . kill-buffer))
-#+end_src
 
-*** Vertical split
-
-#+begin_src elisp
 (defun my/split-right-and-switch ()
   (interactive)
   (split-window-right)
   (windmove-right))
 (window-divider-mode 1)
 (use-package emacs :bind ("C-x 3" . my/split-right-and-switch))
-#+end_src
 
-*** SciMotions
-
-#+begin_src elisp
 (use-package scimotions
   :load-path (lambda () (expand-file-name "scripts/scimotions.el" user-emacs-directory)))
-#+end_src
 
-*** Scroll
+(use-package
+ buffer-move
+ :bind
+ ("<C-S-up>" . buf-move-up)
+ ("<C-S-down>" . buf-move-down)
+ ("<C-S-left>" . buf-move-left)
+ ("<C-S-right>" . buf-move-right))
 
-#+begin_src elisp
+(use-package
+ emacs
+ :bind
+ ("<C-up>" . windmove-up)
+ ("<C-right>" . windmove-right)
+ ("<C-left>" . windmove-left)
+ ("<C-down>" . windmove-down))
+
 (defun my/scroll-half-down ()
   "Scroll down half a window."
   (interactive)
@@ -721,39 +527,28 @@ Automatically resizes windows to fit golden ratio
   :bind
   ("C-v" . my/scroll-half-up)
   ("M-v" . my/scroll-half-down))
-#+end_src
 
-*** Duplicate line
+(defun my/visual-inner-WORD ()
+  "Select the inner word at point."
+  (interactive)
+  (search-backward-regexp " \\|^")
+  (forward-char)
+  (set-mark (point))
+  (search-forward-regexp " \\|$")
+  (backward-char))
 
-#+begin_src elisp
+(use-package emacs :bind ("C-c W" . my/visual-inner-WORD))
+
 (use-package emacs :bind ("C-c d" . duplicate-line))
-#+end_src
 
-*** Expand region
-
-#+begin_src elisp
 (use-package expand-region
   :bind
   ("C-;" . er/expand-region))
-#+end_src
 
-** Async shell command
-
-#+begin_src elisp
 (setq-default async-shell-command-buffer 'new-buffer)
-#+end_src
 
-** Use eww as browser by default
-
-#+begin_src elisp
 (setq browse-url-browser-function 'eww-browse-url)
-#+end_src
 
-* Helper packages
-
-*** Sudo edit
-
-#+begin_src elisp
 (use-package
  sudo-edit
  :ensure t
@@ -764,26 +559,23 @@ Automatically resizes windows to fit golden ratio
      (setenv "SHELL" "/usr/bin/bash")
      (call-interactively 'sudo-edit-find-file)
      (setenv "SHELL" SHELL))))
-#+end_src
 
-*** Auth source
+(defun my/display-current-time ()
+  "Display the current time in the minibuffer."
+  (interactive)
+  (message
+   (format-time-string "Current datetime: %Y-%m-%d %H:%M:%S")))
 
-#+begin_src elisp
 (use-package auth-source
   :custom
   (auth-sources '("~/.authinfo.gpg"))
   (auth-source-debug 'trivia)
   :config
   (auth-source-pass-enable))
-#+end_src
 
-* Org
+(use-package free-keys
+  :vc (:url "https://github.com/Fuco1/free-keys"))
 
-** Base
-
-*** Main setup function
-
-#+begin_src elisp
 (defun my/org-mode-setup ()
   (require 'org-tempo)
   (setq org-ellipsis " ▾")
@@ -795,18 +587,10 @@ Automatically resizes windows to fit golden ratio
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
-#+end_src
 
-*** Indents
-
-#+begin_src elisp
 (use-package org-indent
   :load-path (lambda () (expand-file-name "scripts/org-indent.el" user-emacs-directory)))
-#+end_src
 
-*** Custom hook
-
-#+begin_src elisp
 (defun my/org-mode-hook ()
   (setq org-indent-mode-turns-on-hiding-stars nil)
   (org-indent-mode)
@@ -814,11 +598,7 @@ Automatically resizes windows to fit golden ratio
   (set-face-attribute 'org-level-2 nil :height 1.35)
   (set-face-attribute 'org-level-2 nil :height 1.2)
   (visual-line-mode 1))
-#+end_src
 
-*** Actual setup
-
-#+begin_src elisp
 (use-package
  org
  :config
@@ -833,28 +613,14 @@ Automatically resizes windows to fit golden ratio
  ("M-p" . org-previous-link)
  ("C-c a" . org-agenda)
  ("C-c t" . org-timer-set-timer))
-#+end_src
 
-*** Tags
-
-#+begin_src elisp
 (setq org-tag-alist
       '(("project") ("idea") ("post") ("feature") ("improve") ("bug") ("mvp") ("backlog") ("noexport")))
-#+end_src
 
-** Table of contents
-
-#+begin_src elisp
 (use-package toc-org
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable))
-#+end_src
 
-** Babel
-
-*** Base
-
-#+begin_src elisp
 (setq org-confirm-babel-evaluate nil)
 
 (setq org-babel-default-header-args
@@ -871,25 +637,13 @@ Automatically resizes windows to fit golden ratio
    (plantuml . t)
    (awk . t)
    (sql . t)))
-#+end_src
 
-*** Auto tangle
-
-#+begin_src elisp
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))
-#+end_src
 
-*** Plant UML
-
-#+begin_src elisp
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
-#+end_src
 
-*** Execute all blocks
-
-#+begin_src elisp
 (defun my/org-babel-execute-all-src-blocks ()
   "Execute all source code blocks in the current Org buffer."
   (interactive)
@@ -897,32 +651,18 @@ Automatically resizes windows to fit golden ratio
     (goto-char (point-min))
     (while (search-forward-regexp org-babel-src-block-regexp nil t)
       (org-babel-execute-src-block))))
-#+end_src
 
-** Agenda
-
-*** Base
-
-#+begin_src elisp
 (setq org-directory (expand-file-name "~/notes/org"))
 (setq org-agenda-files (directory-files-recursively "~/notes/org/" "\\.org$"))
 (setq org-agenda-start-with-log-mode t)
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
-#+end_src
 
-*** Custom todo states
-
-#+begin_src elisp
 (setq org-todo-keywords
   '((sequence "TODO(t)" "|" "DONE(d!)")
     (sequence "TOREAD(tr)" "|" "READING(pr)" "|" "FINISED(f!")
     (sequence "INPROGRESS(p)" "INTEST(v)" "HOLD(h)" "|" "COMPLETED(c)" "CANCELED(k@)")))
-#+end_src
 
-*** Custom view
-
-#+begin_src elisp
 (setq org-agenda-custom-commands
   '(("d" "Dashboard"
      ((agenda "" ((org-deadline-warning-days 7)))
@@ -970,11 +710,7 @@ Automatically resizes windows to fit golden ratio
       (todo "CANC"
             ((org-agenda-overriding-header "Cancelled Projects")
              (org-agenda-files org-agenda-files)))))))
-#+end_src
 
-** Templates
-
-#+begin_src elisp
 (setq org-capture-templates
   '(    ;; ... other templates
 
@@ -985,11 +721,7 @@ Automatically resizes windows to fit golden ratio
 
         ;; ... other templates
     ))
-#+end_src
 
-** Source code block tag expansion
-
-#+begin_src elisp
 (use-package org
  :config
  (dolist (setup
@@ -1000,30 +732,12 @@ Automatically resizes windows to fit golden ratio
             ("py" . "src python")
             ("pu" . "src plantuml :file ")))
    (add-to-list 'org-structure-template-alist setup)))
-#+end_src
 
-** Paste images
-
-#+begin_src elisp
 (use-package org-download)
-#+end_src
 
-* Shells and terminals
-
-** Shell
-
-Turn off duplicating lines on execution
-
-#+begin_src elisp
 (setq comint-input-ignoredups t)
 (setq shell-file-name "bash")
-#+end_src
 
-** Eshell
-
-*** Setup eshell
-
-#+begin_src elisp
 (use-package
  eshell
  :hook
@@ -1041,34 +755,20 @@ Turn off duplicating lines on execution
   eshell-scroll-to-bottom-on-input t
   eshell-history-append t
   eshell-visual-commands '("bash" "btop" "ssh" "psql")))
-#+end_src
 
-** Eat
-
-#+begin_src elisp
 (use-package eat
   :diminish
   eat-eshell-mode
   :config
   (add-hook 'eshell-mode-hook #'eat-eshell-mode)
   (add-hook 'eshell-mode-hook #'eat-eshell-visual-command-mode))
-#+end_src
 
-* Tools
-
-** Jinx (spell checker)
-
-#+begin_src elisp
 (use-package
  jinx
  :config
  (dolist (hook '(org-mode-hook conf-mode-hook))
    (add-hook hook #'jinx-mode)))
-#+end_src
 
-** Tramp
-
-#+begin_src elisp
 (setq remote-file-name-inhibit-cache nil)
 (setq vc-ignore-dir-regexp
       (format "%s\\|%s"
@@ -1076,11 +776,7 @@ Turn off duplicating lines on execution
 
                     tramp-file-name-regexp))
 (setq tramp-verbose 1)
-#+end_src
 
-** GPTel
-
-#+begin_src elisp
 (use-package
  gptel
  :config
@@ -1095,10 +791,7 @@ Turn off duplicating lines on execution
    :stream t))
  (add-to-list 'gptel-directives '(frontend . "You are a senior frontend developer focused on React, TypeScript, TailwindCSS and Feature sliced design. You prefer use pnpm and biome and your main editor is GNU Emacs. Write code without comments. Answer with text only to the theoretical questions."))
  :bind ("C-c g" . gptel-menu))
-#+end_src
 
-** Elfeed
-#+begin_src elisp
 (use-package
  elfeed
  :config
@@ -1126,13 +819,7 @@ Turn off duplicating lines on execution
     ("https://www.reddit.com/r/aipromptprogramming.rss" reddit ml)
     ("https://blog.python.org/feeds/posts/default?alt=rss" python news)
     ("https://abdullin.substack.com/feed" llm)))))
-#+end_src
 
-** Magit
-
-*** Magit
-
-#+begin_src elisp
 (use-package
  magit
  :custom (magit-status-buffer-switch-function 'switch-to-buffer)
@@ -1140,13 +827,7 @@ Turn off duplicating lines on execution
   'magit-display-buffer-same-window-except-diff-v1)
  :bind ("C-x g o" . magit) ("C-x g c" . magit-commit)
  :hook (magit-status-mode-hook . display-line-numbers-mode))
-#+end_src
 
-Actually added some
-
-*** Gutter
-
-#+begin_src elisp
 (use-package
  git-gutter
  :diminish git-gutter-mode
@@ -1172,18 +853,10 @@ Actually added some
  ("C-x g s" . my/stage-hunk)
  :hook
  ((org-mode prog-mode) . git-gutter-mode))
-#+end_src
 
-*** Merge
-
-#+begin_src elisp
 (use-package smerge-mode
   :diminish smerge-mode)
-#+end_src
 
-*** Ediff
-
-#+begin_src elisp
 (defun my/ediff-hook ()
   (ediff-setup-keymap)
   (define-key ediff-mode-map "j" 'ediff-next-difference)
@@ -1196,13 +869,7 @@ Actually added some
  (ediff-split-window-function 'split-window-horizontally)
  (ediff-window-setup-function 'ediff-setup-windows-plain)
  :hook (ediff-mode . my/ediff-hook))
-#+end_src
 
-** Project
-
-*** Register not only ~.git~ directories
-
-#+begin_src elisp
 (defun my/dir-contains-project-marker (dir)
   "Checks if `.project' file is present in directory at DIR path."
   (let ((project-marker-path (file-name-concat dir ".project")))
@@ -1212,28 +879,16 @@ Actually added some
 (customize-set-variable 'project-find-functions
                         (list #'project-try-vc
                               #'my/dir-contains-project-marker))
-#+end_src
 
-*** Project extensions
-
-#+begin_src elisp
 (load-file (expand-file-name "scripts/my-extensions.el" user-emacs-directory))
 (load-file (expand-file-name "scripts/project-ext.el" user-emacs-directory))
 (require 'project-ext)
-#+end_src
 
-*** Build from ~Makefile~
-
-#+begin_src elisp
 (use-package
  make-project
  :vc (:url "https://github.com/scipunch/make-project")
  :bind ("C-x p c" . make-project-run))
-#+end_src
 
-*** Binds
-
-#+begin_src elisp
 (defun my/project-or-default-eshell ()
   "Open eshell in project root or in the current."
   (interactive)
@@ -1254,11 +909,7 @@ Actually added some
   ("C-x p e" . my/project-or-default-eshell)
   ("C-x p F" . project-root-find-file)
   ("C-x p p" . my/project-switch))
-#+end_src
 
-** Dired
-
-#+begin_src elisp
 (use-package dired-open
   :custom ((dired-listing-switches "-agho --group-directories-first")
            (dired-kill-when-opening-new-dired-buffer t))
@@ -1269,19 +920,11 @@ Actually added some
                                 ("png" . "feh")
                                 ("mkv" . "mpv")
                                 ("mp4" . "mpv"))))
-#+end_src
 
-** GraphQL
-
-#+begin_src elisp
 (use-package graphql-mode :disabled)
 (use-package graphql :disabled)
 (use-package request :disabled)
-#+end_src
 
-** Emacs Application Framework (EAF)
-
-#+begin_src elisp
 (use-package eaf
   :disabled
   :load-path "~/.emacs.d/site-lisp/emacs-application-framework"
@@ -1296,25 +939,13 @@ Actually added some
   (eaf-browser-enable-adblocker t)
   :config
   (defalias 'browse-web #'eaf-open-browser))
-#+end_src
 
-** PDF tools
-
-#+begin_src elisp
 (use-package pdf-tools)
-#+end_src
 
-** Execute selected shell command
-
-#+begin_src elisp
 (defun my/async-shell-command-on-region ()
   (interactive)
   (async-shell-command (buffer-substring (region-beginning) (region-end))))
-#+end_src
 
-** EWW extensions
-
-#+begin_src elisp
 (use-package
  eww-ext
  :load-path
@@ -1325,10 +956,5 @@ Actually added some
   '(("pyTelegramBotAPI docs"
      .
      "https://pytba.readthedocs.io/en/latest/search.html?q=%s&check_keywords=yes&area=default"))))
-#+end_src
 
-* Final
-
-#+begin_src elisp
 (message "Config fully loaded")
-#+end_src

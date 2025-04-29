@@ -71,8 +71,8 @@ $mainShiftMod = SUPER SHIFT
 
 ** Emacs
 #+begin_src conf
-$emacs = $HOME/.local/bin/emacs
-$terminal = foot
+$emacs = $HOME/.local/bin/emacsclient -a "" -c
+$terminal = $HOME/.local/bin/emacsclient -a "" -c -e "(progn (setq current-prefix-arg '(new)) (call-interactively 'eshell))"
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
 

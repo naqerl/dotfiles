@@ -1,1 +1,0 @@
-(#s(compilation-setup "Memory profile" "make memory-profile") #s(compilation-setup "Clippy" "make clippy") #s(compilation-setup "Run" "make run"))
