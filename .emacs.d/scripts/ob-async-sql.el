@@ -1,9 +1,15 @@
-;; -*- lexical-binding: t; -*-
+;;; package --- Org babel async SQL execution ;; -*- lexical-binding: t; -*-
+;;; Commentary:
+;;; Allows to start an execution of multiple blocks and come back when they will be finished
+;;;
+;;; Code:
 (require 'org)
 (require 'async)
 
 (defun org-babel-async-execute-sql (body params)
-  "Run a SQL block at point asynchrously."
+  "Run a SQL block at point asynchrously.
+BODY contains SQL query
+PARAMS not used but required by the `org-babel-execute:sql'"
   (interactive)
   (let ((current-file (buffer-file-name))
         (uuid (org-id-uuid))
@@ -43,7 +49,9 @@
 
      `(lambda (result)
         "Code that runs when the async function finishes."
-        (message "Query %s finished in %fms" ,uuid ,(* 1000 (float-time (time-since time))))
+        (message "Query %s finished in %fms"
+                 ,uuid
+                 ,(* 1000 (float-time (time-since time))))
         (save-window-excursion
           (save-excursion
             (save-restriction
@@ -58,6 +66,9 @@
                 (insert (format-time-string " at <%F %r>"))))))))
     uuid))
 
-(advice-add 'org-babel-execute:sql :override #'org-babel-async-execute-sql)
+(advice-add
+ 'org-babel-execute:sql
+ :override #'org-babel-async-execute-sql)
 
 (provide 'ob-async-sql)
+;;; ob-async-sql.el ends here
