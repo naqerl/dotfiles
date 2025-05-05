@@ -4455,6 +4455,26 @@ Move WORKTREE to PATH.
 
 
 )
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/load-env-vars-20180511.2210/load-env-vars-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'load-env-vars "load-env-vars" "\
+Load environment variables found in FILE-PATH.
+
+(fn FILE-PATH)" t)
+(register-definition-prefixes "load-env-vars" '("load-env-vars-"))
+
+
+(provide 'load-env-vars-autoloads)
+
+
+)
 (let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/jtsx-20250414.2100/jtsx-autoloads.el"))(load-true-file-name load-file-name))
 
 
@@ -4584,6 +4604,26 @@ See `jinx-mode' for more information on Jinx mode.
 
 
 (provide 'jinx-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/graphql-20221128.1106/graphql-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(register-definition-prefixes "graphql" '("graphql-"))
+
+
+
+(register-definition-prefixes "graphql-examples" '("ghubp-"))
+
+
+(provide 'graphql-autoloads)
 
 
 )
@@ -5272,6 +5312,26 @@ disabled.
 
 
 )
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/github-explorer-20220305.1450/github-explorer-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'github-explorer "github-explorer" "\
+Go REPO github.
+
+(fn &optional REPO)" t)
+(register-definition-prefixes "github-explorer" '("github-explorer-"))
+
+
+(provide 'github-explorer-autoloads)
+
+
+)
 (let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/git-gutter-20241212.1415/git-gutter-autoloads.el"))(load-true-file-name load-file-name))
 
 
@@ -5404,6 +5464,64 @@ format recognized by `kbd', for example \"C-x\".
 
 
 (provide 'free-keys-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/flimenu-20200810.1510/flimenu-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'flimenu-mode "flimenu" "\
+Toggle the automatic flattening of imenu indexes.
+
+This is a minor mode.  If called interactively, toggle the `Flimenu
+mode' mode.  If the prefix argument is positive, enable the mode, and if
+it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate the variable `flimenu-mode'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+(fn &optional ARG)" t)
+(put 'flimenu-global-mode 'globalized-minor-mode t)
+(defvar flimenu-global-mode nil "\
+Non-nil if Flimenu-Global mode is enabled.
+See the `flimenu-global-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `flimenu-global-mode'.")
+(custom-autoload 'flimenu-global-mode "flimenu" nil)
+(autoload 'flimenu-global-mode "flimenu" "\
+Toggle Flimenu mode in all buffers.
+With prefix ARG, enable Flimenu-Global mode if ARG is positive;
+otherwise, disable it.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.
+Enable the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+Flimenu mode is enabled in all buffers where `flimenu-mode-turn-on'
+would do it.
+
+See `flimenu-mode' for more information on Flimenu mode.
+
+(fn &optional ARG)" t)
+(register-definition-prefixes "flimenu" '("flimenu-"))
+
+
+(provide 'flimenu-autoloads)
 
 
 )
@@ -6179,6 +6297,82 @@ Major mode for editing files of tab-separated value type.
 
 
 )
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/caser-20241003.131/caser-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'caser-camelcase-dwim "caser" "\
+Camelcase words in the region, if active; if not, camelcase word at point.
+
+This converts it from dash-case or snake_case to camelCase.
+
+If the region is active, this function calls `caser-camelcase-region'.
+Otherwise, it calls `caser-camelcase-word', with prefix argument passed to it
+to camelcase ARG words.
+
+(fn ARG)" t)
+(autoload 'caser-snakecase-dwim "caser" "\
+Snakecase words in the region, if active; if not, snakecase word at point.
+
+This converts it from camelCase or dash-case to snake_case.
+
+If the region is active, this function calls `caser-snakecase-region'.
+Otherwise, it calls `caser-snakecase-word', with prefix argument passed to it
+to snakecase ARG words.
+
+(fn ARG)" t)
+(autoload 'caser-dashcase-dwim "caser" "\
+Dashcase words in the region, if active; if not, dashcase word at point.
+
+This converts it from camelCase or snake_case to dash-case.
+
+If the region is active, this function calls `caser-dashcase-region'.
+Otherwise, it calls `caser-dashcase-word', with prefix argument passed to it
+to dashcase ARG words.
+
+(fn ARG)" t)
+(autoload 'caser-dashcase-from-space-dwim "caser" "\
+Dashcase what you mean, including converting spaces to dashes.
+
+If the region is active, dashcase it; otherwise dashcase the word at point.
+
+This converts it from camelCase or snake_case to dash-case.
+
+If the region is active, this function calls `caser-dashcase-region'.
+Otherwise, it calls `caser-dashcase-word', with prefix argument passed to it
+to dashcase WORDS words.
+
+(fn &optional WORDS)" t)
+(autoload 'caser-snakecase-from-space-dwim "caser" "\
+Snakecase what you mean, including converting spaces to underscores.
+
+If the region is active, snakecase it; otherwise snakecase WORDS
+words at point, defaulting to 1.
+
+This converts it from camelCase or dash-case to snake_case.
+
+(fn &optional WORDS)" t)
+(autoload 'caser-camelcase-from-space-dwim "caser" "\
+Camelcase what you mean, including converting spaces to underscores.
+
+If the region is active, camelcase it; otherwise camelcase WORDS
+words at point, defaulting to 1.
+
+This converts it from snake_case or dash-case to camelCase.
+
+(fn &optional WORDS)" t)
+(register-definition-prefixes "caser" '("caser-"))
+
+
+(provide 'caser-autoloads)
+
+
+)
 (let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/buffer-move-20220512.755/buffer-move-autoloads.el"))(load-true-file-name load-file-name))
 
 
@@ -6364,11 +6558,12 @@ disabled.
                     s rust-mode popup dash plantuml-mode pdf-tools
                     async org-download org-auto-tangle orderless
                     markdown-mode markdown-toc marginalia make-project
-                    llama magit-section magit jtsx jinx gptel
-                    golden-ratio git-gutter gcmh free-keys
-                    expand-region elisp-autofmt elfeed eat dumb-jump
-                    dockerfile-mode dired-hacks-utils dired-open
-                    diminish csv-mode buffer-move all-the-icons
+                    llama magit-section magit load-env-vars jtsx jinx
+                    graphql gptel golden-ratio github-explorer
+                    git-gutter gcmh free-keys flimenu expand-region
+                    elisp-autofmt elfeed eat dumb-jump dockerfile-mode
+                    dired-hacks-utils dired-open diminish csv-mode
+                    caser buffer-move all-the-icons
                     all-the-icons-dired all-the-icons-completion)
         package-activated-list)))
 (progn
