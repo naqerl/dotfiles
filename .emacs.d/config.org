@@ -62,9 +62,7 @@
 #+end_src
 
 * Dev
-
 ** Common
-
 *** Dumb jump
 
 #+begin_src elisp
@@ -155,7 +153,7 @@
 #+begin_src elisp
 (defun my/occur-regions ()
   (interactive)
-  (occur (format "^%s begin-region -- .*$" comment-start)))
+  (occur (format "^ *%s begin-region -- .*$" comment-start)))
 
 (use-package
  emacs
@@ -171,7 +169,6 @@
 #+end_src
 
 ** Languages
-
 *** Python
 
 #+begin_src elisp
@@ -204,13 +201,6 @@ Required for better LSP docs rendering
 (use-package markdown-mode)
 #+end_src
 
-Generate table of contents
-
-#+begin_src elisp
-(use-package markdown-toc
-  :after markdown-mode)
-#+end_src
-
 *** CSV
 
 #+begin_src elisp
@@ -240,59 +230,17 @@ Generate table of contents
  :hook (web-mode-hook . my/web-mode-hook))
 #+end_src
 
-#+begin_src elisp
-(use-package compile
-  :config
-  (add-to-list
-   'compilation-error-regexp-alist-alist
-   '(biome-lint
-     "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1))
-  (add-to-list 'compilation-error-regexp-alist 'biome-lint)
-
-  (add-to-list
-   'compilation-error-regexp-alist-alist
-   '(tsc
-     "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1))
-  (add-to-list 'compilation-error-regexp-alist 'tsc))
-#+end_src
-
 *** Emacs Lisp
 
 #+begin_src elisp
-(defun my/eval-buffer-and-print ()
-  (interactive)
-  (eval-buffer)
-  (message "Buffer evaluated"))
-
-(defun my/emacs-lisp-mode-hook ()
-  (flymake-mode)
-  (keymap-set emacs-lisp-mode-map "C-c C-f" 'elisp-autofmt-buffer)
-  (keymap-set emacs-lisp-mode-map "C-x C-b" 'my/eval-buffer-and-print))
-
-(use-package
- elisp-autofmt
- :hook (emacs-lisp-mode-hook . my/emacs-lisp-mode-hook))
-
 (with-eval-after-load 'flymake
   (setq elisp-flymake-byte-compile-load-path load-path))
-#+end_src
-
-*** Tex
-
-#+begin_src elisp
-(use-package tex-mode)
 #+end_src
 
 *** CSS
 
 #+begin_src elisp
 (use-package css-mode)
-#+end_src
-
-*** Docker
-
-#+begin_src elisp
-(use-package dockerfile-mode)
 #+end_src
 
 *** Plant UML
@@ -346,7 +294,7 @@ Generate table of contents
 ** Compilation
 
 *** ANSI colors
-
+l
 #+begin_src elisp
 (use-package
  ansi-color
@@ -379,9 +327,25 @@ Generate table of contents
  ("<f9>" . project-compile))
 #+end_src
 
-** Snippets
+*** Compilation regular expressions
 
-*** Yasnippet
+#+begin_src elisp
+(use-package compile
+  :config
+  (add-to-list
+   'compilation-error-regexp-alist-alist
+   '(biome-lint
+     "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1))
+  (add-to-list 'compilation-error-regexp-alist 'biome-lint)
+
+  (add-to-list
+   'compilation-error-regexp-alist-alist
+   '(tsc
+     "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1))
+  (add-to-list 'compilation-error-regexp-alist 'tsc))
+#+end_src
+
+** Snippets
 
 #+begin_src elisp
 (use-package
@@ -525,26 +489,6 @@ Automatically resizes windows to fit golden ratio
         completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
 
-*** Default completion system
-
-#+begin_src elisp
-(use-package
- completion
- :config
- (setq
-  completions-format 'vertical
-  completions-header-format
-  #(
-    "%s possible completions:
-")
-  completion-show-help nil)
- :bind
- (:map
-  completion-in-region-mode-map
-  ("C-n" . 'minibuffer-next-completion)
-  ("C-p" . 'minibuffer-previous-completion)))
-#+end_src
-
 *** Vertico
 
 #+begin_src elisp
@@ -596,93 +540,47 @@ Automatically resizes windows to fit golden ratio
 *** Line numbers
 
 #+begin_src elisp
-;; (global-display-line-numbers-mode nil)
-
-;; (dolist (mode
-;;          '(prog-mode-hook
-;;            org-mode-hook
-;;            magit-status-mode
-;;            compilation-mode-hook
-;;            conf-mode-hook
-;;            eshell-mode-hook
-;;            text-mode
-;;            fundamental-mode))
-;;   (add-hook mode 'display-line-numbers-mode))
-
 (dolist (mode
-         '(pdf-view-mode-hook
-           imenu-list-minor-mode-hook imenu-list-major-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode -1))))
+         '(prog-mode-hook
+           org-mode-hook
+           magit-status-mode
+           compilation-mode-hook
+           conf-mode-hook
+           eshell-mode-hook
+           text-mode
+           fundamental-mode))
+  (add-hook mode 'display-line-numbers-mode))
 
 (setq-default display-line-numbers-type 'visual)
 #+end_src
 
-*** Scroll margin
+*** Essential defaults
 
 #+begin_src elisp
 (setq-default scroll-margin 7)
-#+end_src
-
-*** Auto pairs
-
-#+begin_src elisp
 (electric-pair-mode 1)
-#+end_src
-
-*** UI tweaks
-
-#+begin_src elisp
-(menu-bar-mode -1)           ;; Disable the menu bar
-(scroll-bar-mode -1)         ;; Disable the scroll bar
-(tool-bar-mode -1)           ;; Disable the tool bar
-#+end_src
-
-*** Replace region when typing
-
-#+begin_src elisp
-(setq-default delete-selection-mode t)
-#+end_src
-
-*** Automatically update buffer contents
-
-#+begin_src elisp
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
 (global-auto-revert-mode t)
-#+end_src
-
-*** Automatically select help frame
-
-#+begin_src elisp
 (setq help-window-select t)
-#+end_src
-
-*** Remember command history
-
-#+begin_src elisp
 (setq-default history-length 25)
 (savehist-mode 1)
-#+end_src
-
-*** Remember last location in files
-
-#+begin_src elisp
 (save-place-mode 1)
-#+end_src
-
-*** Do not use dialogue box
-
-#+begin_src elisp
 (setq use-dialog-box nil)
 #+end_src
 
 ** Navigation
-
 *** Windows layout
 
+Allows to restores layout after maximizing
+
 #+begin_src elisp
-(winner-mode +1) ;; Allows to restores layout after maximizing
+(winner-mode +1)
 #+end_src
 
 *** Buffers
+
 #+begin_src elisp
 (use-package emacs
   :bind
@@ -691,17 +589,6 @@ Automatically resizes windows to fit golden ratio
   ("C-x C-b" . ibuffer)
   ("C-x k" . kill-current-buffer)
   ("C-x K" . kill-buffer))
-#+end_src
-
-*** Vertical split
-
-#+begin_src elisp
-(defun my/split-right-and-switch ()
-  (interactive)
-  (split-window-right)
-  (windmove-right))
-(window-divider-mode 1)
-(use-package emacs :bind ("C-x 3" . my/split-right-and-switch))
 #+end_src
 
 *** Scroll
@@ -743,14 +630,7 @@ Automatically resizes windows to fit golden ratio
 (setq-default async-shell-command-buffer 'new-buffer)
 #+end_src
 
-** Use eww as browser by default
-
-#+begin_src elisp
-(setq browse-url-browser-function 'eww-browse-url)
-#+end_src
-
 * Helper packages
-
 *** Sudo edit
 
 #+begin_src elisp
@@ -779,9 +659,7 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 * Org
-
 ** Base
-
 *** Main setup function
 
 #+begin_src elisp
@@ -852,7 +730,6 @@ Automatically resizes windows to fit golden ratio
 #+end_src
 
 ** Babel
-
 *** Base
 
 #+begin_src elisp
@@ -868,17 +745,9 @@ Automatically resizes windows to fit golden ratio
    (sqlite . t)
    (emacs-lisp . t)
    (plantuml . t)
-   ;; (restclient . t)
    (plantuml . t)
    (awk . t)
    (sql . t)))
-#+end_src
-
-*** Auto tangle
-
-#+begin_src elisp
-(use-package org-auto-tangle
-  :hook (org-mode . org-auto-tangle-mode))
 #+end_src
 
 *** Plant UML
@@ -921,73 +790,6 @@ Automatically resizes windows to fit golden ratio
     (sequence "INPROGRESS(p)" "INTEST(v)" "HOLD(h)" "|" "COMPLETED(c)" "CANCELED(k@)")))
 #+end_src
 
-*** Custom view
-
-#+begin_src elisp
-(setq org-agenda-custom-commands
-  '(("d" "Dashboard"
-     ((agenda "" ((org-deadline-warning-days 7)))
-      (todo "NEXT"
-        ((org-agenda-overriding-header "Next Tasks")))
-      (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
-
-    ("n" "Next Tasks"
-     ((todo "NEXT"
-        ((org-agenda-overriding-header "Next Tasks")))))
-
-
-    ("W" "Work Tasks" tags-todo "+work")
-
-    ;; Low-effort next actions
-    ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-     ((org-agenda-overriding-header "Low Effort Tasks")
-      (org-agenda-max-todos 20)
-      (org-agenda-files org-agenda-files)))
-
-    ("w" "Workflow Status"
-     ((todo "WAIT"
-            ((org-agenda-overriding-header "Waiting on External")
-             (org-agenda-files org-agenda-files)))
-      (todo "REVIEW"
-            ((org-agenda-overriding-header "In Review")
-             (org-agenda-files org-agenda-files)))
-      (todo "PLAN"
-            ((org-agenda-overriding-header "In Planning")
-             (org-agenda-todo-list-sublevels nil)
-             (org-agenda-files org-agenda-files)))
-      (todo "BACKLOG"
-            ((org-agenda-overriding-header "Project Backlog")
-             (org-agenda-todo-list-sublevels nil)
-             (org-agenda-files org-agenda-files)))
-      (todo "READY"
-            ((org-agenda-overriding-header "Ready for Work")
-             (org-agenda-files org-agenda-files)))
-      (todo "ACTIVE"
-            ((org-agenda-overriding-header "Active Projects")
-             (org-agenda-files org-agenda-files)))
-      (todo "COMPLETED"
-            ((org-agenda-overriding-header "Completed Projects")
-             (org-agenda-files org-agenda-files)))
-      (todo "CANC"
-            ((org-agenda-overriding-header "Cancelled Projects")
-             (org-agenda-files org-agenda-files)))))))
-#+end_src
-
-** Templates
-
-#+begin_src elisp
-(setq org-capture-templates
-  '(    ;; ... other templates
-
-    ("j" "Journal Entry"
-         entry (file+datetree "~/journal.org")
-         "* %?"
-         :empty-lines 1)
-
-        ;; ... other templates
-    ))
-#+end_src
-
 ** Source code block tag expansion
 
 #+begin_src elisp
@@ -1003,12 +805,6 @@ Automatically resizes windows to fit golden ratio
    (add-to-list 'org-structure-template-alist setup)))
 #+end_src
 
-** Paste images
-
-#+begin_src elisp
-(use-package org-download)
-#+end_src
-
 * Shells and terminals
 
 ** Shell
@@ -1021,8 +817,6 @@ Turn off duplicating lines on execution
 #+end_src
 
 ** Eshell
-
-*** Setup eshell
 
 #+begin_src elisp
 (use-package
@@ -1056,17 +850,6 @@ Turn off duplicating lines on execution
 #+end_src
 
 * Tools
-
-** Jinx (spell checker)
-
-#+begin_src elisp
-(use-package
- jinx
- :config
- (dolist (hook '(org-mode-hook conf-mode-hook))
-   (add-hook hook #'jinx-mode)))
-#+end_src
-
 ** Tramp
 
 #+begin_src elisp
@@ -1087,7 +870,7 @@ Turn off duplicating lines on execution
  :config
  (setq
   gptel-log-level 'info
-  gptel-default-mode 'org-mode
+  gptel-default-mode 'markdown-mode
   gptel-model 'gemini-2.0-flash
   gptel-backend
   (gptel-make-gemini
@@ -1103,7 +886,7 @@ Turn off duplicating lines on execution
   'gptel-directives
   '(python
     .
-    "Use python 3.13 features, do not import Optional or List from typing, use ~None | int~ or ~list[int]~ instead. Prefer match case when possible. Always write typehints for the arguments and return types. Use double quotes. Do not arrange functions in a C language style, so all used functions in the main one should be below it. Create custom exceptions inherited from the ~Exception~ class. User dry-python.returns.result for @safe decorator and Success/Failure. If ~try..except~ is required, write as less as possible lines inside of it and use the required exception class instead of the base one (or write in a comment, that you don't know the valid one). Do not add doc strings or helper commentaries to the code"))
+    "Use python 3.13 features, do not import Optional or List from typing, use ~None | int~ or ~list[int]~ instead. Prefer match case when possible. Always write typehints for the arguments and return types. Use double quotes. Do not arrange functions in a C language style, so all used functions in the main one should be below it. Create custom exceptions inherited from the ~Exception~ class. User dry-python.returns.result for @safe decorator and Success/Failure. If ~try..except~ is required, write as less as possible lines inside of it and use the required exception class instead of the base one (or write in a comment, that you don't know the valid one). Do not add doc strings or helper commentaries to the code. DO NOT FORMAT CODE AS org or markdown code blocks"))
  :bind ("C-c g" . gptel-menu))
 #+end_src
 
@@ -1267,22 +1050,6 @@ Actually added some
 #+end_src
 
 ** Dired
-
-*** Open with XDG
-
-#+begin_src elisp
-(use-package dired-open
-  :custom ((dired-listing-switches "-agho --group-directories-first")
-           (dired-kill-when-opening-new-dired-buffer t))
-  :config
-  (setq dired-open-extensions '(("gif" . "feh")
-                                ("jpg" . "feh")
-                                ("jpeg" . "feh")
-                                ("png" . "feh")
-                                ("mkv" . "mpv")
-                                ("mp4" . "mpv"))))
-#+end_src
-
 *** Bulk dired action
 
 #+begin_src elisp
@@ -1301,12 +1068,6 @@ Add file to gptl context
 (defun my/dired-gptl-context-files ()
   (interactive)
   (my/for-each-dired-marked-file 'gptel-add-file))
-#+end_src
-
-** PDF tools
-
-#+begin_src elisp
-(use-package pdf-tools)
 #+end_src
 
 ** Execute selected shell command
