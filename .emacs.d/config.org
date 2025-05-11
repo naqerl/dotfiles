@@ -314,8 +314,7 @@ Generate table of contents
  (org-plantuml-args
   `("-headless"
    "-config"
-   ,(expand-file-name "plantuml.cfg" user-emacs-directory)))
- :hook (plantuml-mode-hook . display-line-numbers-mode))
+   ,(expand-file-name "plantuml.cfg" user-emacs-directory))))
 #+end_src
 
 *** Solidity
@@ -426,7 +425,7 @@ Generate table of contents
 ** Line numbers width
 
 #+begin_src elisp
-(setq-default display-line-numbers-width 3)
+;; (setq-default display-line-numbers-width 3)
 #+end_src
 
 ** Golden ratio
@@ -533,8 +532,11 @@ Automatically resizes windows to fit golden ratio
  completion
  :config
  (setq
-  completions-format 'one-column
-  completions-header-format nil
+  completions-format 'vertical
+  completions-header-format
+  #(
+    "%s possible completions:
+")
   completion-show-help nil)
  :bind
  (:map
@@ -566,12 +568,20 @@ Automatically resizes windows to fit golden ratio
   (marginalia-mode))
 #+end_src
 
-*** Flatten imenu
+*** Which key
 
 #+begin_src elisp
-(use-package flimenu
-  :config
-  (flimenu-global-mode))
+(use-package which-key :config (which-key-mode t))
+#+end_src
+
+*** Consult
+
+#+begin_src elisp
+(use-package consult
+  :bind
+  ("C-x b" . consult-buffer)
+  ("M-g i" . consult-imenu)
+  ("M-g l" . consult-line))
 #+end_src
 
 *** Indents
@@ -586,18 +596,18 @@ Automatically resizes windows to fit golden ratio
 *** Line numbers
 
 #+begin_src elisp
-(global-display-line-numbers-mode 1)
+;; (global-display-line-numbers-mode nil)
 
-(dolist (mode
-         '(prog-mode-hook
-           org-mode-hook
-           magit-status-mode
-           compilation-mode-hook
-           conf-mode-hook
-           eshell-mode-hook
-           text-mode
-           fundamental-mode))
-  (add-hook mode 'display-line-numbers-mode))
+;; (dolist (mode
+;;          '(prog-mode-hook
+;;            org-mode-hook
+;;            magit-status-mode
+;;            compilation-mode-hook
+;;            conf-mode-hook
+;;            eshell-mode-hook
+;;            text-mode
+;;            fundamental-mode))
+;;   (add-hook mode 'display-line-numbers-mode))
 
 (dolist (mode
          '(pdf-view-mode-hook
@@ -1031,7 +1041,7 @@ Turn off duplicating lines on execution
   eshell-buffer-maximum-lines 10000
   eshell-scroll-to-bottom-on-input t
   eshell-history-append t
-  eshell-visual-commands '("bash" "btop" "ssh" "psql")))
+  eshell-visual-commands '("make" "podman run" "bash" "btop" "ssh" "psql")))
 #+end_src
 
 ** Eat

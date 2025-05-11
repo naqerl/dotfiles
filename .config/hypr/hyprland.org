@@ -30,8 +30,6 @@
   - [[#get-rid-of-screen-share-window-from-google-chrome][Get rid of screen share window from Google Chrome]]
   - [[#picture-in-picture-in-the-corner][Picture in picture in the corner]]
   - [[#wfzf-in-the-center][Wfzf in the center]]
-  - [[#keep-browzer-fucking-silent][Keep browzer fucking silent]]
-  - [[#gimp-popups][Gimp popups]]
 - [[#layer-rules][Layer rules]]
 - [[#binds][Binds]]
   - [[#quit-hypland][Quit hypland]]
@@ -71,7 +69,7 @@ $mainShiftMod = SUPER SHIFT
 
 ** Emacs
 #+begin_src conf
-$emacs = $HOME/.local/bin/emacsclient -a "" -c
+$emacs = $HOME/.local/bin/emacsclient -c -a ""
 $terminal = $HOME/.local/bin/emacsclient -a "" -c -e "(progn (setq current-prefix-arg '(new)) (call-interactively 'eshell))"
 $pass-fzf = $HOME/.config/bin/pass-fzf
 #+end_src
@@ -93,11 +91,6 @@ cursor {
 exec-once = swaybg --image $HOME/Pictures/wallpapers/mountains.png
 #+end_src
 
-*** Kanshi
-
-#+begin_src conf
-# exec-once = kanshi --config ~/dotfiles/.config/kanshi/config
-#+end_src
 
 ** Run xwayland apps that require root
 It's needed for apps like gnome-disk-utility
@@ -114,10 +107,9 @@ exec-once = hyprland-per-window-layout
 
 ** Start apps
 #+begin_src conf
-exec-once = [workspace 1 silent] bash -c 'emacs -daemon && emacsclient -c -a ""'
+exec-once = [workspace 1 silent] $emacs
 exec-once = [workspace 2 silent] zen
 exec-once = [workspace 5 silent] telegram-desktop
-exec-once = [workspace 6 silent] $terminal btop
 #+end_src
 
 ** Idle daemon
@@ -266,16 +258,6 @@ windowrulev2 = noborder, title:(.*Picture-in-picture.*)
 windowrulev2 = float, class:(kitty),title:(wfzf)
 windowrulev2 = size 30% 30%, class:(kitty),title:(wfzf)
 windowrulev2 = center, class:(kitty),title:(wfzf)
-#+end_src
-
-** Keep browzer fucking silent
-#+begin_src conf
-windowrule = workspace 2 silent, ^(.*zen.*)$
-#+end_src
-
-** Gimp popups
-#+begin_src conf
-windowrule = tile, Gimp.*
 #+end_src
 
 * Layer rules

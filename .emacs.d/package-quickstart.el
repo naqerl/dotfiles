@@ -733,6 +733,44 @@ disabled.
 
 
 )
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/systemd-20230201.302/systemd-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(defconst systemd-autoload-regexp (rx (+? (any "a-zA-Z0-9-_.@\\")) "." (or "automount" "busname" "mount" "service" "slice" "socket" "swap" "target" "timer" "link" "netdev" "network") string-end) "\
+Regexp for file buffers in which to autoload `systemd-mode'.")
+(defconst systemd-tempfn-autoload-regexp (rx ".#" (or (and (+? (any "a-zA-Z0-9-_.@\\")) "." (or "automount" "busname" "mount" "service" "slice" "socket" "swap" "target" "timer" "link" "netdev" "network")) "override.conf") (= 16 (char hex-digit)) string-end) "\
+Regexp for temp file buffers in which to autoload `systemd-mode'.")
+(defconst systemd-dropin-autoload-regexp (rx "/systemd/" (+? anything) ".d/" (+? (not (any 47))) ".conf" string-end) "\
+Regexp for dropin config file buffers in which to autoload `systemd-mode'.")
+ (add-to-list 'auto-mode-alist '("\\.nspawn\\'" . systemd-mode))
+ (add-to-list 'auto-mode-alist `(,systemd-autoload-regexp . systemd-mode))
+ (add-to-list 'auto-mode-alist `(,systemd-tempfn-autoload-regexp . systemd-mode))
+ (add-to-list 'auto-mode-alist `(,systemd-dropin-autoload-regexp . systemd-mode))
+(autoload 'systemd-mode "systemd" "\
+Major mode for editing systemd unit files.
+See https://www.freedesktop.org/wiki/Software/systemd/ for more
+information about systemd.
+
+In addition to any hooks its parent mode might have run, this
+mode runs the hook `systemd-mode-hook' at mode initialization.
+
+Key bindings:
+\\{systemd-mode-map}
+
+(fn)" t)
+(register-definition-prefixes "systemd" '("define-systemd-matcher" "systemd-"))
+
+
+(provide 'systemd-autoloads)
+
+
+)
 (let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/sudo-edit-20220801.1317/sudo-edit-autoloads.el"))(load-true-file-name load-file-name))
 
 
@@ -897,6 +935,235 @@ Either remove or add the dbg! macro." t)
 
 
 )
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/polymode-20230317.1218/polymode-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(register-definition-prefixes "poly-lock" '("poly-lock-"))
+
+
+
+(autoload 'define-polymode "polymode" "\
+Define a new polymode MODE.
+This macro defines command MODE and an indicator variable MODE
+which becomes t when MODE is active and nil otherwise.
+
+MODE command can be used as both major and minor mode. Using
+polymodes as minor modes makes sense when :hostmode (see below)
+is not specified, in which case polymode installs only inner
+modes and doesn't touch current major mode.
+
+Standard hook MODE-hook is run at the end of the initialization
+of each polymode buffer (both indirect and base buffers).
+
+This macro also defines the MODE-map keymap from the :keymap
+argument and PARENT-map (see below) and poly-[MODE-NAME]-polymode
+variable which holds an object of class `pm-polymode' which holds
+the entire configuration for this polymode.
+
+PARENT is either the polymode configuration object or a polymode
+mode (there is 1-to-1 correspondence between config
+objects (`pm-polymode') and mode functions). The new polymode
+MODE inherits alll the behavior from PARENT except for the
+overwrites specified by the keywords (see below). The new MODE
+runs all the hooks from the PARENT-mode and inherits its MODE-map
+from PARENT-map.
+
+DOC is an optional documentation string. If present PARENT must
+be provided, but can be nil.
+
+BODY is executed after the complete initialization of the
+polymode but before MODE-hook. It is executed once for each
+polymode buffer - host buffer on initialization and every inner
+buffer subsequently created.
+
+Before the BODY code keyword arguments (i.e. alternating keywords
+and values) are allowed. The following special keywords
+controlling the behavior of the new MODE are supported:
+
+:lighter Optional LIGHTER is displayed in the mode line when the
+   mode is on. If omitted, it defaults to the :lighter slot of
+   CONFIG object.
+
+:keymap If nil, a new MODE-map keymap is created what directly
+  inherits from the PARENT's keymap. The last keymap in the
+  inheritance chain is always `polymode-minor-mode-map'. If a
+  keymap it is used directly as it is. If a list of binding of
+  the form (KEY . BINDING) it is merged the bindings are added to
+  the newly create keymap.
+
+:after-hook A single form which is evaluated after the mode hooks
+  have been run. It should not be quoted.
+
+Other keywords are added to the `pm-polymode' configuration
+object and should be valid slots in PARENT config object or the
+root config `pm-polymode' object if PARENT is nil. By far the
+most frequently used slots are:
+
+:hostmode Symbol pointing to a `pm-host-chunkmode' object
+  specifying the behavior of the hostmode. If missing or nil,
+  MODE will behave as a minor-mode in the sense that it will
+  reuse the currently installed major mode and will install only
+  the inner modes.
+
+:innermodes List of symbols pointing to `pm-inner-chunkmode'
+  objects which specify the behavior of inner modes (or submodes).
+
+(fn MODE &optional PARENT DOC &rest BODY)" nil t)
+(function-put 'define-polymode 'lisp-indent-function 'defun)
+(function-put 'define-polymode 'doc-string-elt 3)
+(register-definition-prefixes "polymode" '("pm-" "poly"))
+
+
+
+(register-definition-prefixes "polymode-base" '("poly-"))
+
+
+
+(register-definition-prefixes "polymode-classes" '("pm-"))
+
+
+
+(register-definition-prefixes "polymode-compat" '("*span*" "pm-" "polymode-"))
+
+
+
+(defvar-local polymode-default-inner-mode nil "\
+Inner mode for chunks with unspecified modes.
+Intended to be used as local variable in polymode buffers. A
+special value `host' means use the host mode.")
+(put 'polymode-default-inner-mode 'safe-local-variable #'symbolp)
+(autoload 'define-hostmode "polymode-core" "\
+Define a hostmode with name NAME.
+Optional PARENT is a name of a hostmode to be derived (cloned)
+from. If missing, the optional documentation string DOC is
+generated automatically. KEY-ARGS is a list of key-value pairs.
+See the documentation of the class `pm-host-chunkmode' for
+possible values.
+
+(fn NAME &optional PARENT DOC &rest KEY-ARGS)" nil t)
+(function-put 'define-hostmode 'doc-string-elt 3)
+(function-put 'define-hostmode 'lisp-indent-function 'defun)
+(autoload 'define-innermode "polymode-core" "\
+Ddefine an innermode with name NAME.
+Optional PARENT is a name of a innermode to be derived (cloned)
+from. If missing the optional documentation string DOC is
+generated automatically. KEY-ARGS is a list of key-value pairs.
+See the documentation of the class `pm-inner-chunkmode' for
+possible values.
+
+(fn NAME &optional PARENT DOC &rest KEY-ARGS)" nil t)
+(function-put 'define-innermode 'doc-string-elt 3)
+(function-put 'define-innermode 'lisp-indent-function 'defun)
+(autoload 'define-auto-innermode "polymode-core" "\
+Ddefine an auto innermode with name NAME.
+Optional PARENT is a name of an auto innermode to be
+derived (cloned) from. If missing the optional documentation
+string DOC is generated automatically. KEY-ARGS is a list of
+key-value pairs. See the documentation of the class
+`pm-inner-auto-chunkmode' for possible values.
+
+(fn NAME &optional PARENT DOC &rest KEY-ARGS)" nil t)
+(function-put 'define-auto-innermode 'doc-string-elt 3)
+(function-put 'define-auto-innermode 'lisp-indent-function 'defun)
+(register-definition-prefixes "polymode-core" '("*span*" "polymode-"))
+
+
+
+(autoload 'pm-debug-minor-mode "polymode-debug" "\
+Turns on/off useful facilities for debugging polymode.
+
+Key bindings:
+\\{pm-debug-minor-mode-map}
+
+This is a minor mode.  If called interactively, toggle the `Pm-Debug
+minor mode' mode.  If the prefix argument is positive, enable the mode,
+and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate the variable `pm-debug-minor-mode'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+(fn &optional ARG)" t)
+(autoload 'pm-debug-minor-mode-on "polymode-debug")
+(put 'pm-debug-mode 'globalized-minor-mode t)
+(defvar pm-debug-mode nil "\
+Non-nil if Pm-Debug mode is enabled.
+See the `pm-debug-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `pm-debug-mode'.")
+(custom-autoload 'pm-debug-mode "polymode-debug" nil)
+(autoload 'pm-debug-mode "polymode-debug" "\
+Toggle Pm-Debug minor mode in all buffers.
+With prefix ARG, enable Pm-Debug mode if ARG is positive; otherwise,
+disable it.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.
+Enable the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+Pm-Debug minor mode is enabled in all buffers where
+`pm-debug-minor-mode-on' would do it.
+
+See `pm-debug-minor-mode' for more information on Pm-Debug minor
+mode.
+
+(fn &optional ARG)" t)
+(autoload 'pm-toggle-tracing "polymode-debug" "\
+Toggle polymode tracing.
+With numeric prefix toggle tracing for that LEVEL. Currently
+universal argument toggles maximum level of tracing (15). See
+`pm-traced-functions'. Default level is 4.
+
+(fn LEVEL)" t)
+(autoload 'pm-trace "polymode-debug" "\
+Trace function FN.
+Use `untrace-function' to untrace or `untrace-all' to untrace all
+currently traced functions.
+
+(fn FN)" t)
+(autoload 'pm-debug-relevant-variables "polymode-debug" "\
+Get the relevant polymode variables.
+If OUT-TYPE is `buffer', print the variables in the dedicated buffer,
+if `message' issue a message, if nil just return a list of values.
+
+(fn &optional OUT-TYPE)" t)
+(register-definition-prefixes "polymode-debug" '("pm-"))
+
+
+
+(register-definition-prefixes "polymode-export" '("pm-" "poly"))
+
+
+
+(register-definition-prefixes "polymode-methods" '("pm-"))
+
+
+
+(register-definition-prefixes "polymode-test-utils" '("pm-"))
+
+
+
+(register-definition-prefixes "polymode-weave" '("pm-" "polymode-"))
+
+
+(provide 'polymode-autoloads)
+
+
+)
 (let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/dash-20250312.1307/dash-autoloads.el"))(load-true-file-name load-file-name))
 
 
@@ -966,6 +1233,152 @@ This allows Dash symbols to be looked up with \\[info-lookup-symbol]." t)
 
 
 (provide 'dash-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/f-20241003.1131/f-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(register-definition-prefixes "f" '("f-"))
+
+
+(provide 'f-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/ansible-20250222.1816/ansible-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(defvar ansible-key-map (make-sparse-keymap) "\
+Keymap for Ansible.")
+(autoload 'ansible-mode "ansible" "\
+Ansible minor mode.
+
+This is a minor mode.  If called interactively, toggle the `Ansible
+mode' mode.  If the prefix argument is positive, enable the mode, and if
+it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate the variable `ansible-mode'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+(fn &optional ARG)" t)
+(autoload 'ansible-dict-initialize "ansible" "\
+Initialize Ansible auto-complete.")
+(register-definition-prefixes "ansible" '("ansible-"))
+
+
+(provide 'ansible-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/ansible-doc-20160924.824/ansible-doc-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'ansible-doc "ansible-doc" "\
+Show ansible documentation for MODULE.
+
+(fn MODULE)" t)
+(autoload 'ansible-doc-mode "ansible-doc" "\
+Minor mode for Ansible documentation.
+
+When called interactively, toggle `ansible-doc-mode'.  With
+prefix ARG, enable `ansible-doc-mode' if ARG is positive,
+otherwise disable it.
+
+When called from Lisp, enable `ansible-doc-mode' if ARG is
+omitted, nil or positive.  If ARG is `toggle', toggle
+`ansible-doc-mode'.  Otherwise behave as if called interactively.
+
+In `ansible-doc-mode' provide the following keybindings for
+Ansible documentation lookup:
+
+\\{ansible-doc-mode-map}
+
+(fn &optional ARG)" t)
+(register-definition-prefixes "ansible-doc" '("ansible-doc-"))
+
+
+(provide 'ansible-doc-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/jinja2-mode-20220117.807/jinja2-mode-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'jinja2-mode "jinja2-mode" "\
+Major mode for editing jinja2 files
+
+(fn)" t)
+(add-to-list 'auto-mode-alist '("\\.jinja2\\'" . jinja2-mode))
+(add-to-list 'auto-mode-alist '("\\.j2\\'" . jinja2-mode))
+(register-definition-prefixes "jinja2-mode" '("jinja2-" "sgml-indent-line-num"))
+
+
+(provide 'jinja2-mode-autoloads)
+
+
+)
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/poly-ansible-20250501.1455/poly-ansible-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+ (autoload 'poly-ansible-mode "poly-ansible" "Polymode for Jinja2 templating in Ansible YAML." t)
+(add-to-list 'auto-mode-alist '("/ansible/.*\\.ya?ml\\'" . poly-ansible-mode))
+(add-to-list 'auto-mode-alist '("/\\(?:group\\|host\\)_vars/" . poly-ansible-mode))
+(register-definition-prefixes "poly-ansible" '("jinja2-ansible-functions-keywords"))
+
+
+
+(register-definition-prefixes "poly-ansible-jinja2-filters" '("poly-ansible-jinja2-filters"))
+
+
+
+(register-definition-prefixes "poly-jinja2" '("poly-jinja2-innermode"))
+
+
+
+ (autoload 'poly-systemd-jinja2-mode "poly-systemd-jinja2" "Polymode for Jinja2 templating in Systemd units." t)
+(add-to-list 'auto-mode-alist (cons (concat (replace-regexp-in-string "\\\\'$" "" systemd-autoload-regexp) "\\.j\\(?:inja\\)?2\\'") 'poly-systemd-jinja2-mode))
+(register-definition-prefixes "poly-systemd-jinja2" '("poly-systemd-hostmode" "systemd-file-podman-p-jinja2-advice"))
+
+
+(provide 'poly-ansible-autoloads)
 
 
 )
@@ -6297,6 +6710,439 @@ Major mode for editing files of tab-separated value type.
 
 
 )
+(let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/consult-20250504.2026/consult-autoloads.el"))(load-true-file-name load-file-name))
+
+
+
+(add-to-list 'load-path (or (and load-file-name (directory-file-name (file-name-directory load-file-name))) (car load-path)))
+
+
+
+
+(autoload 'consult-completion-in-region "consult" "\
+Use minibuffer completion as the UI for `completion-at-point'.
+
+The arguments START, END, COLLECTION and PREDICATE and expected return
+value are as specified for `completion-in-region'.  Use this function as
+a value for `completion-in-region-function'.
+
+(fn START END COLLECTION PREDICATE)")
+(autoload 'consult-outline "consult" "\
+Jump to an outline heading, obtained by matching against `outline-regexp'.
+
+This command supports narrowing to a heading level and candidate
+preview.  The initial narrowing LEVEL can be given as prefix
+argument.  The symbol at point is added to the future history.
+
+(fn &optional LEVEL)" t)
+(autoload 'consult-mark "consult" "\
+Jump to a marker in MARKERS list (defaults to buffer-local `mark-ring').
+
+The command supports preview of the currently selected marker position.
+The symbol at point is added to the future history.
+
+(fn &optional MARKERS)" t)
+(autoload 'consult-global-mark "consult" "\
+Jump to a marker in MARKERS list (defaults to `global-mark-ring').
+
+The command supports preview of the currently selected marker position.
+The symbol at point is added to the future history.
+
+(fn &optional MARKERS)" t)
+(autoload 'consult-line "consult" "\
+Search for a matching line.
+
+Depending on the setting `consult-point-placement' the command
+jumps to the beginning or the end of the first match on the line
+or the line beginning.  The default candidate is the non-empty
+line next to point.  This command obeys narrowing.  Optional
+INITIAL input can be provided.  The search starting point is
+changed if the START prefix argument is set.  The symbol at point
+and the last `isearch-string' is added to the future history.
+
+(fn &optional INITIAL START)" t)
+(autoload 'consult-line-multi "consult" "\
+Search for a matching line in multiple buffers.
+
+By default search across all project buffers.  If the prefix
+argument QUERY is non-nil, all buffers are searched.  Optional
+INITIAL input can be provided.  The symbol at point and the last
+`isearch-string' is added to the future history.  In order to
+search a subset of buffers, QUERY can be set to a plist according
+to `consult--buffer-query'.
+
+(fn QUERY &optional INITIAL)" t)
+(autoload 'consult-keep-lines "consult" "\
+Filter a subset of the lines in the current buffer with live preview.
+
+The filtered lines are kept and the other lines are deleted.  When
+called interactively, the lines selected are those that match the
+minibuffer input.  In order to match the inverse of the input, prefix
+the input with `! '.  When called from Elisp, the filtering is performed
+by a FILTER function.  If the buffer is narrowed to a region, the
+command only acts on this region.  See also `consult-focus-lines' which
+uses overlays to display only matching lines, but does not modify the
+buffer.
+
+FILTER is the filter function, called for each line.
+INITIAL is the initial input.
+
+(fn FILTER &optional INITIAL)" t)
+(autoload 'consult-focus-lines "consult" "\
+Show only matching lines using overlays.
+
+In contrast to `consult-keep-lines' the buffer is not modified.  The
+FILTER selects the lines which are shown.  When called interactively,
+the lines selected are those that match the minibuffer input.  In order
+to match the inverse of the input, prefix the input with `! '.  With
+optional prefix argument SHOW reveal the hidden lines.  Alternatively
+rerun the command and exit the minibuffer directly without input to
+reveal the lines.  When called from Elisp, the filtering is performed by
+a FILTER function.  If the buffer is narrowed to a region, the command
+only acts on this region.
+
+FILTER is the filter function, called for each line.
+SHOW is the prefix argument, if non-nil reveal all hidden lines.
+INITIAL is the initial input.
+
+(fn FILTER &optional SHOW INITIAL)" t)
+(autoload 'consult-goto-line "consult" "\
+Read line number and jump to the line with preview.
+
+Enter either a line number to jump to the first column of the
+given line or line:column in order to jump to a specific column.
+Jump directly if a line number is given as prefix ARG.  The
+command respects narrowing and the settings
+`consult-goto-line-numbers' and `consult-line-numbers-widen'.
+
+(fn &optional ARG)" t)
+(autoload 'consult-recent-file "consult" "\
+Find recent file using `completing-read'." t)
+(autoload 'consult-mode-command "consult" "\
+Run a command from any of the given MODES.
+
+If no MODES are specified, use currently active major and minor modes.
+
+(fn &rest MODES)" t)
+(autoload 'consult-yank-from-kill-ring "consult" "\
+Select STRING from the kill ring and insert it.
+With prefix ARG, put point at beginning, and mark at end, like `yank' does.
+
+This command behaves like `yank-from-kill-ring', which also offers a
+`completing-read' interface to the `kill-ring'.  Additionally the
+Consult version supports preview of the selected string.
+
+(fn STRING &optional ARG)" t)
+(autoload 'consult-yank-pop "consult" "\
+If there is a recent yank act like `yank-pop'.
+
+Otherwise select string from the kill ring and insert it.
+See `yank-pop' for the meaning of ARG.
+
+This command behaves like `yank-pop', which also offers a
+`completing-read' interface to the `kill-ring'.  Additionally the
+Consult version supports preview of the selected string.
+
+(fn &optional ARG)" t)
+(autoload 'consult-yank-replace "consult" "\
+Select STRING from the kill ring.
+
+If there was no recent yank, insert the string.
+Otherwise replace the just-yanked string with the selected string.
+
+(fn STRING)" t)
+(autoload 'consult-bookmark "consult" "\
+If bookmark NAME exists, open it, otherwise create a new bookmark with NAME.
+
+The command supports preview of file bookmarks and narrowing.  See the
+variable `consult-bookmark-narrow' for the narrowing configuration.
+
+(fn NAME)" t)
+(autoload 'consult-complex-command "consult" "\
+Select and evaluate command from the command history.
+
+This command can act as a drop-in replacement for `repeat-complex-command'." t)
+(autoload 'consult-history "consult" "\
+Insert string from HISTORY of current buffer.
+In order to select from a specific HISTORY, pass the history
+variable as argument.  INDEX is the name of the index variable to
+update, if any.  BOL is the function which jumps to the beginning
+of the prompt.  See also `cape-history' from the Cape package.
+
+(fn &optional HISTORY INDEX BOL)" t)
+(autoload 'consult-isearch-history "consult" "\
+Read a search string with completion from the Isearch history.
+
+This replaces the current search string if Isearch is active, and
+starts a new Isearch session otherwise." t)
+(autoload 'consult-minor-mode-menu "consult" "\
+Enable or disable minor mode.
+
+This is an alternative to `minor-mode-menu-from-indicator'." t)
+(autoload 'consult-theme "consult" "\
+Disable current themes and enable THEME from `consult-themes'.
+
+The command supports previewing the currently selected theme.
+
+(fn THEME)" t)
+(autoload 'consult-buffer "consult" "\
+Enhanced `switch-to-buffer' command with support for virtual buffers.
+
+The command supports recent files, bookmarks, views and project files as
+virtual buffers.  Buffers are previewed.  Narrowing to buffers (b), files (f),
+bookmarks (m) and project files (p) is supported via the corresponding
+keys.  In order to determine the project-specific files and buffers, the
+`consult-project-function' is used.  The virtual buffer SOURCES
+default to `consult-buffer-sources'.  See `consult--multi' for the
+configuration of the virtual buffer sources.
+
+(fn &optional SOURCES)" t)
+(autoload 'consult-project-buffer "consult" "\
+Enhanced `project-switch-to-buffer' command with support for virtual buffers.
+The command may prompt you for a project directory if it is invoked from
+outside a project.  See `consult-buffer' for more details." t)
+(autoload 'consult-buffer-other-window "consult" "\
+Variant of `consult-buffer', switching to a buffer in another window." t)
+(autoload 'consult-buffer-other-frame "consult" "\
+Variant of `consult-buffer', switching to a buffer in another frame." t)
+(autoload 'consult-buffer-other-tab "consult" "\
+Variant of `consult-buffer', switching to a buffer in another tab." t)
+(autoload 'consult-grep "consult" "\
+Search with `grep' for files in DIR where the content matches a regexp.
+
+The initial input is given by the INITIAL argument.  DIR can be nil, a
+directory string or a list of file/directory paths.  If `consult-grep'
+is called interactively with a prefix argument, the user can specify the
+directories or files to search in.  Multiple directories or files must
+be separated by comma in the minibuffer, since they are read via
+`completing-read-multiple'.  By default the project directory is used if
+`consult-project-function' is defined and returns non-nil.  Otherwise
+the `default-directory' is searched.  If the command is invoked with a
+double prefix argument (twice `C-u') the user is asked for a project, if
+not yet inside a project, or the current project is searched.
+
+The input string is split, the first part of the string (grep input) is
+passed to the asynchronous grep process and the second part of the
+string is passed to the completion-style filtering.
+
+The input string is split at a punctuation character, which is given as
+the first character of the input string.  The format is similar to
+Perl-style regular expressions, e.g., /regexp/.  Furthermore command
+line options can be passed to grep, specified behind --.  The overall
+prompt input has the form `#async-input -- grep-opts#filter-string'.
+
+Note that the grep input string is transformed from Emacs regular
+expressions to Posix regular expressions.  Always enter Emacs regular
+expressions at the prompt.  `consult-grep' behaves like builtin Emacs
+search commands, e.g., Isearch, which take Emacs regular expressions.
+Furthermore the asynchronous input split into words, each word must
+match separately and in any order.  See `consult--regexp-compiler' for
+the inner workings.  In order to disable transformations of the grep
+input, adjust `consult--regexp-compiler' accordingly.
+
+Here we give a few example inputs:
+
+#alpha beta         : Search for alpha and beta in any order.
+#alpha.*beta        : Search for alpha before beta.
+#\\(alpha\\|beta\\) : Search for alpha or beta (Note Emacs syntax!)
+#word -- -C3        : Search for word, include 3 lines as context
+#first#second       : Search for first, quick filter for second.
+
+The symbol at point is added to the future history.
+
+(fn &optional DIR INITIAL)" t)
+(autoload 'consult-git-grep "consult" "\
+Search with `git grep' for files in DIR with INITIAL input.
+See `consult-grep' for details.
+
+(fn &optional DIR INITIAL)" t)
+(autoload 'consult-ripgrep "consult" "\
+Search with `rg' for files in DIR with INITIAL input.
+See `consult-grep' for details.
+
+(fn &optional DIR INITIAL)" t)
+(autoload 'consult-find "consult" "\
+Search for files with `find' in DIR.
+The file names must match the input regexp.  INITIAL is the
+initial minibuffer input.  See `consult-grep' for details
+regarding the asynchronous search and the arguments.
+
+(fn &optional DIR INITIAL)" t)
+(autoload 'consult-fd "consult" "\
+Search for files with `fd' in DIR.
+The file names must match the input regexp.  INITIAL is the
+initial minibuffer input.  See `consult-grep' for details
+regarding the asynchronous search and the arguments.
+
+(fn &optional DIR INITIAL)" t)
+(autoload 'consult-locate "consult" "\
+Search with `locate' for files which match input given INITIAL input.
+
+The input is treated literally such that locate can take advantage of
+the locate database index.  Regular expressions would often force a slow
+linear search through the entire database.  The locate process is started
+asynchronously, similar to `consult-grep'.  See `consult-grep' for more
+details regarding the asynchronous search.
+
+(fn &optional INITIAL)" t)
+(autoload 'consult-man "consult" "\
+Search for man page given INITIAL input.
+
+The input string is not preprocessed and passed literally to the
+underlying man commands.  The man process is started asynchronously,
+similar to `consult-grep'.  See `consult-grep' for more details regarding
+the asynchronous search.
+
+(fn &optional INITIAL)" t)
+(register-definition-prefixes "consult" '("consult-"))
+
+
+
+(autoload 'consult-compile-error "consult-compile" "\
+Jump to a compilation error in the current buffer.
+
+This command collects entries from compilation buffers and grep
+buffers related to the current buffer.  The command supports
+preview of the currently selected error." t)
+(register-definition-prefixes "consult-compile" '("consult-compile--"))
+
+
+
+(autoload 'consult-flymake "consult-flymake" "\
+Jump to Flymake diagnostic.
+When PROJECT is non-nil then prompt with diagnostics from all
+buffers in the current project instead of just the current buffer.
+
+(fn &optional PROJECT)" t)
+(register-definition-prefixes "consult-flymake" '("consult-flymake--"))
+
+
+
+(autoload 'consult-imenu "consult-imenu" "\
+Select item from flattened `imenu' using `completing-read' with preview.
+
+The command supports preview and narrowing.  See the variable
+`consult-imenu-config', which configures the narrowing.
+The symbol at point is added to the future history.
+
+See also `consult-imenu-multi'." t)
+(autoload 'consult-imenu-multi "consult-imenu" "\
+Select item from the imenus of all buffers from the same project.
+
+In order to determine the buffers belonging to the same project, the
+`consult-project-function' is used.  Only the buffers with the
+same major mode as the current buffer are used.  See also
+`consult-imenu' for more details.  In order to search a subset of buffers,
+QUERY can be set to a plist according to `consult--buffer-query'.
+
+(fn &optional QUERY)" t)
+(register-definition-prefixes "consult-imenu" '("consult-imenu-"))
+
+
+
+(autoload 'consult-info "consult-info" "\
+Full text search through info MANUALS.
+
+(fn &rest MANUALS)" t)
+(defun consult-info-define (name &rest manuals) "\
+Define `consult-info-NAME' command to search through MANUALS.
+MANUALS is a list of a strings. NAME can be a symbol or a string. If
+NAME is a string, it is added to the MANUALS list. Return name of
+defined command as symbol." (let ((cmd (intern (format "consult-info-%s" name)))) (when (stringp name) (push name manuals)) (defalias cmd (lambda nil (interactive) (apply #'consult-info manuals)) (format "Search via `consult-info' through the manual%s %s:\n\n%s" (if (cdr manuals) "s" "") (mapconcat (lambda (m) (format "\"%s\"" m)) manuals ", ") (mapconcat (lambda (m) (format "  * Info node `(%s)'" m)) manuals "\n"))) cmd))
+(register-definition-prefixes "consult-info" '("consult-info--"))
+
+
+
+(autoload 'consult-kmacro "consult-kmacro" "\
+Run a chosen keyboard macro.
+
+With prefix ARG, run the macro that many times.
+Macros containing mouse clicks are omitted.
+
+(fn ARG)" t)
+(register-definition-prefixes "consult-kmacro" '("consult-kmacro--"))
+
+
+
+(autoload 'consult-org-heading "consult-org" "\
+Jump to an Org heading.
+
+MATCH and SCOPE are as in `org-map-entries' and determine which
+entries are offered.  By default, all entries of the current
+buffer are offered.
+
+(fn &optional MATCH SCOPE)" t)
+(autoload 'consult-org-agenda "consult-org" "\
+Jump to an Org agenda heading.
+
+By default, all agenda entries are offered.  MATCH is as in
+`org-map-entries' and can used to refine this.
+
+(fn &optional MATCH)" t)
+(register-definition-prefixes "consult-org" '("consult-org--"))
+
+
+
+(autoload 'consult-register-window "consult-register" "\
+Enhanced drop-in replacement for `register-preview'.
+
+BUFFER is the window buffer.
+SHOW-EMPTY must be t if the window should be shown for an empty register list.
+
+(fn BUFFER &optional SHOW-EMPTY)")
+(autoload 'consult-register-format "consult-register" "\
+Enhanced preview of register REG.
+This function can be used as `register-preview-function'.
+If COMPLETION is non-nil format the register for completion.
+
+(fn REG &optional COMPLETION)")
+(autoload 'consult-register "consult-register" "\
+Load register and either jump to location or insert the stored text.
+
+This command is useful to search the register contents.  For quick access
+to registers it is still recommended to use the register functions
+`consult-register-load' and `consult-register-store' or the built-in
+built-in register access functions.  The command supports narrowing, see
+`consult-register--narrow'.  Marker positions are previewed.  See
+`jump-to-register' and `insert-register' for the meaning of prefix ARG.
+
+(fn &optional ARG)" t)
+(autoload 'consult-register-load "consult-register" "\
+Do what I mean with a REG.
+
+For a window configuration, restore it.  For a number or text, insert it.
+For a location, jump to it.  See `jump-to-register' and `insert-register'
+for the meaning of prefix ARG.
+
+(fn REG &optional ARG)" t)
+(autoload 'consult-register-store "consult-register" "\
+Store register dependent on current context, showing an action menu.
+
+With an active region, store/append/prepend the contents, optionally
+deleting the region when a prefix ARG is given.  With a numeric prefix
+ARG, store or add the number.  Otherwise store point, frameset, window or
+kmacro.
+
+(fn ARG)" t)
+(register-definition-prefixes "consult-register" '("consult-register-"))
+
+
+
+(autoload 'consult-xref "consult-xref" "\
+Show xrefs with preview in the minibuffer.
+
+This function can be used for `xref-show-xrefs-function'.
+See `xref-show-xrefs-function' for the description of the
+FETCHER and ALIST arguments.
+
+(fn FETCHER &optional ALIST)")
+(register-definition-prefixes "consult-xref" '("consult-xref--"))
+
+
+(provide 'consult-autoloads)
+
+
+)
 (let* ((load-file-name (file-name-concat package--quickstart-dir "elpa/caser-20241003.131/caser-autoloads.el"))(load-true-file-name load-file-name))
 
 
@@ -6554,16 +7400,18 @@ disabled.
       (delete-dups
        (append
         '(yuck-mode yasnippet yaml-mode with-editor web-mode vertico
-                    transient toc-org tablist sudo-edit solidity-mode
-                    s rust-mode popup dash plantuml-mode pdf-tools
-                    async org-download org-auto-tangle orderless
-                    markdown-mode markdown-toc marginalia make-project
-                    llama magit-section magit load-env-vars jtsx jinx
+                    transient toc-org tablist systemd sudo-edit
+                    solidity-mode s rust-mode popup polymode dash f
+                    ansible ansible-doc jinja2-mode poly-ansible
+                    plantuml-mode pdf-tools async org-download
+                    org-auto-tangle orderless markdown-mode
+                    markdown-toc marginalia make-project llama
+                    magit-section magit load-env-vars jtsx jinx
                     graphql gptel golden-ratio github-explorer
                     git-gutter gcmh free-keys flimenu expand-region
                     elisp-autofmt elfeed eat dumb-jump dockerfile-mode
                     dired-hacks-utils dired-open diminish csv-mode
-                    caser buffer-move all-the-icons
+                    consult caser buffer-move all-the-icons
                     all-the-icons-dired all-the-icons-completion)
         package-activated-list)))
 (progn

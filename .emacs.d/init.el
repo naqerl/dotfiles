@@ -21,7 +21,7 @@
      default))
  '(package-selected-packages
    '(all-the-icons-completion all-the-icons-dired buffer-move caser
-                              csv-mode diminish dired-open
+                              consult csv-mode diminish dired-open
                               dockerfile-mode dumb-jump eat elfeed
                               elisp-autofmt expand-region flimenu
                               free-keys gcmh git-gutter
@@ -29,9 +29,9 @@
                               jtsx load-env-vars magit make-project
                               marginalia markdown-toc orderless
                               org-auto-tangle org-download pdf-tools
-                              plantuml-mode rust-mode solidity-mode
-                              sudo-edit toc-org vertico web-mode
-                              yaml-mode yasnippet yuck-mode))
+                              plantuml-mode poly-ansible rust-mode
+                              solidity-mode sudo-edit toc-org vertico
+                              web-mode yaml-mode yasnippet yuck-mode))
  '(package-vc-selected-packages
    '((org-super-links :url "https://github.com/toshism/org-super-links")
      (make-project :url "https://github.com/scipunch/make-project")))
