@@ -61,6 +61,18 @@
 (use-package diminish)
 #+end_src
 
+** Server
+
+#+begin_src elisp
+(use-package server
+  :ensure nil
+  :defer 1
+  :config
+  (setq server-client-instructions nil)
+  (unless (server-running-p)
+    (server-start)))
+#+end_src
+
 * Dev
 ** Common
 *** Dumb jump
@@ -251,7 +263,7 @@ Required for better LSP docs rendering
  :custom
  (org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
  (plantuml-default-exec-mode 'jar)
- (plantuml-jar-path org-plantuml-jar-path)
+ (plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
  (plantuml-indent-level 2)
  (plantuml-output-type "png")
  (plantuml-jar-args
@@ -544,11 +556,8 @@ Automatically resizes windows to fit golden ratio
          '(prog-mode-hook
            org-mode-hook
            magit-status-mode
-           compilation-mode-hook
            conf-mode-hook
-           eshell-mode-hook
-           text-mode
-           fundamental-mode))
+           text-mode))
   (add-hook mode 'display-line-numbers-mode))
 
 (setq-default display-line-numbers-type 'visual)
