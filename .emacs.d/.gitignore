@@ -1,0 +1,13 @@
+auto-save-list/
+eshell/
+eln-cache/
+elpa/
+history
+package-quickstart.*/
+places
+projects/
+tramp/
+transient/
+url/
+tree-sitter/
+package-quickstart*

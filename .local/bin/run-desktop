@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+import os
+import logging
+import subprocess
+import sys
+
+from dataclasses import dataclass, fields
+from pathlib import Path
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
+HOME = os.environ["HOME"]
+FZF = "wfzf"
+DESKTOP_DIRS = [
+    Path(path) for path
+    in ("/usr/share/applications/", f"{HOME}/.local/share/applications/")
+]
+
+@dataclass
+class DesktopEntry:
+    name: str
+    exec: str
+
+
+def parse_desktop_entry(path: Path) -> list[DesktopEntry]:
+    log.debug("Parsing %s", path)
+    result = []
+    buf = {}
+
+    with path.open() as fp:
+        for line in fp.readlines():
+            match line.split("=", 1):
+                case ["Name", name]:
+                    name = name.strip()
+                    log.debug("Got name %s", name)
+                    buf["name"] = name
+                case ["Exec", exec]:
+                    exec = exec.strip()
+                    log.debug("Got exec %s", exec)
+                    cmd = []
+                    for part in exec.split():
+                        if part.strip().lower() in ("%u", "%f"):
+                            continue
+                        cmd.append(part)
+                    buf["exec"] = exec
+                case _:
+                    if len(buf) == len(fields(DesktopEntry)):
+                        result.append(DesktopEntry(**buf))
+                        buf = {}
+
+    log.debug("Parsed %s entries", len(result))
+    return result
+
+
+def main() -> None:
+    desktop_entries = [
+        entry
+        for directory in DESKTOP_DIRS
+        for path in directory.iterdir()
+        if path.is_file()
+        for entry in parse_desktop_entry(path)
+    ]
+    log.info("Parsed %s desktop entries", len(desktop_entries))
+
+    fzf_p = subprocess.Popen(FZF, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+    stdout, _ = fzf_p.communicate(input="\n".join(entry.name for entry in desktop_entries))
+    if not stdout:
+        sys.exit(1)
+    name = stdout.strip()
+    log.info("Choosed program: %s", name)
+
+    exec = next(entry.exec for entry in desktop_entries if entry.name == name)
+    subprocess.run(["hyprctl", "dispatch", "exec", exec])
+    fzf_p.wait()
+
+
+if __name__ == "__main__":
+    main()
