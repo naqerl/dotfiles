@@ -360,6 +360,7 @@
 (use-package markdown-mode :ensure t)
 (use-package treesit-auto :ensure t)
 (use-package load-env-vars :ensure t)
+(use-package solidity-mode :ensure t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -369,8 +370,8 @@
  '(package-selected-packages
    '(consult diminish dumb-jump eat embark embark-consult expand-region
              git-gutter golden-ratio gptel jtsx load-env-vars magit
-             marginalia markdown-mode orderless sudo-edit treesit-auto
-             vertico yaml-mode)))
+             marginalia markdown-mode orderless solidity solidity-mode
+             sudo-edit treesit-auto vertico yaml-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
