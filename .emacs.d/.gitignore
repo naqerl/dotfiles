@@ -11,3 +11,5 @@ transient/
 url/
 tree-sitter/
 package-quickstart*
+projects
+tramp

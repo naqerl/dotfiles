@@ -359,6 +359,7 @@
 (use-package yaml-mode :ensure t)
 (use-package markdown-mode :ensure t)
 (use-package treesit-auto :ensure t)
+(use-package load-env-vars :ensure t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -367,12 +368,13 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(consult diminish dumb-jump eat embark embark-consult expand-region
-             git-gutter golden-ratio gptel jtsx magit marginalia
-             markdown-mode orderless sudo-edit treesit-auto vertico
-             yaml-mode)))
+             git-gutter golden-ratio gptel jtsx load-env-vars magit
+             marginalia markdown-mode orderless sudo-edit treesit-auto
+             vertico yaml-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(completions-annotations ((t (:inherit shadow))))
+ '(marginalia-documentation ((t (:foreground "LavenderBlush4" :underline nil)))))
