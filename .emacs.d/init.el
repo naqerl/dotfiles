@@ -34,6 +34,7 @@
 (setq-default electric-indent-inhibit t)
 (setq backward-delete-char-untabify-method 'hungry)
 (which-key-mode t)
+(setq dired-dwim-target t)
 (use-package ansi-color
   :config
   (defun user/ansi-colorize-buffer ()
