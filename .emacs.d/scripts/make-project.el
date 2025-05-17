@@ -40,6 +40,11 @@
  (comment :read-only)
  (prerequisites :read-only))
 
+(cl-defstruct make-project--makefile
+  "Representes whole Makefile."
+  (path :read-only)
+  (targets :read-only))
+
 (defvar make-project-column-margin 4
   "Amount of spaces during `completing-read' between Makefile target info.")
 
@@ -54,7 +59,7 @@
       :? @prerequisites)))
   "Tree-sitter query to construct `make-project--makefile-target' from.")
 
-(defvar make-project--target-column-width) ;
+(defvar make-project--target-column-width)
 (defvar make-project--prerequisites-column-width)
 
 ;;;###autoload
@@ -64,57 +69,66 @@
   (treesit-parser-create 'make)
   (let*
       ((default-directory (project-root (project-current)))
-       (makefile (make-project--select-makefile))
-       (targets (make-project--parse-project-makefile makefile))
-       (max-target-width
-        (make-project--max-width-by
-         'make-project--makefile-target-name targets))
-       (max-prerequisites-width
-        (make-project--max-width-by
-         'make-project--makefile-target-prerequisites targets))
-       (make-project--target-column-width
-        (+ max-target-width make-project-column-margin))
-       (make-project--prerequisites-column-width
-        (+ max-prerequisites-width make-project-column-margin))
+       (makefiles (mapcar #'make-project--parse-project-makefile (make-project--find-makefiles)))
+       ;; (max-target-width
+       ;;  (make-project--max-width-by
+       ;;   'make-project--makefile-target-name targets))
+       ;; (max-prerequisites-width
+       ;;  (make-project--max-width-by
+       ;;   'make-project--makefile-target-prerequisites targets))
+       ;; (make-project--target-column-width
+       ;;  (+ max-target-width make-project-column-margin))
+       ;; (make-project--prerequisites-column-width
+       ;;  (+ max-prerequisites-width make-project-column-margin))
        (targets-alist
-        (mapcar
-         (lambda (el)
-           (cons (make-project--makefile-target-name el) el))
-         targets))
-       (completion-extra-properties ;; Create padded prerequisites and comments annotation
-        '(:annotation-function
-          (lambda (target-name)
-            (let* ((target
-                    (alist-get target-name minibuffer-completion-table
-                               nil nil #'string=))
-                   (prerequisites
-                    (make-project--makefile-target-prerequisites
-                     target))
-                   (comment
-                    (make-project--makefile-target-comment target))
-                   (target-column-padding
-                    (make-project--calculate-padding
-                     make-project--target-column-width
-                     target-name))
-                   (prerequisites-column-padding
-                    (make-project--calculate-padding
-                     make-project--prerequisites-column-width
-                     prerequisites)))
-              (s-concat
-               (make-string target-column-padding ?\s)
-               (propertize (if prerequisites
-                               prerequisites
-                             "")
-                           'face 'package-status-dependency)
-               (make-string prerequisites-column-padding ?\s)
-               (propertize (if comment
-                               comment
-                             "")
-                           'face 'completions-annotations))))))
-       (target (completing-read "Make target: " targets-alist)))
-    (let ((default-directory
-           (file-name-directory (expand-file-name makefile))))
-      (compile (format "make %s" target)))))
+        (apply #'append (mapcar (lambda (makefile)
+                                   (mapcar(lambda (target)
+                                            (cons (concat
+                                                   (make-project--makefile-path makefile)
+                                                   " / "
+                                                   (make-project--makefile-target-name target))
+                                                  (cons
+                                                   (make-project--makefile-path makefile)
+                                                   (make-project--makefile-target-name target))))
+                                          (make-project--makefile-targets makefile)))
+                                 makefiles)))
+       ;; (completion-extra-properties ;; Create padded prerequisites and comments annotation
+       ;;  '(:annotation-function
+       ;;    (lambda (target-name)
+       ;;      (let* ((target
+       ;;              (alist-get target-name minibuffer-completion-table
+       ;;                         nil nil #'string=))
+       ;;             (prerequisites
+       ;;              (make-project--makefile-target-prerequisites
+       ;;               target))
+       ;;             (comment
+       ;;              (make-project--makefile-target-comment target))
+       ;;             (target-column-padding
+       ;;              (make-project--calculate-padding
+       ;;               make-project--target-column-width
+       ;;               target-name))
+       ;;             (prerequisites-column-padding
+       ;;              (make-project--calculate-padding
+       ;;               make-project--prerequisites-column-width
+       ;;               prerequisites)))
+       ;;        (s-concat
+       ;;         (make-string target-column-padding ?\s)
+       ;;         (propertize (if prerequisites
+       ;;                         prerequisites
+       ;;                       "")
+       ;;                     'face 'package-status-dependency)
+       ;;         (make-string prerequisites-column-padding ?\s)
+       ;;         (propertize (if comment
+       ;;                         comment
+       ;;                       "")
+       ;;                     'face 'completions-annotations))))))
+       (selected (completing-read "Make target: " targets-alist)))
+    (let* ((makefile2target (alist-get selected targets-alist nil nil #'string=))
+           (makefile (car makefile2target))
+           (target (cdr makefile2target))
+           (default-directory
+            (file-name-directory (expand-file-name makefile))))
+           (compile (format "make %s" target)))))
 
 (defun make-project--select-makefile ()
   "Searches for the all Makefile's in the `default-directory'.
@@ -122,21 +136,27 @@ Returns path if only one Makefile was found.
 Else interactively requests selection."
   (message "DEFAULT DIRECTORY %s" default-directory)
   (let ((files
-         (mapcar
-          (lambda (path) (string-replace default-directory "" path))
-          (directory-files-recursively
-           default-directory "^Makefile$"
-           nil (lambda (x) (not (string-match-p "/\\." x)))))))
+         (make-project--find-makefiles)))
     (if (eq (length files) 1)
         (car files)
       (completing-read "Makefile: " files))))
+
+(defun make-project--find-makefiles ()
+  "Finds all make files starting from default directory."
+  (mapcar
+   (lambda (path) (string-replace default-directory "" path))
+   (directory-files-recursively
+    default-directory "^Makefile$"
+    nil (lambda (x) (not (string-match-p "/\\." x))))))
 
 (defun make-project--parse-project-makefile (makefile)
   "Returns a table of available targets in MAKEFILE."
   (if (file-exists-p makefile)
       (with-temp-buffer
         (insert-file-contents makefile)
-        (make-project--parse-makefile))
+        (make-make-project--makefile
+         :path makefile
+         :targets (make-project--parse-makefile)))
     (warn "No Makefile found in project root")))
 
 (defun make-project--parse-makefile ()
