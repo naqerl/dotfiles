@@ -33,7 +33,9 @@
 (electric-indent-mode t)
 (setq-default electric-indent-inhibit t)
 (setq backward-delete-char-untabify-method 'hungry)
-(which-key-mode t)
+(use-package which-key
+  :diminish which-key-mode
+  :config (which-key-mode t))
 (setq dired-dwim-target t)
 (use-package ansi-color
   :config
@@ -60,6 +62,9 @@
    '(tsc
      "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1))
   (add-to-list 'compilation-error-regexp-alist 'tsc))
+(use-package eldoc
+  :config
+  (global-eldoc-mode -1))
 
 ;; Fonts
 (set-face-attribute 'default nil
