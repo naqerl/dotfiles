@@ -70,16 +70,9 @@
   (let*
       ((default-directory (project-root (project-current)))
        (makefiles (mapcar #'make-project--parse-project-makefile (make-project--find-makefiles)))
-       ;; (max-target-width
-       ;;  (make-project--max-width-by
-       ;;   'make-project--makefile-target-name targets))
-       ;; (max-prerequisites-width
-       ;;  (make-project--max-width-by
-       ;;   'make-project--makefile-target-prerequisites targets))
-       ;; (make-project--target-column-width
-       ;;  (+ max-target-width make-project-column-margin))
-       ;; (make-project--prerequisites-column-width
-       ;;  (+ max-prerequisites-width make-project-column-margin))
+       (max-makefile-width
+        (make-project--max-width-by
+         'make-project--makefile-path makefiles))
        (targets-alist
         (apply #'append (mapcar (lambda (makefile)
                                    (mapcar(lambda (target)
@@ -92,36 +85,6 @@
                                                    (make-project--makefile-target-name target))))
                                           (make-project--makefile-targets makefile)))
                                  makefiles)))
-       ;; (completion-extra-properties ;; Create padded prerequisites and comments annotation
-       ;;  '(:annotation-function
-       ;;    (lambda (target-name)
-       ;;      (let* ((target
-       ;;              (alist-get target-name minibuffer-completion-table
-       ;;                         nil nil #'string=))
-       ;;             (prerequisites
-       ;;              (make-project--makefile-target-prerequisites
-       ;;               target))
-       ;;             (comment
-       ;;              (make-project--makefile-target-comment target))
-       ;;             (target-column-padding
-       ;;              (make-project--calculate-padding
-       ;;               make-project--target-column-width
-       ;;               target-name))
-       ;;             (prerequisites-column-padding
-       ;;              (make-project--calculate-padding
-       ;;               make-project--prerequisites-column-width
-       ;;               prerequisites)))
-       ;;        (s-concat
-       ;;         (make-string target-column-padding ?\s)
-       ;;         (propertize (if prerequisites
-       ;;                         prerequisites
-       ;;                       "")
-       ;;                     'face 'package-status-dependency)
-       ;;         (make-string prerequisites-column-padding ?\s)
-       ;;         (propertize (if comment
-       ;;                         comment
-       ;;                       "")
-       ;;                     'face 'completions-annotations))))))
        (selected (completing-read "Make target: " targets-alist)))
     (let* ((makefile2target (alist-get selected targets-alist nil nil #'string=))
            (makefile (car makefile2target))
