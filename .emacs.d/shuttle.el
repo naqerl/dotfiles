@@ -44,10 +44,10 @@
               ("M-n" . flycheck-next-error) ; optional but recommended error navigation
               ("M-p" . flycheck-previous-error)))
 
-
 (use-package lsp-tailwindcss
   :load-path "~/.emacs.d/lsp-tailwindcss"
-  :init (setq lsp-tailwindcss-add-on-mode t)
+  :init (setq lsp-tailwindcss-add-on-mode t
+              lsp-tailwindcss-skip-config-check t)
   :config
   (dolist (tw-major-mode
            '(css-mode
