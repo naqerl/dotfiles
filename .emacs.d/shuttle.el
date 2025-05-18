@@ -1,3 +1,7 @@
+;;; package --- LSP setup ;; -*- lexical-binding: t; -*-
+;;; Commentary:
+;;; lsp-mode & corfu setup to get lsp features
+;;; Code:
 (setq read-process-output-max (* 10 1024 1024))
 (setq gc-cons-threshold 200000000)
 
@@ -73,3 +77,6 @@
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
   (read-extended-command-predicate #'command-completion-default-include-p))
+
+(provide 'shuttle)
+;;; shuttle.el ends here
