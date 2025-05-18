@@ -13,3 +13,6 @@ tree-sitter/
 package-quickstart*
 projects
 tramp
+.cache/
+.lsp-session-v1
+lsp-tailwindcss/

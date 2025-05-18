@@ -390,11 +390,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(diminish dockerfile-mode dumb-jump eat emacs-mini-frame
-              embark-consult eradio expand-region f git-gutter
-              golden-ratio gptel jtsx load-env-vars magit marginalia
-              markdown-mode orderless password-store solidity-mode
-              sudo-edit treesit-auto vertico yaml-mode yasnippet)))
+   '(corfu diminish dockerfile-mode dumb-jump eat emacs-mini-frame
+           embark-consult eradio expand-region f flycheck git-gutter
+           golden-ratio gptel jtsx load-env-vars lsp-mode lsp-ui magit
+           marginalia markdown-mode orderless password-store
+           solidity-mode sudo-edit treesit-auto vertico yaml-mode
+           yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
