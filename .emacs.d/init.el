@@ -274,7 +274,11 @@
   :ensure t
   :after embark
   :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  (embark-collect-mode . consult-preview-at-point-mode)
+  :config
+  (dolist (override '((consult-grep . embark-export)
+                      (consult-ripgrep . embark-export)))
+    (add-to-list 'embark-default-action-overrides override)))
 
 (use-package golden-ratio
   :ensure t
