@@ -329,6 +329,17 @@
       (add-to-list 'gptel-directives prompt)))
   :bind ("C-c g" . gptel-menu))
 
+(use-package eradio
+  :ensure t
+  :defer 1
+  :demand
+  :custom
+  (eradio-player '("mpv" "--no-video" "--no-terminal"))
+  (eradio-channels
+   (eval (car (read-from-string (f-read (expand-file-name
+                                         "eradio-playlist"
+                                         user-emacs-directory)))))))
+
 ;;; Languages setup:
 ;; Python
 (use-package python
@@ -364,7 +375,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(diminish dumb-jump eat embark-consult eradio expand-region f
+              git-gutter golden-ratio gptel jtsx load-env-vars magit
+              marginalia markdown-mode orderless solidity-mode
+              sudo-edit treesit-auto vertico yaml-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
