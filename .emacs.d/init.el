@@ -341,6 +341,7 @@
                                          "eradio-playlist"
                                          user-emacs-directory)))))))
 
+(use-package password-store :ensure t)
 ;;; Languages setup:
 ;; Python
 (use-package python
@@ -364,13 +365,24 @@
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode)))
 
+;; Snippets
+(use-package yasnippet
+  :ensure t
+  :custom
+  (yas-snippet-dirs `(,(expand-file-name
+                        "snippets"
+                        user-emacs-directory)))
+  :config
+  (yas-global-mode 1))
+
 ;; Do not require config
 (use-package yaml-mode :ensure t)
 (use-package markdown-mode :ensure t)
+(use-package solidity-mode :ensure t)
+(use-package dockerfile-mode :ensure t)
+
 (use-package treesit-auto :ensure t)
 (use-package load-env-vars :ensure t)
-(use-package solidity-mode :ensure t)
-(use-package password-store :ensure t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -378,11 +390,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(diminish dumb-jump eat emacs-mini-frame embark-consult eradio
-              expand-region f git-gutter golden-ratio gptel jtsx
-              load-env-vars magit marginalia markdown-mode orderless
-              password-store solidity-mode sudo-edit treesit-auto
-              vertico yaml-mode)))
+   '(diminish dockerfile-mode dumb-jump eat emacs-mini-frame
+              embark-consult eradio expand-region f git-gutter
+              golden-ratio gptel jtsx load-env-vars magit marginalia
+              markdown-mode orderless password-store solidity-mode
+              sudo-edit treesit-auto vertico yaml-mode yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
