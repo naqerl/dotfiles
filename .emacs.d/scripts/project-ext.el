@@ -111,8 +111,11 @@ If PROJECT-DIR not specified then prompts for it"
                 (last last-two 1)
               last-two)))
       (mapconcat 'identity result "/")))
+)
+; end-region   -- Project perspective extensions
 
-  (defun project-ext:persp-discover (directory &optional depth)
+; begin-region -- Project search extensions
+(defun project-ext:discover (directory &optional depth)
     "Recursively searches projects under given DIRECTORY.
 Default DEPTH is 6
 Returns number of total found projects"
@@ -133,13 +136,10 @@ Returns number of total found projects"
               (when (file-directory-p dir)
                 (setq projects-found
                       (+ projects-found
-                         (project-ext:persp-discover
+                         (project-ext:discover
                           dir (1- depth))))))))
       (project-ext:info "Total projects found: %s" projects-found)
-      projects-found)))
-; end-region   -- Project perspective extensions
-
-; begin-region -- Project search extensions
+      projects-found))
 
 (defvar project-ext:search-comment-list '("todo" "fixme" "xxx"))
 
