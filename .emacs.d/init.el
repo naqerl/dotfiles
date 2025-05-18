@@ -367,6 +367,7 @@
 (use-package treesit-auto :ensure t)
 (use-package load-env-vars :ensure t)
 (use-package solidity-mode :ensure t)
+(use-package password-store :ensure t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -377,7 +378,8 @@
    '(diminish dumb-jump eat emacs-mini-frame embark-consult eradio
               expand-region f git-gutter golden-ratio gptel jtsx
               load-env-vars magit marginalia markdown-mode orderless
-              solidity-mode sudo-edit treesit-auto vertico yaml-mode)))
+              password-store solidity-mode sudo-edit treesit-auto
+              vertico yaml-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
