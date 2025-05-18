@@ -258,8 +258,10 @@
 
 (use-package consult
   :ensure t
+  :config
+  (setq consult-ripgrep-args (concat consult-ripgrep-args " --hidden"))
   :bind
-  ("C-x p g" . consult-grep)
+  ("C-x p g" . consult-ripgrep)
   ("C-x b" . consult-buffer)
   ("M-g i" . consult-imenu)
   ("M-g l" . consult-line))
