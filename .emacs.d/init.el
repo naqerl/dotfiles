@@ -170,6 +170,8 @@
 (load-file (expand-file-name "scripts/my-extensions.el" user-emacs-directory))
 
 (use-package project
+  :custom
+  (project-mode-line t)
   :bind
   ("C-x p F" . project-root-find-file))
 
