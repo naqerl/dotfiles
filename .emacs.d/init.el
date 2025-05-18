@@ -194,6 +194,7 @@
 
 (use-package diminish :ensure t)
 (use-package sudo-edit :ensure t)
+(use-package f :ensure t)
 
 (use-package expand-region
   :ensure t
@@ -311,6 +312,7 @@
 
 (use-package gptel
   :ensure t
+  :after f
   :config
   (setq
    gptel-log-level 'info
@@ -321,16 +323,10 @@
        "Gemini"
      :key 'gptel-api-key-from-auth-source
      :stream t))
-  (add-to-list
-   'gptel-directives
-   '(frontend
-     .
-     "You are a senior frontend developer focused on React, TypeScript, TailwindCSS and Feature sliced design. You prefer use pnpm and biome and your main editor is GNU Emacs. Write code without comments. Answer with text only to the theoretical questions."))
-  (add-to-list
-   'gptel-directives
-   '(python
-     .
-     "Use python 3.13 features, do not import Optional or List from typing, use ~None | int~ or ~list[int]~ instead. Prefer match case when possible. Always write typehints for the arguments and return types. Use double quotes. Do not arrange functions in a C language style, so all used functions in the main one should be below it. Create custom exceptions inherited from the ~Exception~ class. User dry-python.returns.result for @safe decorator and Success/Failure. If ~try..except~ is required, write as less as possible lines inside of it and use the required exception class instead of the base one (or write in a comment, that you don't know the valid one). Do not add doc strings or helper commentaries to the code. DO NOT FORMAT CODE AS org or markdown code blocks"))
+  (let* ((prompts-path (expand-file-name "prompts" user-emacs-directory))
+         (prompts (eval (car (read-from-string (f-read prompts-path))))))
+    (dolist (prompt prompts)
+      (add-to-list 'gptel-directives prompt)))
   :bind ("C-c g" . gptel-menu))
 
 ;;; Languages setup:
