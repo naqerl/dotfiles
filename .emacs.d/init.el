@@ -192,6 +192,9 @@
 
 (use-package app-launcher)
 
+(use-package pass-wtype
+  :after password-store)
+
 ;; Third party packages
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
