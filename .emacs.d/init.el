@@ -194,6 +194,10 @@
   :config
   (load-theme 'koi t))
 
+(use-package llm-commit
+  :load-path "scripts"
+  :bind (:map git-commit-mode-map ("C-c C-g" . llm-commit:generate)))
+
 (use-package app-launcher)
 
 (use-package pass-wtype
