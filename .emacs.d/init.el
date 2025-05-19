@@ -65,6 +65,10 @@
 (use-package eldoc
   :config
   (global-eldoc-mode -1))
+(use-package ls-lisp
+  :custom
+  (ls-lisp-dirs-first t)
+  (ls-lisp-use-insert-directory-program nil))
 
 ;; Fonts
 (set-face-attribute 'default nil
