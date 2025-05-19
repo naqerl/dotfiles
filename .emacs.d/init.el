@@ -376,7 +376,9 @@
   (yas-global-mode 1))
 
 ;; Do not require config
-(use-package yaml-mode :ensure t)
+(use-package yaml-mode
+  :ensure t
+  :hook (yaml-mode . display-line-numbers-mode))
 (use-package markdown-mode :ensure t)
 (use-package solidity-mode :ensure t)
 (use-package dockerfile-mode :ensure t)
