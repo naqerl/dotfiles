@@ -34,11 +34,11 @@
 (require 'treesit)
 
 (cl-defstruct
- make-project--makefile-target
- "Represents Makefile target and it's context."
- (name :read-only)
- (comment :read-only)
- (prerequisites :read-only))
+    make-project--makefile-target
+  "Represents Makefile target and it's context."
+  (name :read-only)
+  (comment :read-only)
+  (prerequisites :read-only))
 
 (cl-defstruct make-project--makefile
   "Representes whole Makefile."
@@ -75,23 +75,24 @@
          'make-project--makefile-path makefiles))
        (targets-alist
         (apply #'append (mapcar (lambda (makefile)
-                                   (mapcar(lambda (target)
-                                            (cons (concat
-                                                   (make-project--makefile-path makefile)
-                                                   " / "
-                                                   (make-project--makefile-target-name target))
-                                                  (cons
-                                                   (make-project--makefile-path makefile)
-                                                   (make-project--makefile-target-name target))))
-                                          (make-project--makefile-targets makefile)))
-                                 makefiles)))
+                                  (mapcar(lambda (target)
+                                           (cons (concat
+                                                  (or
+						   (file-name-directory (make-project--makefile-path makefile))
+						   "./")
+                                                  (make-project--makefile-target-name target))
+                                                 (cons
+                                                  (make-project--makefile-path makefile)
+                                                  (make-project--makefile-target-name target))))
+                                         (make-project--makefile-targets makefile)))
+                                makefiles)))
        (selected (completing-read "Make target: " targets-alist)))
     (let* ((makefile2target (alist-get selected targets-alist nil nil #'string=))
            (makefile (car makefile2target))
            (target (cdr makefile2target))
            (default-directory
             (file-name-directory (expand-file-name makefile))))
-           (compile (format "make %s" target)))))
+      (compile (format "make %s" target)))))
 
 (defun make-project--select-makefile ()
   "Searches for the all Makefile's in the `default-directory'.
