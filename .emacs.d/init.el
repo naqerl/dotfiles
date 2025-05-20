@@ -48,6 +48,7 @@
   :custom
   (compilation-max-output-line-length 5000)
   (compilation-scroll-output t)
+  (compilation-buffer-name-function (lambda (_) (concat "*" compile-command "*")))
   :bind
   ("<f8>" . recompile)
   ("<f9>" . project-compile)
