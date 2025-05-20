@@ -1,49 +1,57 @@
-;; Simplify UI
-(blink-cursor-mode t)
-(setq make-backup-files nil)
-(setq create-lockfiles nil)
-(setq-default auto-save-default nil)
-(setq save-interprogram-paste-before-kill t)
-(setq-default scroll-margin 7)
+;;; UI\UX
+(setq make-backup-files nil
+      create-lockfiles nil
+      auto-save-default nil
+      save-interprogram-paste-before-kill t
+      scroll-margin 7
+      left-margin-width 1
+      right-margin-width 0
+      async-shell-command-buffer 'new-buffer
+      help-window-select t
+      history-length 25
+      use-dialog-box nil
+      dired-dwim-target t
+      electric-indent-inhibit t
+      backward-delete-char-untabify-method 'hungry
+      display-line-numbers-type 'visual
+      indent-tabs-mode nil
+      custom-file (expand-file-name ".emacs.custom.el" user-emacs-directory))
+
+(blink-cursor-mode 1)
 (electric-pair-mode 1)
+(global-auto-revert-mode 1)
+(savehist-mode 1)
+(save-place-mode 1)
+(winner-mode 1)
+(electric-indent-mode 1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
-(global-auto-revert-mode t)
-(setq help-window-select t)
-(setq-default history-length 25)
-(savehist-mode 1)
-(save-place-mode 1)
-(setq use-dialog-box nil)
-(winner-mode +1)
-(add-to-list 'default-frame-alist '(left-fringe . 0))
-(add-to-list 'default-frame-alist '(right-fringe . 0))
-(setq-default
- left-margin-width 1
- right-margin-width 0
- async-shell-command-buffer 'new-buffer)
+
+(dolist (frame-setting '((left-fringe . 0)
+                         (right-fringe . 0)))
+  (add-to-list 'default-frame-alist frame-setting)) ;; Remove unwanted UI
+
 (dolist (mode
          '(prog-mode-hook
            org-mode-hook
            conf-mode-hook
            text-mode))
-  (add-hook mode 'display-line-numbers-mode))
-(setq-default display-line-numbers-type 'visual)
-(setq-default indent-tabs-mode nil)
-(electric-indent-mode t)
-(setq-default electric-indent-inhibit t)
-(setq backward-delete-char-untabify-method 'hungry)
+  (add-hook mode 'display-line-numbers-mode)) ;; Line numbers where they are needed
+
+;; Builtin packages setup
 (use-package which-key
   :diminish which-key-mode
   :config (which-key-mode t))
-(setq dired-dwim-target t)
-(use-package ansi-color
+
+(use-package ansi-color ;; Properly handle colors in compilation buffers
   :config
   (defun user/ansi-colorize-buffer ()
     (let ((buffer-read-only nil))
       (ansi-color-apply-on-region (point-min) (point-max))))
   :hook
   (compilation-filter . user/ansi-colorize-buffer))
+
 (use-package compile
   :custom
   (compilation-max-output-line-length 5000)
@@ -53,20 +61,16 @@
   ("<f8>" . recompile)
   ("<f9>" . project-compile)
   :config
-  (add-to-list
-   'compilation-error-regexp-alist-alist
-   '(biome-lint
-     "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1))
-  (add-to-list 'compilation-error-regexp-alist 'biome-lint)
-  (add-to-list
-   'compilation-error-regexp-alist-alist
-   '(tsc
-     "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1))
-  (add-to-list 'compilation-error-regexp-alist 'tsc))
-(use-package eldoc
+  (dolist (regex '((biome-lint "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1)
+                   (tsc "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1)))
+    (add-to-list 'compilation-error-regexp-alist-alist regex)
+    (add-to-list 'compilation-error-regexp-alist-alist (car regex))))
+
+(use-package eldoc ;; There is no place for the annoying documentation
   :config
   (global-eldoc-mode -1))
-(use-package ls-lisp
+
+(use-package ls-lisp ;; Sort directories first in dired
   :custom
   (ls-lisp-dirs-first t)
   (ls-lisp-use-insert-directory-program nil))
@@ -92,10 +96,6 @@
   (setq server-client-instructions nil)
   (unless (server-running-p)
     (server-start)))
-
-;; Add custom files to path
-(dolist (file '("scripts"))
-  (add-to-list 'load-path (expand-file-name file user-emacs-directory)))
 
 ;; Custom built-in binds
 (use-package emacs
@@ -152,8 +152,7 @@
               tramp-file-name-regexp))
 (setq tramp-verbose 1)
 
-;; Hippie expand
-(use-package hippie-exp
+(use-package hippie-exp ;; Completion
   :bind ("M-/" . hippie-expand))
 
 (use-package upcase-abbrev-expand
@@ -162,7 +161,6 @@
   (add-to-list
    'hippie-expand-try-functions-list 'try-complete-upcase-abbrev))
 
-;; Auth source
 (use-package auth-source
   :custom
   (auth-sources '("~/.authinfo.gpg"))
@@ -171,7 +169,6 @@
   :config
   (auth-source-pass-enable))
 
-;; Custom packages
 (load-file (expand-file-name "scripts/my-extensions.el" user-emacs-directory))
 
 (use-package project
@@ -182,6 +179,7 @@
 
 (use-package project-ext
   :after project
+  :load-path "scripts"
   :bind
   ("C-x p e" . project-ext:project-or-default-eshell)
   ("C-x p p" . project-ext:project-switch))
@@ -196,12 +194,14 @@
   (load-theme 'koi t))
 
 (use-package llm-commit
-  :load-path "~/.emacs.d/scripts"
+  :load-path "scripts"
   :hook (git-commit-mode . llm-commit:generate))
 
-(use-package app-launcher)
+(use-package app-launcher
+  :load-path "scripts")
 
 (use-package pass-wtype
+  :load-path "scripts"
   :after password-store)
 
 ;; Third party packages
@@ -394,23 +394,3 @@
 
 (use-package treesit-auto :ensure t)
 (use-package load-env-vars :ensure t)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(corfu diminish dockerfile-mode dumb-jump eat emacs-mini-frame
-           embark-consult eradio expand-region f flycheck git-gutter
-           golden-ratio gptel jtsx llm load-env-vars lsp-mode lsp-ui
-           magit magit-gptcommit marginalia markdown-mode orderless
-           password-store solidity-mode sudo-edit treesit-auto vertico
-           yaml-mode yasnippet)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(completions-annotations ((t (:inherit shadow))))
- '(marginalia-documentation ((t (:foreground "LavenderBlush4" :underline nil)))))
