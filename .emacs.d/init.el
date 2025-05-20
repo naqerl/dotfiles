@@ -89,8 +89,7 @@
                     :height 1.0
                     :weight 'medium)
 
-;; Start server on launch
-(use-package server
+(use-package server ;; Start server on launch
   :defer 1
   :config
   (setq server-client-instructions nil)
@@ -126,7 +125,6 @@
   ("C-v" . user/scroll-half-up)
   ("M-v" . user/scroll-half-down))
 
-;; Eshell
 (use-package
   eshell
   :bind
@@ -141,7 +139,8 @@
    eshell-buffer-maximum-lines 10000
    eshell-scroll-to-bottom-on-input t
    eshell-history-append t
-   eshell-visual-commands '("make" "podman run" "bash" "btop" "ssh" "psql")))
+   eshell-visual-commands '("make" "bash" "btop" "ssh" "psql")
+   eshell-visual-subcommands '(("podman" "run"))))
 
 ;; Tramp
 (setq remote-file-name-inhibit-cache nil)
@@ -157,6 +156,7 @@
 
 (use-package upcase-abbrev-expand
   :after hippie-exp
+  :load-path "scripts"
   :config
   (add-to-list
    'hippie-expand-try-functions-list 'try-complete-upcase-abbrev))
@@ -169,7 +169,7 @@
   :config
   (auth-source-pass-enable))
 
-(load-file (expand-file-name "scripts/my-extensions.el" user-emacs-directory))
+(use-package my-extensions :load-path "scripts")
 
 (use-package project
   :custom
