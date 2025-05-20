@@ -393,4 +393,3 @@
 (use-package dockerfile-mode :ensure t)
 
 (use-package treesit-auto :ensure t)
-(use-package load-env-vars :ensure t)
