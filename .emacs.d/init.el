@@ -240,6 +240,11 @@
   :hook
   (magit-status-mode . display-line-numbers-mode))
 
+(use-package forge
+  :after magit
+  :ensure t
+  :defer 1)
+
 (use-package git-gutter
   :ensure t
   :diminish git-gutter-mode
@@ -322,7 +327,7 @@
 
 (use-package gptel
   :ensure t
-  :after f
+  :defer 1
   :config
   (setq
    gptel-log-level 'info
