@@ -86,7 +86,10 @@
                                                   (make-project--makefile-target-name target))))
                                          (make-project--makefile-targets makefile)))
                                 makefiles)))
-       (selected (completing-read "Make target: " targets-alist)))
+       (selected (completing-read (concat
+				   "["
+				   (project-name (project-current))
+				   "] Makefile target: ") targets-alist)))
     (let* ((makefile2target (alist-get selected targets-alist nil nil #'string=))
            (makefile (car makefile2target))
            (target (cdr makefile2target))
