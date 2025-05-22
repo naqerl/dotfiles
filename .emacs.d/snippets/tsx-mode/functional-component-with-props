@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: functional-component-with-props
+# key: fcwp
+# expand-env: ((yas-wrap-around-region nil) (fc-name (file-name-sans-extension (buffer-name))))
+# binding: C-u C-c s c
+# --
+export type `fc-name`Props = {
+
+}
+
+export const `fc-name`: React.FC<`fc-name`Props> = ({}) => {
+  return (
+    <${1:}>
+      $0
+    </$1>
+  )
+}
