@@ -151,11 +151,18 @@
               tramp-file-name-regexp)
       tramp-verbose 1)
 
+;; SSH shortcut
 (defun ssh()
   "Completing read ssh server and connect to it."
   (interactive)
   (let ((default-directory (read-file-name "SSH host: " "/ssh:")))
     (eat)))
+
+;; Dired
+(advice-add 'dired-delete-file :before
+            (lambda (file &rest rest)
+              (when-let ((buf (get-file-buffer file)))
+                (kill-buffer buf))))
 
 (use-package hippie-exp ;; Completion
   :bind ("M-/" . hippie-expand))
