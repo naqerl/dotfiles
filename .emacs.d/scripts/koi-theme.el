@@ -120,7 +120,9 @@
    (orderless-match-face-2 :foreground red)
    (git-gutter:modified :foreground yellow)
    (git-gutter:added :foreground green)
-   (git-gutter:deleted :foreground red)))
+   (git-gutter:deleted :foreground red)
+
+   (completions-notations :foreground fg-2)))
 
 ;;;###autoload
 (and load-file-name
