@@ -143,13 +143,14 @@
    eshell-visual-subcommands '(("podman" "run"))))
 
 ;; Tramp
-(setq remote-file-name-inhibit-cache nil)
-(setq vc-ignore-dir-regexp
+(setq remote-file-name-inhibit-cache nil
+      tramp-completion-use-auth-sources nil
+      vc-ignore-dir-regexp
       (format "%s\\|%s"
               vc-ignore-dir-regexp
+              tramp-file-name-regexp)
+      tramp-verbose 1)
 
-              tramp-file-name-regexp))
-(setq tramp-verbose 1)
 
 (use-package hippie-exp ;; Completion
   :bind ("M-/" . hippie-expand))
