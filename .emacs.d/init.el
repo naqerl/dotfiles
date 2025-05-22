@@ -155,7 +155,8 @@
 (defun ssh()
   "Completing read ssh server and connect to it."
   (interactive)
-  (let ((default-directory (read-file-name "SSH host: " "/ssh:")))
+  (let* ((default-directory (read-file-name "SSH host: " "/ssh:"))
+	(eat-buffer-name (concat "*" default-directory "*")))
     (eat)))
 
 ;; Dired
