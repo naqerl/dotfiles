@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: functional-component
-# name: fc
+# key: fc
 # expand-env: ((yas-wrap-around-region nil) (fc-name (file-name-sans-extension (buffer-name))))
 # binding: C-c s c
 # --

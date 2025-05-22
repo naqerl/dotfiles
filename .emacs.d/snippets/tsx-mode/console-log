@@ -3,4 +3,4 @@
 # key: cl
 # expand-env: ((yas-wrap-around-region nil) (fc-name (file-name-sans-extension (buffer-name))))
 # --
-console.log($1)$0
+console.log($1);$0
