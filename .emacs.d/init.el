@@ -151,6 +151,11 @@
               tramp-file-name-regexp)
       tramp-verbose 1)
 
+(defun ssh()
+  "Completing read ssh server and connect to it."
+  (interactive)
+  (let ((default-directory (read-file-name "SSH host: " "/ssh:")))
+    (eat)))
 
 (use-package hippie-exp ;; Completion
   :bind ("M-/" . hippie-expand))
