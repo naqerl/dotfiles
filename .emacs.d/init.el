@@ -245,8 +245,7 @@
   (magit-status-buffer-switch-function 'switch-to-buffer)
   (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   :bind
-  ("C-x g o" . magit)
-  ("C-x g c" . magit-commit)
+  ("C-x g" . magit)
   :hook
   (magit-status-mode . display-line-numbers-mode))
 
