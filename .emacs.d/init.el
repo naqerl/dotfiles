@@ -210,6 +210,10 @@
   :load-path "scripts"
   :after password-store)
 
+(use-package org
+  :custom
+  (org-edit-src-content-indentation 0))
+
 ;; Third party packages
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
