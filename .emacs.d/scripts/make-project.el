@@ -70,9 +70,6 @@
   (let*
       ((default-directory (project-root (project-current)))
        (makefiles (mapcar #'make-project--parse-project-makefile (make-project--find-makefiles)))
-       (max-makefile-width
-        (make-project--max-width-by
-         'make-project--makefile-path makefiles))
        (targets-alist
         (apply #'append (mapcar (lambda (makefile)
                                   (mapcar(lambda (target)
@@ -91,7 +88,13 @@
            (makefile (car makefile2target))
            (target (cdr makefile2target))
            (default-directory
-            (file-name-directory (expand-file-name makefile))))
+            (file-name-directory (expand-file-name makefile)))
+	   (compilation-buffer-name-function
+	    (lambda (_) (concat
+			 "*make "
+			 (file-name-directory makefile)
+			 target
+			 "*"))))
       (compile (format "make %s" target)))))
 
 (defun make-project--select-makefile ()
