@@ -1,3 +1,5 @@
+;; TODO: Add bind for select inside of (progn (search-forward "\"") (set-mark-command nil) (search-forward "\"") (backward-char))
+
 ;;; UI\UX
 (setq make-backup-files nil
       create-lockfiles nil
