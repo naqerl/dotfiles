@@ -76,14 +76,11 @@
        (targets-alist
         (apply #'append (mapcar (lambda (makefile)
                                   (mapcar(lambda (target)
-                                           (cons (concat
-                                                  (or
-						   (file-name-directory (make-project--makefile-path makefile))
-						   "./")
-                                                  (make-project--makefile-target-name target))
-                                                 (cons
-                                                  (make-project--makefile-path makefile)
-                                                  (make-project--makefile-target-name target))))
+                                           (cons
+					    (make-project--format-make-target makefile target)
+                                            (cons
+                                             (make-project--makefile-path makefile)
+                                             (make-project--makefile-target-name target))))
                                          (make-project--makefile-targets makefile)))
                                 makefiles)))
        (selected (completing-read (concat
@@ -208,6 +205,14 @@ Returns a `list' of `make-project--makefile-target'."
      (if value
          (string-width value)
        0)))
+
+(defun make-project--format-make-target (makefile target)
+  "Returns user friendly TARGET represnetation from MAKEFILE."
+  (concat
+   (or
+    (file-name-directory (make-project--makefile-path makefile))
+    "./")
+   (make-project--makefile-target-name target)))
 
 (provide 'make-project)
 ;;; make-project.el ends here
