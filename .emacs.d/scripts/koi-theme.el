@@ -122,7 +122,9 @@
    (git-gutter:added :foreground green)
    (git-gutter:deleted :foreground red)
 
-   (completions-notations :foreground fg-2)))
+   (completions-notations :foreground fg-1)
+   (marginalia-documentation :foreground fg-1)
+   (gptel-context-highlight-face :background bg :foreground fg)))
 
 ;;;###autoload
 (and load-file-name
