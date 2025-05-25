@@ -202,7 +202,11 @@
 
 (use-package make-project
   :load-path "scripts"
-  :bind ("C-x p c" . make-project-run))
+  :bind ("C-x p c" . make-project-run)
+  :custom (compilation-buffer-name-function
+	  (lambda (_) (if make-project-compilation-buffer-name
+			  make-project-compilation-buffer-name
+			(concat "*" (downcase name-of-mode) "*")))))
 
 (use-package koi-theme
   :load-path "scripts"

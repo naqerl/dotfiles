@@ -48,6 +48,9 @@
 (defvar make-project-column-margin 4
   "Amount of spaces during `completing-read' between Makefile target info.")
 
+(defvar make-project-compilation-buffer-name nil
+  "Name of the last make compilation command.")
+
 (defvar make-project--treesit-qeury
   '(((comment)
      :? @comment
@@ -88,13 +91,12 @@
            (makefile (car makefile2target))
            (target (cdr makefile2target))
            (default-directory
-            (file-name-directory (expand-file-name makefile)))
-	   (compilation-buffer-name-function
-	    (lambda (_) (concat
-			 "*make "
-			 (file-name-directory makefile)
-			 target
-			 "*"))))
+            (file-name-directory (expand-file-name makefile))))
+      (setq make-project-compilation-buffer-name (concat
+						   "*make "
+						   (file-name-directory makefile)
+						   target
+						   "*"))
       (compile (format "make %s" target)))))
 
 (defun make-project--select-makefile ()
