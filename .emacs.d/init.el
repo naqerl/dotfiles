@@ -400,7 +400,9 @@
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode)))
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jtsx-jsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . jtsx-typescript-mode))
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . jtsx-typescript-mode)))
 
 ;; Snippets
 (use-package yasnippet
