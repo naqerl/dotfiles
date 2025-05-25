@@ -124,7 +124,7 @@
 
    (completions-notations :foreground fg-1)
    (marginalia-documentation :foreground fg-1)
-   (gptel-context-highlight-face :background bg :foreground fg)))
+   (gptel-context-highlight-face :background bg)))
 
 ;;;###autoload
 (and load-file-name
