@@ -423,3 +423,4 @@
 (use-package dockerfile-mode :ensure t)
 
 (use-package treesit-auto :ensure t)
+(put 'dired-find-alternate-file 'disabled nil)
