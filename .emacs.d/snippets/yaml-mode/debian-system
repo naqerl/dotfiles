@@ -5,8 +5,6 @@
 ---
 - name: "Setup Debian"
   hosts: all
-  vars_files:
-    - vars/common.yml
   tasks:
     - name: "Install packages"
       become: true
@@ -15,8 +13,6 @@
         update_cache: true
         name:
           - podman
-          - containers-storage
-          - cron
 
     - name: "Extend bash profile"
       ansible.builtin.blockinfile:
