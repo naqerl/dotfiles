@@ -406,7 +406,14 @@
 
 ;; Go lang
 (use-package go-mode
-  :ensure t)
+  :ensure t
+  :config
+  (defun user/go-mode-hook ()
+    (setq tab-width 2
+     standard-indent 2
+     indent-tabs-mode nil))
+  :hook
+  (go-mode . user/go-mode-hook))
 
 ;; Snippets
 (use-package yasnippet
