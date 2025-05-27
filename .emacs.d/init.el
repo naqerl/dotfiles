@@ -404,6 +404,10 @@
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . jtsx-typescript-mode))
   (add-to-list 'auto-mode-alist '("\\.js\\'" . jtsx-typescript-mode)))
 
+;; Go lang
+(use-package go-mode
+  :ensure t)
+
 ;; Snippets
 (use-package yasnippet
   :ensure t
