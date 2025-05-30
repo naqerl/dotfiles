@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # name: debian-setup
+# key: debian-setup
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
 # --
 ---
