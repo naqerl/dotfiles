@@ -18,3 +18,4 @@ tramp
 lsp-tailwindcss/
 forge-database.sqlite
 bookmarks
+.local/

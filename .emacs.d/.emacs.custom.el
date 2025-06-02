@@ -6,8 +6,8 @@
  '(package-selected-packages
    '(corfu diminish dockerfile-mode dumb-jump eat embark-consult eradio
 	   expand-region flycheck forge git-gutter go-mode
-	   golden-ratio gptel jtsx lsp-ui magit-gptcommit marginalia
-	   orderless password-store solidity-mode sudo-edit
+	   golden-ratio gptel harpoon jtsx lsp-ui magit-gptcommit
+	   marginalia orderless password-store solidity-mode sudo-edit
 	   treesit-auto vertico yaml-mode yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

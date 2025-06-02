@@ -348,6 +348,18 @@
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
+(use-package harpoon
+  :ensure t
+  :bind
+  ("C-c h <return>" . harpoon-add-file)
+  ("C-c h f" . harpoon-toggle-file)
+  ("C-c h c" . harpoon-clear)
+  ("C-c 1" . harpoon-go-to-1)
+  ("C-c 2" . harpoon-go-to-2)
+  ("C-c 3" . harpoon-go-to-3)
+  ("C-c 4" . harpoon-go-to-4)
+  ("C-c 5" . harpoon-go-to-5))
+
 (use-package gptel
   :ensure t
   :defer 1
