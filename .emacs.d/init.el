@@ -313,7 +313,8 @@
   ("C-x p g" . consult-ripgrep)
   ("C-x b" . consult-buffer)
   ("M-g i" . consult-imenu)
-  ("M-g l" . consult-line))
+  ("M-g l" . consult-line)
+  (:map eshell-hist-mode-map ("M-r" . consult-history)))
 
 (use-package embark
   :ensure t
