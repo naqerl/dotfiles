@@ -345,6 +345,8 @@
   :ensure t
   :custom
   (dumb-jump-rg-search-args "--pcre2 --max-filesize 80M --no-ignore --hidden")
+  (dumb-jump-force-searcher 'rg)
+  (dumb-jump-functions-only t)
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
