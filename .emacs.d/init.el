@@ -350,6 +350,12 @@
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
+(use-package change-inner
+  :ensure t
+  :bind
+  ("M-i" . change-inner)
+  ("M-o" . change-outer))
+
 (use-package harpoon
   :ensure t
   :bind
