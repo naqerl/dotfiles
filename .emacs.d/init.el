@@ -130,19 +130,22 @@
 (use-package
   eshell
   :bind
-  (:map
-   eshell-command-mode-map
-   ("C-l" .
-    (lambda ()
-      (interactive)
-      (eshell/clear-scrollback))))
+  (:map eshell-command-mode-map
+        ("C-l" . (lambda () (interactive) (eshell/clear-scrollback))))
+  (:map eshell-mode-map
+        ("C-c C-o" . user/eshell-copy-last-output))
   :config
+  (defun user/eshell-copy-last-output ()
+    (interactive)
+    (copy-region-as-kill (eshell-beginning-of-output) (eshell-end-of-output))
+    (message "Output of %s was copied" eshell-last-command-name))
   (setq
    eshell-buffer-maximum-lines 10000
    eshell-scroll-to-bottom-on-input t
    eshell-history-append t
    eshell-visual-commands '("make" "bash" "btop" "ssh" "psql")
-   eshell-visual-subcommands '(("podman" "run"))))
+   eshell-visual-subcommands '(("podman" "run")))
+  (add-to-list 'savehist-additional-variables '(eshell-history . 255)))
 
 ;; Tramp
 (setq remote-file-name-inhibit-cache nil
@@ -457,3 +460,5 @@
 
 (use-package treesit-auto :ensure t)
 (put 'dired-find-alternate-file 'disabled nil)
+
+(message "Config loaded")

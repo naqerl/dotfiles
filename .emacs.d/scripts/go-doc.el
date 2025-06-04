@@ -9,6 +9,7 @@
 (defvar go--index-cache nil
   "Contains searched index for each package.")
 
+;;;###autoload
 (defun go-doc()
   "Search for the Go lang documentation."
   (interactive)
