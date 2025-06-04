@@ -440,6 +440,11 @@
   (go-mode . user/go-mode-hook)
   (go-mode . subword-mode))
 
+(use-package go-doc
+  :load-path "script"
+  :bind (:map go-mode-map
+              ("C-c s" . go-doc)))
+
 ;; Snippets
 (use-package yasnippet
   :ensure t
