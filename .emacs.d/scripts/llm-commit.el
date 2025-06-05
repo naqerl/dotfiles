@@ -35,8 +35,7 @@ Now, write the commit message using this format: [label]: [summary]")
   (let ((default-directory (project-root (project-current))))
     (gptel-request (format
                     llm-commit-prompt-template
-                    (shell-command-to-string "git diff --cached")))
-    (move-end-of-line nil)))
+                    (shell-command-to-string "git diff --cached")))))
 
 (provide 'llm-commit)
 ;;; llm-commit.el ends here
