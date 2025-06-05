@@ -127,13 +127,10 @@
   ("C-v" . user/scroll-half-up)
   ("M-v" . user/scroll-half-down))
 
-(use-package
-  eshell
+(use-package eshell
   :bind
   (:map eshell-command-mode-map
         ("C-l" . (lambda () (interactive) (eshell/clear-scrollback))))
-  (:map eshell-mode-map
-        ("C-c C-o" . user/eshell-copy-last-output))
   :config
   (defun user/eshell-copy-last-output ()
     (interactive)
@@ -145,7 +142,11 @@
    eshell-history-append t
    eshell-visual-commands '("make" "bash" "btop" "ssh" "psql")
    eshell-visual-subcommands '(("podman" "run")))
-  (add-to-list 'savehist-additional-variables '(eshell-history . 255)))
+  (add-to-list 'savehist-additional-variables '(eshell-history . 255))
+  (add-hook
+   'eshell-mode-hook
+   '(lambda ()
+      (bind-key "C-c C-o" #'user/eshell-copy-last-output 'eshell-mode-map))))
 
 ;; Tramp
 (setq remote-file-name-inhibit-cache nil
@@ -317,7 +318,10 @@
   ("C-x b" . consult-buffer)
   ("M-g i" . consult-imenu)
   ("M-g l" . consult-line)
-  (:map eshell-hist-mode-map ("M-r" . consult-history)))
+  :config
+  (add-hook
+   'eshell-mode-hook
+   '(lambda () (bind-key "M-r" #'consult-history 'eshell-hist-mode-map))))
 
 (use-package embark
   :ensure t
@@ -441,6 +445,7 @@
   (go-mode . subword-mode))
 
 (use-package go-doc
+  :after go-mode
   :load-path "script"
   :bind (:map go-mode-map
               ("C-c s" . go-doc)))
