@@ -4,10 +4,12 @@
 ;;; With this package you can access all of them right from the GNU Emacs
 ;;; and useful completing helperls like `orderless'
 ;;; Code:
-(require 'my-extensions)
 
 (defvar go--index-cache nil
   "Contains searched index for each package.")
+
+(defvar go--doc-buffer "*go doc*"
+  "Buffer name to show documentation.")
 
 ;;;###autoload
 (defun go-doc()
@@ -15,12 +17,21 @@
   (interactive)
   (unless (project-current)
     (error "It works only inside project"))
+  (require 'go-mode)
   (let* ((default-directory (project-root (project-current)))
 	 (root-package (completing-read "Package: " (go--list-packages)))
 	 (index (go--package-index root-package))
 	 (doc-entry (completing-read "Entry: " index))
-	 (result (cadr (assoc doc-entry index))))
-    (message "%s" (shell-command-to-string (format "go doc %s" result)))))
+	 (result (cadr (assoc doc-entry index)))
+	 (doc (shell-command-to-string (format "go doc %s" result))))
+    (with-current-buffer (get-buffer-create go--doc-buffer)
+      (read-only-mode -1)
+      (erase-buffer)
+      (save-excursion (insert doc))
+      (godoc-mode)
+      (read-only-mode 1)))
+  (display-buffer go--doc-buffer)
+  (other-window 1))
 
 (defun go--list-packages ()
   "Lists all packages for the current project."
