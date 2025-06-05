@@ -441,8 +441,7 @@
      standard-indent 2
      indent-tabs-mode nil))
   :hook
-  (go-mode . user/go-mode-hook)
-  (go-mode . subword-mode))
+  (go-mode . user/go-mode-hook))
 
 (use-package go-doc
   :after go-mode
