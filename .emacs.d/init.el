@@ -407,6 +407,14 @@
                                          user-emacs-directory)))))))
 
 (use-package password-store :ensure t)
+
+(use-package elcord
+  :ensure t
+  :custom
+  (elcord-idle-message "Hanging around..")
+  :config
+  (elcord-mode))
+
 ;;; Languages setup:
 ;; Python
 (use-package python
