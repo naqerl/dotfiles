@@ -193,16 +193,15 @@
 
 (use-package project
   :custom
-  (project-mode-line t)
-  :bind
-  ("C-x p F" . project-root-find-file))
+  (project-mode-line t))
 
 (use-package project-ext
   :after project
   :load-path "scripts"
   :bind
   ("C-x p e" . project-ext:project-or-default-eshell)
-  ("C-x p p" . project-ext:project-switch))
+  ("C-x p j" . project-ext:project-switch)
+  ("C-x p F" . project-ext:root-find-file))
 
 (use-package make-project
   :load-path "scripts"

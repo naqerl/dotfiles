@@ -255,12 +255,22 @@ REST ommited."
 
 ; end-region   -- Timer
 
+; begin-region -- Modified defaults
+
 (defun project-ext:project-or-default-eshell ()
   "Open eshell in project root or in the current."
   (interactive)
   (if (project-current)
       (project-eshell)
     (eshell)))
+
+(defun project-ext:root-find-file ()
+  "Find file in project root."
+  (interactive)
+  (let ((default-directory (project-root (project-current))))
+    (call-interactively 'find-file)))
+
+; end-region   -- Modified defaults
 
 ; begin-region -- Logging
 
