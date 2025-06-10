@@ -18,6 +18,7 @@
       display-line-numbers-type 'visual
       indent-tabs-mode nil
       custom-file (expand-file-name ".emacs.custom.el" user-emacs-directory))
+(setopt use-short-answers t)
 
 (blink-cursor-mode 1)
 (electric-pair-mode 1)
@@ -476,5 +477,35 @@
 
 (use-package treesit-auto :ensure t)
 (put 'dired-find-alternate-file 'disabled nil)
+
+;; Evil
+(use-package evil
+  :ensure t
+  :after undo-tree
+  :custom
+  (evil-undo-system 'undo-tree)
+  :bind (:map evil-insert-state-map
+	      ("C-g" . evil-normal-state))
+  :config (evil-mode 1)
+  ;; Evil-states per major mode
+  (setq evil-default-state 'emacs
+  evil-normal-state-modes '(fundamental-mode
+                                  ssh-config-mode
+                                  conf-mode
+                                  prog-mode
+                                  text-mode
+                                  repos-mode
+                                  dired-mode))
+  ;; Minor mode evil states
+  (add-hook 'with-editor-mode-hook 'evil-insert-state)
+  ;; Per mode cursors
+  (setq evil-insert-state-cursor '(box "#c4b28a"))
+  (setq evil-normal-state-cursor '(box "#87a987"))
+  (setq evil-emacs-state-cursor '(bar "#C34043"))
+  (setq evil-replace-state-cursor '(box "#8ea4a2"))
+  (setq evil-visual-state-cursor '(box "#7E9CD8")))
+
+(use-package undo-tree
+  :ensure t)
 
 (message "Config loaded")
