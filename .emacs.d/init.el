@@ -440,6 +440,13 @@
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . jtsx-typescript-mode))
   (add-to-list 'auto-mode-alist '("\\.js\\'" . jtsx-typescript-mode)))
 
+(use-package web-mode
+  :ensure t
+  :config
+  (setq web-mode-engines-alist
+	'(("go"    . "\\.html\\'")))
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode)))
+
 ;; Go lang
 (use-package go-mode
   :ensure t
@@ -493,6 +500,7 @@
                                   ssh-config-mode
                                   conf-mode
                                   prog-mode
+				  harpoon-mode
                                   text-mode
                                   repos-mode
                                   dired-mode))
@@ -506,6 +514,8 @@
   (setq evil-visual-state-cursor '(box "#7E9CD8")))
 
 (use-package undo-tree
-  :ensure t)
+  :ensure t
+  :custom
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (message "Config loaded")
