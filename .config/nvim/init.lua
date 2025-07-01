@@ -318,29 +318,6 @@ require('lazy').setup({
 		config = true
 	},
 	{
-		"gbprod/yanky.nvim",
-		config = function()
-			require("yanky").setup({
-				system_clipboard = {
-					sync_with_ring = true,
-					clipboard_register = nil,
-				},
-				highlight = {
-					on_put = false,
-					on_yank = false,
-					timer = 0,
-				},
-			})
-			vim.keymap.set("n", "<leader>y", "<cmd>YankyRingHistory<cr>")
-			vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
-			vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
-			vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
-			vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
-			vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
-			vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
-		end,
-	},
-	{
 		"andweeb/presence.nvim",
     event = 'VimEnter',
 		config = function()
