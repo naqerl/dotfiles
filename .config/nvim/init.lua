@@ -23,6 +23,9 @@ vim.o.showmode = false
 vim.o.cmdheight = 1
 vim.o.guicursor = "i:block"
 
+-- Error formats
+vim.cmd [[set errorformat^=vet:\ %f:%l:%c:\ %m]] -- go vet (important to prepend, otherwise 'vet' will be a part of the file path)
+
 -- Update buffer after file change
 vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
