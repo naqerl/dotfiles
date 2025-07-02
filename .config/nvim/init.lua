@@ -353,3 +353,6 @@ vim.cmd([[
 	endfunction
 	command! -nargs=* -complete=customlist,MakeCompletion Make !make <args>
 ]])
+
+-- Custom plugins
+require("plugins/makex")
