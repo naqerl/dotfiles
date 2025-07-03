@@ -276,37 +276,6 @@ require('lazy').setup({
 		end
 	},
 	{
-		"NeogitOrg/neogit",
-		dependencies = {
-			"nvim-lua/plenary.nvim",         -- required
-			"sindrets/diffview.nvim",        -- optional - Diff integration
-			"nvim-telescope/telescope.nvim", -- optional
-		},
-		keys = {
-			{ "<C-g>", "<cmd>Neogit<cr>"},
-		}
-	},
-	{
-		"ej-shafran/compile-mode.nvim",
-		version = "^5.0.0",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			{ "m00qek/baleia.nvim", tag = "v1.3.0" },
-		},
-		cmd = { "Compile" },
-		keys = {
-			{ "<F8>", "<cmd>Recompile<cr>" },
-			{ "<M-]>", "<cmd>NextError<cr>", silent = true },
-			{ "<M-[>", "<cmd>PrevError<cr>", silent = true },
-		},
-		config = function()
-			---@type CompileModeOpts
-			vim.g.compile_mode = {
-				baleia_setup = true,
-			}
-		end
-	},
-	{
 		'pechorin/any-jump.vim',
 		config = function()
 			vim.g.any_jump_window_width_ratio = 0.8
@@ -331,6 +300,32 @@ require('lazy').setup({
 	{
 		"powerman/vim-plugin-ruscmd",
 	},
+	{
+    "fredrikaverpil/godoc.nvim",
+    version = "*",
+    dependencies = {
+        { "nvim-telescope/telescope.nvim" }, -- optional
+        {
+            "nvim-treesitter/nvim-treesitter",
+            opts = {
+              ensure_installed = { "go" },
+            },
+        },
+    },
+    build = "go install github.com/lotusirous/gostdsym/stdsym@latest", -- optional
+    cmd = { "GoDoc" }, -- optional
+    opts = {
+			picker = {
+				type = "telescope"
+			}
+		}, -- see further down below for configuration
+	},
+	{
+		"tpope/vim-rsi"
+	},
+	{
+		"tpope/vim-fugitive"
+	}
 })
 
 if vim.g.neovide then
