@@ -16,3 +16,10 @@ mkdir -p $HOME/.config
 cd $HOME/dotfiles
 ln -s $PWD/.config/hypr $HOME/.config/hypr
 ln -s $PWD/.emacs.d $HOME/.emacs.d
+
+# GoogleDot cursor
+cursor_file="GoogleDot-Black.tar.gz"
+wget "https://github.com/ful1e5/Google_Cursor/releases/download/v2.0.0/${cursor_file}"
+tar -xvf "$cursor_file"
+rm "$cursor_file"
+sudo mv GoogleDot-* /usr/share/icons/
