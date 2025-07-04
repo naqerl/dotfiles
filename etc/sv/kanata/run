@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Wait for Hyprland start
+echo "kanata: Waiting for Hyprland"
+while [ -z $(pgrep "Hyprland") ]; do
+	sleep 1
+done
+
+# Actually run kanata in bg
+echo "kanata: Starting"
+/usr/bin/kanata --cfg /home/user/.config/kanata/kanata.kbd &>/dev/null &
+
+# Wait until Hyprland will be closed
+echo "kanata: Keeping alive with Hyprland"
+while [ -n $(pgrep "Hyprland") ]; do
+	sleep 5
+done
+
+# Stop kanata (otherwise tty will be fucked up)
+echo "kanata: Shutting down"
+pkill kanata
