@@ -1,9 +1,6 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.o.relativenumber = true
-vim.schedule(function()
-	vim.o.clipboard = 'unnamedplus'
-end) 
 vim.o.breakindent = true
 vim.o.undofile = true
 vim.o.ignorecase = true
