@@ -332,15 +332,37 @@ require('lazy').setup({
 	{
 		"folke/noice.nvim",
 		event = "VeryLazy",
+		config = function()
+			require("noice").setup({
+				presets = {
+					bottom_search = true, -- use a classic bottom cmdline for search
+					command_palette = true, -- position the cmdline and popupmenu together
+					long_message_to_split = true, -- long messages will be sent to a split
+					inc_rename = false, -- enables an input dialog for inc-rename.nvim
+					lsp_doc_border = false, -- add a border to hover docs and signature help
+				},
+			})
+
+			local hl = vim.api.nvim_get_hl(0, {name = 'StatusLine'})
+			vim.api.nvim_set_hl(0, 'NoiceCmdline', { bg = hl.bg, fg = hl.fg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlineIcon', { bg = hl.bg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlinePrompt', { bg = hl.bg, fg = hl.fg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopUp', { bg = hl.bg, fg = hl.fg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopupBorder', { bg = hl.bg, fg = hl.bg })
+
+		end
+		dependencies = {
+			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+			"MunifTanjim/nui.nvim",
+			"rcarriga/nvim-notify",
+		}
+	},
+	{
+		"rcarriga/nvim-notify",
 		opts = {
-			presets = {
-				bottom_search = true, -- use a classic bottom cmdline for search
-				command_palette = true, -- position the cmdline and popupmenu together
-				long_message_to_split = true, -- long messages will be sent to a split
-				inc_rename = false, -- enables an input dialog for inc-rename.nvim
-				lsp_doc_border = false, -- add a border to hover docs and signature help
-			},
-		},
+			timeout = 1500,
+			r', { bg = '#282828', fg = '#ffffff' })  -- Replace with your desired colors
+		end
 		dependencies = {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
