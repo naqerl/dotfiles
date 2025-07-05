@@ -350,7 +350,7 @@ require('lazy').setup({
 			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopUp', { bg = hl.bg, fg = hl.fg })
 			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopupBorder', { bg = hl.bg, fg = hl.bg })
 
-		end
+		end,
 		dependencies = {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
@@ -361,8 +361,9 @@ require('lazy').setup({
 		"rcarriga/nvim-notify",
 		opts = {
 			timeout = 1500,
-			r', { bg = '#282828', fg = '#ffffff' })  -- Replace with your desired colors
-		end
+			render = "compact",
+			style = "static",
+		},
 		dependencies = {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
