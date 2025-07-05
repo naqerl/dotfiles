@@ -43,8 +43,9 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Quick fix list
-vim.keymap.set('n', '<M-j>', '<cmd>cnext<cr>')
-vim.keymap.set('n', '<M-k>', '<cmd>cprev<cr>')
+vim.keymap.set('n', '<M-]>', '<cmd>cnext<cr>')
+vim.keymap.set('n', '<M-[>', '<cmd>cprev<cr>')
+vim.keymap.set('n', '<leader>oc', '<cmd>copen<cr>')
 
 -- Reselect pasted
 vim.keymap.set('n', 'gV', '`[v`]')
