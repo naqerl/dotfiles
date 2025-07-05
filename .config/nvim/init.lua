@@ -356,11 +356,6 @@ require('lazy').setup({
 	},
 	{
 		"rcarriga/nvim-notify",
-		opts = {
-			timeout = 1500,
-			render = "compact",
-			style = "static",
-		},
 		dependencies = {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
@@ -371,7 +366,7 @@ require('lazy').setup({
 		"rcarriga/nvim-notify",
 		opts = {
 			timeout = 1500,
-			render = "wrapped-compact",
+			render = "compact",
 			stages = "static",
 		}
 	}
