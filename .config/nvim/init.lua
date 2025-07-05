@@ -346,6 +346,14 @@ require('lazy').setup({
 			"MunifTanjim/nui.nvim",
 			"rcarriga/nvim-notify",
 		}
+	},
+	{
+		"rcarriga/nvim-notify",
+		opts = {
+			timeout = 1500,
+			render = "wrapped-compact",
+			stages = "static",
+		}
 	}
 })
 
