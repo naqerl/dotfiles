@@ -160,13 +160,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles)
       vim.keymap.set('n', '<leader>r', builtin.registers)
 
-			vim.api.nvim_set_keymap(
-				'n',
-				'<C-p>',
-				":lua require'telescope'.extensions.project.project{}<CR>",
-				{noremap = true, silent = true}
-			)
-
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
 
