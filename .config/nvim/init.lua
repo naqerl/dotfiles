@@ -378,6 +378,10 @@ require('lazy').setup({
 	},
 	{
 		"rcarriga/nvim-notify",
+		config = function()
+			require("notify").setup()
+			require("telescope").load_extension("notify") 
+		end,
 		dependencies = {
 			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
 			"MunifTanjim/nui.nvim",
