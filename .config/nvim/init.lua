@@ -373,12 +373,14 @@ require('lazy').setup({
 						-- code
 					end,
 					after_mount = function(input)
-						-- code
+						local fn = require('fine-cmdline').fn
+						vim.keymap.set('i', '<Esc>', fn.close, {buffer = input.bufnr})
+						vim.keymap.set('i', '<C-p>', fn.up_history, {buffer = input.bufnr})
+						vim.keymap.set('i', '<C-n>', fn.down_history, {buffer = input.bufnr})
 					end,
 					set_keymaps = function(imap, feedkeys)
-						-- code
 					end
-				}
+					}
 			})
 		end
 	},
