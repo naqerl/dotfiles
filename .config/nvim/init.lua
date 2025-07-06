@@ -19,6 +19,9 @@ vim.o.signcolumn = "auto"
 vim.o.showmode = false
 vim.o.cmdheight = 1
 vim.o.guicursor = "i:block"
+vim.o.colorcolumn = "80"
+vim.o.wrap = false
+vim.o.spell = true
 
 -- Error formats
 vim.cmd [[set errorformat^=vet:\ %f:%l:%c:\ %m]] -- go vet (important to prepend, otherwise 'vet' will be a part of the file path)
@@ -55,6 +58,12 @@ vim.keymap.set("v", "<M-p>", '"_dp')
 
 -- Replace word under cursor
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+
+-- Copy to system clipboard
+vim.keymap.set("v", "<leader>y", '"+y')
+
+-- Paste without saving
+vim.keymap.set("v", "<leader>y", '"+y')
 
 vim.api.nvim_create_autocmd('TextYankPost', {
 	desc = 'Highlight when yanking (copying) text',
