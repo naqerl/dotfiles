@@ -212,15 +212,12 @@ require('lazy').setup({
 						local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
 						local location      = '%2l:%-2v'
 						local search        = MiniStatusline.section_searchcount({ trunc_width = 75 })
-						local cmd						= require("noice").api.status.command.get()
 
 						return MiniStatusline.combine_groups({
 							{ hl = mode_hl,                  strings = { mode } },
 							{ hl = 'MiniStatuslineDevinfo',  strings = { git, diff, diagnostics, lsp } },
 							'%<', -- Mark general truncate point
 							{ hl = 'MiniStatuslineFilename', strings = { filename } },
-							'%=', -- End left alignment
-							{ strings = { cmd }},
 							'%=', -- End left alignment
 							{ hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
 							{ hl = mode_hl,                  strings = { search, location } },
@@ -343,53 +340,48 @@ require('lazy').setup({
 		"tpope/vim-fugitive"
 	},
 	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
+		"VonHeikemen/fine-cmdline.nvim",
+		dependencies = {
+			'MunifTanjim/nui.nvim'
+		},
 		config = function()
-			require("noice").setup({
-				presets = {
-					bottom_search = true, -- use a classic bottom cmdline for search
-					command_palette = true, -- position the cmdline and popupmenu together
-					long_message_to_split = false, -- long messages will be sent to a split
-					inc_rename = false, -- enables an input dialog for inc-rename.nvim
-					lsp_doc_border = false, -- add a border to hover docs and signature help
+			vim.api.nvim_set_keymap('n', ':', '<cmd>FineCmdline<CR>', {noremap = true})
+
+			require('fine-cmdline').setup({
+				cmdline = {
+					enable_keymaps = true,
+					smart_history = true,
+					prompt = '󰄾 '
 				},
+				popup = {
+					position = {
+						row = '30%',
+						col = '50%',
+					},
+					size = {
+						width = '60%',
+					},
+					border = {
+						style = 'solid',
+					},
+					win_options = {
+						winhighlight = 'Normal:StatusLine,FloatBorder:StatusLine',
+					},
+				},
+				hooks = {
+					before_mount = function(input)
+						-- code
+					end,
+					after_mount = function(input)
+						-- code
+					end,
+					set_keymaps = function(imap, feedkeys)
+						-- code
+					end
+				}
 			})
-
-			local hl = vim.api.nvim_get_hl(0, {name = 'StatusLine'})
-			vim.api.nvim_set_hl(0, 'NoiceCmdline', { bg = hl.bg, fg = hl.fg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlineIcon', { bg = hl.bg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlinePrompt', { bg = hl.bg, fg = hl.fg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopUp', { bg = hl.bg, fg = hl.fg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopupBorder', { bg = hl.bg, fg = hl.bg })
-
-		end,
-		dependencies = {
-			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-			"MunifTanjim/nui.nvim",
-			"rcarriga/nvim-notify",
-		}
+		end
 	},
-	{
-		"rcarriga/nvim-notify",
-		config = function()
-			require("notify").setup()
-			require("telescope").load_extension("notify") 
-		end,
-		dependencies = {
-			-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-			"MunifTanjim/nui.nvim",
-			"rcarriga/nvim-notify",
-		}
-	},
-	{
-		"rcarriga/nvim-notify",
-		opts = {
-			timeout = 1500,
-			render = "compact",
-			stages = "static",
-		}
-	}
 })
 
 if vim.g.neovide then
