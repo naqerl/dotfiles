@@ -13,18 +13,16 @@ vim.o.inccommand = 'split'
 vim.o.scrolloff = 7
 vim.o.confirm = true
 vim.o.laststatus = 3
-vim.o.tabstop = 2
-vim.o.shiftwidth = 2
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
 vim.o.signcolumn = "auto"
 vim.o.showmode = false
-vim.o.cmdheight = 1
+vim.o.cmdheight = 0
 vim.o.guicursor = "i:block"
 vim.o.colorcolumn = "80"
 vim.o.wrap = false
 vim.o.spell = true
-
--- Error formats
-vim.cmd [[set errorformat^=vet:\ %f:%l:%c:\ %m]] -- go vet (important to prepend, otherwise 'vet' will be a part of the file path)
+vim.o.expandtab = true
 
 -- Update buffer after file change
 vim.o.autoread = true
@@ -243,7 +241,7 @@ require('lazy').setup({
 		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 		config = function()
 			require("nvim-treesitter.configs").setup({
-				ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+				ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go' },
 				-- Autoinstall languages that are not installed
 				auto_install = true,
 				highlight = {
@@ -311,17 +309,7 @@ require('lazy').setup({
 		event = "InsertEnter",
 		config = true
 	},
-	{
-		"andweeb/presence.nvim",
-    event = 'VimEnter',
-		config = function()
-			require('presence').setup({
-			})
-		end
-	},
-	{
-		"powerman/vim-plugin-ruscmd",
-	},
+	{ "powerman/vim-plugin-ruscmd" },
 	{
     "fredrikaverpil/godoc.nvim",
     version = "*",
@@ -342,57 +330,33 @@ require('lazy').setup({
 			}
 		}, -- see further down below for configuration
 	},
+	{ "tpope/vim-rsi" },
+	{ "tpope/vim-fugitive" },
 	{
-		"tpope/vim-rsi"
-	},
-	{
-		"tpope/vim-fugitive"
-	},
-	{
-		"VonHeikemen/fine-cmdline.nvim",
-		dependencies = {
-			'MunifTanjim/nui.nvim'
-		},
+		"folke/noice.nvim",
+		event = "VeryLazy",
 		config = function()
-			vim.api.nvim_set_keymap('n', ':', '<cmd>FineCmdline<CR>', {noremap = true})
-
-			require('fine-cmdline').setup({
+			require('noice').setup({
 				cmdline = {
-					enable_keymaps = true,
-					smart_history = true,
-					prompt = '󰄾 '
+					enbled = true,
 				},
-				popup = {
-					position = {
-						row = '30%',
-						col = '50%',
-					},
-					size = {
-						width = '60%',
-					},
-					border = {
-						style = 'solid',
-					},
-					win_options = {
-						winhighlight = 'Normal:StatusLine,FloatBorder:StatusLine',
-					},
-				},
-				hooks = {
-					before_mount = function(input)
-						-- code
-					end,
-					after_mount = function(input)
-						local fn = require('fine-cmdline').fn
-						vim.keymap.set('i', '<Esc>', fn.close, {buffer = input.bufnr})
-						vim.keymap.set('i', '<C-p>', fn.up_history, {buffer = input.bufnr})
-						vim.keymap.set('i', '<C-n>', fn.down_history, {buffer = input.bufnr})
-					end,
-					set_keymaps = function(imap, feedkeys)
-					end
-					}
+				messages = {
+					enabled = false,
+				}
 			})
-		end
-	},
+
+			-- Change cmdline highlighting
+			local hl = vim.api.nvim_get_hl(0, {name = 'StatusLine'})
+			vim.api.nvim_set_hl(0, 'NoiceCmdline', { bg = hl.bg, fg = hl.fg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlineIcon', { bg = hl.bg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlinePrompt', { bg = hl.bg, fg = hl.fg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopUp', { bg = hl.bg, fg = hl.fg })
+			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopupBorder', { bg = hl.bg, fg = hl.bg })
+		end,
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+		}
+	}
 })
 
 if vim.g.neovide then
