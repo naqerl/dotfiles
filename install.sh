@@ -21,3 +21,9 @@ wget "https://github.com/ful1e5/Google_Cursor/releases/download/v2.0.0/${cursor_
 tar -xvf "$cursor_file"
 rm "$cursor_file"
 sudo mv GoogleDot-* /usr/share/icons/
+
+# Opencode
+curl -fsSL https://opencode.ai/install | bash
+
+# pnpm
+curl -fsSL https://get.pnpm.io/install.sh | sh -
