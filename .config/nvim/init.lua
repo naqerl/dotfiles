@@ -316,10 +316,19 @@ require('lazy').setup({
 	},
 	{
 		"rebelot/kanagawa.nvim",
+		enabled = false,
 		lazy = false,
 		priority = 1000,
 		config = function()
 			vim.cmd.colorscheme "kanagawa-dragon"
+		end
+	},
+	{
+		"kyrias/nvim-base16",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.cmd.colorscheme "base16-sandcastle"
 		end
 	},
 	{
