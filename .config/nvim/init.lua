@@ -295,21 +295,19 @@ require('lazy').setup({
 		end,
 	},
 	{
-		"rebelot/kanagawa.nvim",
-		enabled = false,
+		"svrana/neosolarized.nvim",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			vim.cmd.colorscheme "kanagawa-dragon"
-		end
-	},
-	{
-		"kyrias/nvim-base16",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			vim.cmd.colorscheme "base16-sandcastle"
-		end
+			require("neosolarized").setup({
+				comment_italics = true,
+				background_set = true,
+			})
+			vim.cmd.colorscheme("neosolarized")
+		end,
+		dependencies = {
+			"tjdevries/colorbuddy.nvim",
+		},
 	},
 	{
 		'pechorin/any-jump.vim',
