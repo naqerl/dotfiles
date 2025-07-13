@@ -17,7 +17,7 @@ vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.signcolumn = "auto"
 vim.o.showmode = false
-vim.o.cmdheight = 0
+vim.o.cmdheight = 1
 vim.o.guicursor = "i:block"
 vim.o.colorcolumn = "80"
 vim.o.wrap = false
@@ -268,7 +268,6 @@ require('lazy').setup({
 					end,
 				},
 			})
-
 		end,
 	},
 	{ -- Highlight, edit, and navigate code
@@ -360,34 +359,6 @@ require('lazy').setup({
 	},
 	{ "tpope/vim-rsi" },
 	{ "tpope/vim-fugitive" },
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		config = function()
-			require('noice').setup({
-				cmdline = {
-					enbled = true,
-				},
-				messages = {
-					enabled = false,
-				},
-				presets = {
-					bottom_search = true,
-				},
-			})
-
-			-- Change cmdline highlighting
-			local hl = vim.api.nvim_get_hl(0, {name = 'StatusLine'})
-			vim.api.nvim_set_hl(0, 'NoiceCmdline', { bg = hl.bg, fg = hl.fg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlineIcon', { bg = hl.bg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlinePrompt', { bg = hl.bg, fg = hl.fg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopUp', { bg = hl.bg, fg = hl.fg })
-			vim.api.nvim_set_hl(0, 'NoiceCmdlinePopupBorder', { bg = hl.bg, fg = hl.bg })
-		end,
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-		}
-	},
 	{
 		'nmac427/guess-indent.nvim',
 		config = function()
