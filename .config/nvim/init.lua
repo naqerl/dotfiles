@@ -131,12 +131,24 @@ require('lazy').setup({
 				end,
 			},
 			{ 'nvim-telescope/telescope-ui-select.nvim' },
+			{ 'nvim-telescope/telescope-file-browser.nvim' },
 		},
 		config = function()
 			require('telescope').setup {
 				extensions = {
 					['ui-select'] = {
 						require('telescope.themes').get_dropdown(),
+					},
+					file_browser = {
+						hijack_netrw = true,
+						mappings = {
+							["i"] = {
+								-- your custom insert mode mappings
+							},
+							["n"] = {
+								-- your custom normal mode mappings
+							},
+						},
 					},
 				},
 				defaults = require("telescope.themes").get_ivy({
@@ -163,6 +175,7 @@ require('lazy').setup({
 			}
 			pcall(require('telescope').load_extension, 'fzf')
 			pcall(require('telescope').load_extension, 'ui-select')
+			pcall(require('telescope').load_extension, 'file_browser')
 
 			local builtin = require 'telescope.builtin'
 			vim.keymap.set('n', '<leader>f', builtin.find_files)
@@ -176,6 +189,19 @@ require('lazy').setup({
 			vim.keymap.set('n', '<leader>sr', builtin.resume)
 			vim.keymap.set('n', '<leader>s.', builtin.oldfiles)
 			vim.keymap.set('n', '<leader>r', builtin.registers)
+
+			vim.keymap.set(
+				"n",
+				"<space>E",
+				":Telescope file_browser<CR>",
+				{ silent = true }
+			)
+			vim.keymap.set(
+				"n",
+				"<space>e",
+				":Telescope file_browser path=%:p:h select_buffer=true<CR>",
+				{ silent = true }
+			)
 
 			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
@@ -269,14 +295,6 @@ require('lazy').setup({
 				indent = { enable = true },
 			})
 		end,
-	},
-	{
-		'stevearc/oil.nvim',
-		opts = {},
-		lazy = false,
-		keys = {
-			{ "<C-e>", "<cmd>Oil<cr>"},
-		},
 	},
 	{
 		"ThePrimeagen/harpoon",
