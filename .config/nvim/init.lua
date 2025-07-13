@@ -140,7 +140,6 @@ require('lazy').setup({
 						require('telescope.themes').get_dropdown(),
 					},
 					file_browser = {
-						hijack_netrw = true,
 						mappings = {
 							["i"] = {
 								-- your custom insert mode mappings
@@ -296,25 +295,6 @@ require('lazy').setup({
 		end,
 	},
 	{
-		"ThePrimeagen/harpoon",
-		lazy = false,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
-		config = true,
-		keys = {
-			{ "<leader>a", "<cmd>lua require('harpoon.mark').add_file()<cr>"},
-			{ "<leader>hn", "<cmd>lua require('harpoon.ui').nav_next()<cr>"},
-			{ "<leader>hp", "<cmd>lua require('harpoon.ui').nav_prev()<cr>"},
-			{ "<F1>", "<cmd>lua require('harpoon.ui').nav_file(1)<cr>"},
-			{ "<F2>", "<cmd>lua require('harpoon.ui').nav_file(2)<cr>"},
-			{ "<F3>", "<cmd>lua require('harpoon.ui').nav_file(3)<cr>"},
-			{ "<F4>", "<cmd>lua require('harpoon.ui').nav_file(4)<cr>"},
-			{ "<F5>", "<cmd>lua require('harpoon.ui').nav_file(5)<cr>"},
-			{ "<F6>", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>"},
-		},
-	},
-	{
 		"rebelot/kanagawa.nvim",
 		enabled = false,
 		lazy = false,
@@ -402,3 +382,4 @@ vim.cmd([[
 
 -- Custom plugins
 require("plugins/makex")
+require("plugins/marpoon").setup()
