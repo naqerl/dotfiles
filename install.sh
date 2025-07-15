@@ -1,5 +1,5 @@
 # Install packages
-sudo xbps-install acpi base-devel base-system bash-completion brltty btop chrony cryptsetup curl elogind espeakup fd firefox fzf ghostty git gptfdisk greetd grim hyprland hyprland-qtutils linux lvm2 lz4 make mdadm mesa mesa-dri mpv neovim nerd-fonts-ttf noto-fonts-emoji noto-fonts-ttf pass pinentry-gnome pipewire podman polkit refind ripgrep slurp swappy telegram-desktop tmux void-docs-browse void-live-audio wget wireplumber wl-clipboard wmenu wtype xdg-desktop-portal-hyprland
+sudo xbps-install acpi base-devel base-system bash-completion brltty btop chrony cryptsetup curl elogind espeakup fd firefox fzf ghostty git gptfdisk greetd grim hyprland hyprland-qtutils linux lvm2 lz4 make mdadm mesa mesa-dri mpv neovim nerd-fonts-ttf noto-fonts-emoji noto-fonts-ttf pass pinentry-gnome pipewire podman polkit refind ripgrep slurp swappy telegram-desktop tmux void-docs-browse void-live-audio wget wireplumber wl-clipboard wmenu wtype xdg-desktop-portal-hyprland xdg-utils
 
 # Enable services
 sudo ln -s /etc/sv/dbus /var/service
