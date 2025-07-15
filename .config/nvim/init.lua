@@ -151,7 +151,18 @@ require('lazy').setup({
 					},
 				},
 				defaults = require("telescope.themes").get_ivy({
-					layout_config = { height = vim.o.lines },
+					mappings = {                                                                                                                                                                  
+						i = {                                                                                                                                                                         
+							['<C-p>'] = require('telescope.actions.layout').toggle_preview                                                                                                            
+						}                                                                                                                                                                         
+					},
+					preview = {                                                                                                                                                                          
+						hide_on_startup = true -- hide previewer when picker starts
+					},
+					layout_config = {
+						height = vim.o.lines,
+						preview_cutoff = 10,
+					},
 					borderchars = {
 						{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
 						prompt = {" ", " ", " ", " ", ' ', ' ', " ", " "},
@@ -163,14 +174,6 @@ require('lazy').setup({
 						limit = 100,
 					},
 				}),
-				pickers = {
-					find_files = {
-						previewer = false,
-					},
-					current_buffer_fuzzy_find = {
-						previewer = false,
-					},
-				},
 			}
 			pcall(require('telescope').load_extension, 'fzf')
 			pcall(require('telescope').load_extension, 'ui-select')
