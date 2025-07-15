@@ -348,7 +348,12 @@ require('lazy').setup({
 		}, -- see further down below for configuration
 	},
 	{ "tpope/vim-rsi" },
-	{ "tpope/vim-fugitive" },
+	{
+		"tpope/vim-fugitive",
+		dependencies = {
+			"tpope/vim-rhubarb",
+		}
+	},
 	{
 		'nmac427/guess-indent.nvim',
 		config = function()
