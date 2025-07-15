@@ -20,7 +20,7 @@ select_session() {
 "$HOME/.config/tmux/switcher/list_sessions.sh" | fzf --reverse \
 	--prompt '   ' \
 	--header-first \
-	--color=bg:18 \
+	--color=bg:16 \
 	--header "$header" \
 	--bind "ctrl-s:change-prompt(   )+reload($LIST_SESSIONS)" \
 	--bind "ctrl-o:change-prompt(   )+reload($LIST_PROJECTS $PROJECTS_BASE_DIR)" \
