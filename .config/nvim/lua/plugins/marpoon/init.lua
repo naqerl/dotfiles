@@ -42,6 +42,11 @@ function M.setup()
             M.update_global_marks()
         end,
     })
+    vim.keymap.set('n', '<F1>', "'A")
+    vim.keymap.set('n', '<F2>', "'S")
+    vim.keymap.set('n', '<F3>', "'D")
+    vim.keymap.set('n', '<F4>', "'F")
+    vim.keymap.set('n', '<F5>', "'G")
 end
 
 return M
