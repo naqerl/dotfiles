@@ -360,6 +360,14 @@ require('lazy').setup({
 			require('guess-indent').setup({})
 		end,
 	},
+	{
+		"sotte/presenting.nvim",
+		opts = {
+			-- fill in your options here
+			-- see :help Presenting.config
+		},
+		cmd = { "Presenting" },
+	},
 })
 
 if vim.g.neovide then
