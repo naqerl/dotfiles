@@ -22,6 +22,7 @@ sudo xbps-install \
 	grim \ 
 	hyprland \ 
 	hyprland-qtutils \ 
+	libnotify \
 	linux \ 
 	lvm2 \ 
 	lz4 \ 
@@ -45,6 +46,7 @@ sudo xbps-install \
 	swappy \ 
 	telegram-desktop \ 
 	tmux \ 
+	unzip \
 	void-docs-browse \ 
 	void-live-audio \ 
 	wget \ 
@@ -81,3 +83,8 @@ curl -fsSL https://opencode.ai/install | bash
 
 # pnpm
 curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+# hyprnotify
+wget -O /tmp/hyprnotify.zip https://github.com/codelif/hyprnotify/releases/download/v0.8.0/hyprnotify.zip
+unzip /tmp/hyprnotify.zip -d $HOME/.local/bin/
+chmod +x $HOME/.local/bin/hyprnotify
