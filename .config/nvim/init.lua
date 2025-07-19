@@ -194,13 +194,13 @@ require('lazy').setup({
 
 			vim.keymap.set(
 				"n",
-				"<space>E",
+				"<M-E>",
 				":Telescope file_browser<CR>",
 				{ silent = true }
 			)
 			vim.keymap.set(
 				"n",
-				"<space>e",
+				"<M-e>",
 				":Telescope file_browser path=%:p:h select_buffer=true<CR>",
 				{ silent = true }
 			)
@@ -367,7 +367,7 @@ require('lazy').setup({
 			-- see :help Presenting.config
 		},
 		cmd = { "Presenting" },
-	},
+	}
 })
 
 if vim.g.neovide then
