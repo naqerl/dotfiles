@@ -9,6 +9,7 @@ sudo xbps-install \
 	chrony \ 
 	cryptsetup \ 
 	curl \ 
+	delta \
 	elogind \ 
 	espeakup \ 
 	fd \ 
