@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+boundary=100
+last_charging_status=0
+
+while [[ true ]]; do
+    status=$(acpi -b)
+
+    temp=$(echo $status | grep -i "discharging")
+    is_charging=$?
+
+    read -ra battery_val <<< $status
+    percentage=${battery_val[3]::-2}
+    echo "percentage: $percentage, charging $is_charging, boundary $boundary"
+
+    if [[ $last_charging_status -ne $is_charging ]]; then
+        if [[ $is_charging -eq 1 ]]; then
+            notify-send -h int:x-hyprnotify-icon:5 "battery is charging"
+        else
+            notify-send -h int:x-hyprnotify-icon:2 "battery is discharing"
+        fi
+        last_charging_status=$is_charging
+    fi
+
+    if [[ $percentage -ge $boundary ]]; then
+        sleep 5
+        continue
+    fi
+
+    if [[ $percentage -lt 20 ]]; then
+        # We need charging
+        notify-send --urgency critical "low battery ($percentage%)"
+        boundary=$((percentage - 5))
+    elif [[ $percentage -lt 50 ]]; then
+        # Have some charge, but highlight how much time left
+        time_left=${battery_val[4]::-3}
+        notify-send --urgency normal "$time_left of battery left"
+        boundary=$((percentage - 20))
+    else
+        sleep 5
+    fi
+done
