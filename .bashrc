@@ -23,3 +23,5 @@ esac
 # Aliases
 alias g='git'
 alias p='podman'
+alias xi='sudo xbps-install'
+alias xq='xbps-query -Rs'
