@@ -23,6 +23,7 @@ sudo xbps-install \
 	hyprland \ 
 	hyprland-qtutils \ 
 	libnotify \
+	libspa-bluetooth \ # pipewire bluetooth
 	linux \ 
 	lvm2 \ 
 	lz4 \ 
@@ -51,11 +52,23 @@ sudo xbps-install \
 	void-live-audio \ 
 	wget \ 
 	wireplumber \ 
+	wireplumber-elogind \
 	wl-clipboard \ 
 	wmenu \ 
 	wtype \ 
 	xdg-desktop-portal-hyprland \ 
 	xdg-utils \
+
+# Pipewire setup
+mkdir -p /etc/pipewire/pipewire.conf.d
+ln -s /usr/share/examples/wireplumber/10-wireplumber.conf /etc/pipewire/pipewire.conf.d/
+
+sudo mkdir -p /etc/pipewire/pipewire.conf.d
+sudo ln -s /usr/share/examples/pipewire/20-pipewire-pulse.conf /etc/pipewire/pipewire.conf.d/
+
+sudo mkdir -p /etc/alsa/conf.d
+sudo ln -s /usr/share/alsa/alsa.conf.d/50-pipewire.conf /etc/alsa/conf.d
+sudo ln -s /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf /etc/alsa/conf.d
 
 # Enable services
 sudo ln -s /etc/sv/dbus /var/service
