@@ -41,6 +41,7 @@ sudo xbps-install \
 	pipewire \ 
 	podman \ 
 	polkit \ 
+	qBittorrent \
 	refind \ 
 	ripgrep \ 
 	slurp \ 
@@ -52,7 +53,6 @@ sudo xbps-install \
 	void-live-audio \ 
 	wget \ 
 	wireplumber \ 
-	wireplumber-elogind \
 	wl-clipboard \ 
 	wmenu \ 
 	wtype \ 
@@ -101,3 +101,27 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 wget -O /tmp/hyprnotify.zip https://github.com/codelif/hyprnotify/releases/download/v0.8.0/hyprnotify.zip
 unzip /tmp/hyprnotify.zip -d $HOME/.local/bin/
 chmod +x $HOME/.local/bin/hyprnotify
+
+# qBittorrent plugins
+plugins_path=$HOME/.local/share/qBittorrent/nova3/engines
+source="https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main"
+plugins=(
+	"bitsearch.py"
+	"calidadtorrent.py"
+	"divxtotal.py"
+	"dontorrent.py"
+	"esmeraldatorrent.py"
+	"naranjatorrent.py"
+	"pediatorrent.py"
+	"solidtorrents.py"
+	"therarbg.py"
+	"tomadivx.py"
+	"torrenflix.py"
+	"torrentdownloads.py"
+	"traht.py"
+)
+mkdir -p $pugins_path
+cd $plugins_path
+for plugin in "${plugins[@]}"; do
+	wget "${source}/${plugin}"
+done
