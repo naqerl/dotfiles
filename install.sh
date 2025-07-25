@@ -15,7 +15,6 @@ sudo xbps-install \
 	fd \ 
 	firefox \ 
 	fzf \ 
-	ghostty \ 
 	git \ 
 	gptfdisk \ 
 	greetd \ 
@@ -58,6 +57,7 @@ sudo xbps-install \
 	wtype \ 
 	xdg-desktop-portal-hyprland \ 
 	xdg-utils \
+	kitty \
 
 # Pipewire setup
 mkdir -p /etc/pipewire/pipewire.conf.d
