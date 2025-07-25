@@ -20,6 +20,7 @@ while [[ true ]]; do
             notify-send -h int:x-hyprnotify-icon:2 "battery is discharing"
         fi
         last_charging_status=$is_charging
+        boundary=100
     fi
 
     if [[ $percentage -ge $boundary ]]; then
@@ -31,7 +32,7 @@ while [[ true ]]; do
         # We need charging
         notify-send --urgency critical "low battery ($percentage%)"
         boundary=$((percentage - 5))
-    elif [[ $percentage -lt 50 ]]; then
+    elif [[ $percentage -lt 70 ]]; then
         # Have some charge, but highlight how much time left
         time_left=${battery_val[4]::-3}
         notify-send --urgency normal "$time_left of battery left"

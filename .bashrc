@@ -20,8 +20,23 @@ esac
 [[ -f $(which fzf) ]] && \
 		eval "$(fzf --bash)"
 
+
+pj() {
+  cd $HOME
+  dir=$(find code/ -maxdepth 5 -type d -name .git | xargs -I{} dirname {} | fzf)
+  if [[ -z $dir ]]; then
+      cd -
+      exit 0
+  fi
+  echo "Jumped to project at ~/$dir"
+  cd "$dir"
+}
+
 # Aliases
 alias g='git'
 alias p='podman'
 alias xi='sudo xbps-install'
 alias xq='xbps-query -Rs'
+
+# opencode
+export PATH=/home/user/.opencode/bin:$PATH

@@ -372,7 +372,15 @@ require('lazy').setup({
 		-- version = '*', -- latest stable version, may have breaking changes if major version changed
 		-- version = '^6.0.0', -- pin major version, include fixes and features that do not have breaking changes
 		config = function()
-			require('kitty-scrollback').setup()
+			require('kitty-scrollback').setup({
+				callbacks = {
+					after_ready = function(kitty_data, opts)
+						vim.o.relativenumber = true
+						vim.o.number = true
+						print("WTF")
+					end
+				}
+			})
 		end,
 	}
 })

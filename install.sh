@@ -21,6 +21,7 @@ sudo xbps-install \
 	grim \ 
 	hyprland \ 
 	hyprland-qtutils \ 
+	hyprpicker \
 	libnotify \
 	libspa-bluetooth \ # pipewire bluetooth
 	linux \ 
