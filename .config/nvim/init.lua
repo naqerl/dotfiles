@@ -298,19 +298,14 @@ require('lazy').setup({
 		end,
 	},
 	{
-		"svrana/neosolarized.nvim",
+		"slugbyte/lackluster.nvim",
 		lazy = false,
 		priority = 1000,
-		config = function()
-			require("neosolarized").setup({
-				comment_italics = true,
-				background_set = true,
-			})
-			vim.cmd.colorscheme("neosolarized")
+		init = function()
+			vim.cmd.colorscheme("lackluster")
+			-- vim.cmd.colorscheme("lackluster-hack") -- my favorite
+			-- vim.cmd.colorscheme("lackluster-mint")
 		end,
-		dependencies = {
-			"tjdevries/colorbuddy.nvim",
-		},
 	},
 	{
 		'pechorin/any-jump.vim',
