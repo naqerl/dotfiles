@@ -131,7 +131,6 @@ require('lazy').setup({
 				end,
 			},
 			{ 'nvim-telescope/telescope-ui-select.nvim' },
-			{ 'nvim-telescope/telescope-file-browser.nvim' },
 		},
 		config = function()
 			require('telescope').setup {
@@ -139,24 +138,14 @@ require('lazy').setup({
 					['ui-select'] = {
 						require('telescope.themes').get_dropdown(),
 					},
-					file_browser = {
-						mappings = {
-							["i"] = {
-								-- your custom insert mode mappings
-							},
-							["n"] = {
-								-- your custom normal mode mappings
-							},
-						},
-					},
 				},
 				defaults = require("telescope.themes").get_ivy({
-					mappings = {                                                                                                                                                                  
-						i = {                                                                                                                                                                         
-							['<C-p>'] = require('telescope.actions.layout').toggle_preview                                                                                                            
-						}                                                                                                                                                                         
+					mappings = {
+						i = {
+							['<C-p>'] = require('telescope.actions.layout').toggle_preview
+						}
 					},
-					preview = {                                                                                                                                                                          
+					preview = {
 						hide_on_startup = true -- hide previewer when picker starts
 					},
 					layout_config = {
@@ -177,33 +166,13 @@ require('lazy').setup({
 			}
 			pcall(require('telescope').load_extension, 'fzf')
 			pcall(require('telescope').load_extension, 'ui-select')
-			pcall(require('telescope').load_extension, 'file_browser')
 
 			local builtin = require 'telescope.builtin'
 			vim.keymap.set('n', '<leader>f', builtin.find_files)
 			vim.keymap.set('n', '<leader>g', builtin.live_grep)
 			vim.keymap.set('n', '<leader>b', builtin.buffers)
-			vim.keymap.set('n', '<leader>sh', builtin.help_tags)
-			vim.keymap.set('n', '<leader>sk', builtin.keymaps)
-			vim.keymap.set('n', '<leader>ss', builtin.builtin)
-			vim.keymap.set('n', '<leader>sw', builtin.grep_string)
-			vim.keymap.set('n', '<leader>sd', builtin.diagnostics)
-			vim.keymap.set('n', '<leader>sr', builtin.resume)
-			vim.keymap.set('n', '<leader>s.', builtin.oldfiles)
 			vim.keymap.set('n', '<leader>r', builtin.registers)
-
-			vim.keymap.set(
-				"n",
-				"<M-E>",
-				":Telescope file_browser<CR>",
-				{ silent = true }
-			)
-			vim.keymap.set(
-				"n",
-				"<M-e>",
-				":Telescope file_browser path=%:p:h select_buffer=true<CR>",
-				{ silent = true }
-			)
+			vim.keymap.set('n', '<leader>e', builtin.resume)
 
 			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
@@ -249,14 +218,14 @@ require('lazy').setup({
 				content = {
 					active = function()
 						local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
-						local git	 = MiniStatusline.section_git({ trunc_width = 40 })
+						local git	= MiniStatusline.section_git({ trunc_width = 40 })
 						local diff	= MiniStatusline.section_diff({ trunc_width = 75 })
 						local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
-						local lsp	 = MiniStatusline.section_lsp({ trunc_width = 75 })
+						local lsp	= MiniStatusline.section_lsp({ trunc_width = 75 })
 						local filename	= MiniStatusline.section_filename({ trunc_width = 140 })
 						local fileinfo	= MiniStatusline.section_fileinfo({ trunc_width = 120 })
 						local location	= '%2l:%-2v'
-						local search		= MiniStatusline.section_searchcount({ trunc_width = 75 })
+						local search	= MiniStatusline.section_searchcount({ trunc_width = 75 })
 
 						return MiniStatusline.combine_groups({
 							{ hl = mode_hl,	strings = { mode } },
@@ -382,7 +351,29 @@ require('lazy').setup({
 				}
 			})
 		end,
-	}
+	},
+	{
+		'stevearc/oil.nvim',
+		lazy = false,
+		config = function()
+			require("oil").setup({
+				watch_for_changes = true,
+				view_options = {
+					show_hidden = true,
+				},
+				columns = {
+					"permissions",
+					"size",
+					"mtime",
+				},
+				win_options = {
+					signcolumn = "no",
+					cursorcolumn = false,
+				},
+			})
+			vim.keymap.set("n", "-", "<CMD>Oil<CR>")
+		end
+	},
 })
 
 if vim.g.neovide then
