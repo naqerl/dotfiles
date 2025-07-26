@@ -212,6 +212,8 @@ require('lazy').setup({
 			-- - sr)'  - [S]urround [R]eplace [)] [']
 			require('mini.surround').setup()
 
+			require('mini.pairs').setup()
+
 			-- Simple and easy statusline.
 			local statusline = require 'mini.statusline'
 			statusline.setup({
@@ -286,32 +288,7 @@ require('lazy').setup({
 			{ "<leader>j", "<cmd>AnyJump<cr>" },
 		}
 	},
-	{
-		'windwp/nvim-autopairs',
-		event = "InsertEnter",
-		config = true
-	},
 	{ "powerman/vim-plugin-ruscmd" },
-	{
-		"fredrikaverpil/godoc.nvim",
-		version = "*",
-		dependencies = {
-			{ "nvim-telescope/telescope.nvim" }, -- optional
-			{
-				"nvim-treesitter/nvim-treesitter",
-				opts = {
-					ensure_installed = { "go" },
-				},
-			},
-		},
-		build = "go install github.com/lotusirous/gostdsym/stdsym@latest", -- optional
-		cmd = { "GoDoc" }, -- optional
-		opts = {
-			picker = {
-				type = "telescope"
-			}
-		}, -- see further down below for configuration
-	},
 	{ "tpope/vim-rsi" },
 	{
 		"tpope/vim-fugitive",
@@ -324,14 +301,6 @@ require('lazy').setup({
 		config = function()
 			require('guess-indent').setup({})
 		end,
-	},
-	{
-		"sotte/presenting.nvim",
-		opts = {
-			-- fill in your options here
-			-- see :help Presenting.config
-		},
-		cmd = { "Presenting" },
 	},
 	{
 		'mikesmithgh/kitty-scrollback.nvim',
