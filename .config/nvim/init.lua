@@ -1,6 +1,5 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-vim.o.relativenumber = true
 vim.o.breakindent = true
 vim.o.undofile = true
 vim.o.ignorecase = true
@@ -10,7 +9,6 @@ vim.o.timeoutlen = 300
 vim.o.splitright = true
 vim.o.splitbelow = true
 vim.o.inccommand = 'split'
-vim.o.scrolloff = 7
 vim.o.confirm = true
 vim.o.laststatus = 3
 vim.o.tabstop = 4
@@ -289,15 +287,7 @@ require('lazy').setup({
 		-- version = '*', -- latest stable version, may have breaking changes if major version changed
 		-- version = '^6.0.0', -- pin major version, include fixes and features that do not have breaking changes
 		config = function()
-			require('kitty-scrollback').setup({
-				callbacks = {
-					after_ready = function(kitty_data, opts)
-						vim.o.relativenumber = true
-						vim.o.number = true
-						print("WTF")
-					end
-				}
-			})
+			require('kitty-scrollback').setup()
 		end,
 	},
 	{
@@ -321,6 +311,15 @@ require('lazy').setup({
 			})
 			vim.keymap.set("n", "-", "<CMD>Oil<CR>")
 		end
+	},
+	{
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		build = "cd app && pnpm install",
+		init = function()
+			vim.g.mkdp_filetypes = { "markdown" }
+		end,
+		ft = { "markdown" },
 	},
 })
 
