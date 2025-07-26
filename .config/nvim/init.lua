@@ -61,6 +61,10 @@ vim.keymap.set("v", "<leader>y", '"+y')
 -- Paste without saving
 vim.keymap.set("v", "<leader>p", '"_dP')
 
+-- Make wrapped liens navigation human friendly
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent = true })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { noremap = true, expr = true, silent = true })
+
 vim.api.nvim_create_autocmd('TextYankPost', {
 	desc = 'Highlight when yanking (copying) text',
 	group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -320,6 +324,9 @@ require('lazy').setup({
 			vim.g.mkdp_filetypes = { "markdown" }
 		end,
 		ft = { "markdown" },
+	},
+	{
+		"smithbm2316/centerpad.nvim"
 	},
 })
 
