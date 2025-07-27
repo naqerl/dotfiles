@@ -1,5 +1,13 @@
 [global]
 layer = overlay
 offset = (10, 10)
+width = (0, 300)
+foreground = "#cccccc"
 background = "#000000"
-frame_color = "#000000"
+frame_color = "#101010"
+
+[urgency_critical]
+background = "#d70000"
+frame_color = "#d70000"
+foreground = "#101010"
+timeout = 0
