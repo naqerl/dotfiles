@@ -1,0 +1,5 @@
+[global]
+layer = overlay
+offset = (10, 10)
+background = "#000000"
+frame_color = "#000000"

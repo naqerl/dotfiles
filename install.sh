@@ -10,6 +10,7 @@ sudo xbps-install \
 	cryptsetup \ 
 	curl \ 
 	delta \
+	dunst \
 	elogind \ 
 	espeakup \ 
 	fd \ 
