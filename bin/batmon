@@ -13,10 +13,10 @@ if echo $status | grep -ic "discharging"; then
     next_boundary=$(cat $STATE_FILE)
     echo "percentage: $percentage, prev charge $next_boundary"
     if (( percentage <= next_boundary)); then
-        if (( percentage < 20 )); then
+        if (( percentage <= 20 )); then
             # We need charging
             notify-send --urgency critical "low battery ($percentage%)"
-        elif (( percentage < 70 )); then
+        elif (( percentage <= 70 )); then
             # Have some charge, but highlight how much time left
             notify-send --urgency normal "$percentage% of battery left"
         fi
