@@ -1,43 +1,30 @@
 #!/usr/bin/env bash
+set -e
 
-boundary=100
-last_charging_status=0
+STATE_FILE=/tmp/batmon-state
+STEP=10
 
-while [[ true ]]; do
-    status=$(acpi -b)
-
-    temp=$(echo $status | grep -i "discharging")
-    is_charging=$?
-
-    read -ra battery_val <<< $status
-    percentage=${battery_val[3]::-2}
-    echo "percentage: $percentage, charging $is_charging, boundary $boundary"
-
-    if [[ $last_charging_status -ne $is_charging ]]; then
-        if [[ $is_charging -eq 1 ]]; then
-            notify-send -h int:x-hyprnotify-icon:5 "battery is charging"
-        else
-            notify-send -h int:x-hyprnotify-icon:2 "battery is discharing"
+status=$(acpi -b)
+if echo $status | grep -ic "discharging"; then
+    percentage=$(echo $status | awk -F ', ' '{print substr($2, 0, length($2)-1)}')
+    if [[ ! -f $STATE_FILE ]]; then
+        echo 100 > "$STATE_FILE"
+    fi
+    next_boundary=$(cat $STATE_FILE)
+    echo "percentage: $percentage, prev charge $next_boundary"
+    if (( percentage <= next_boundary)); then
+        if (( percentage < 20 )); then
+            # We need charging
+            notify-send --urgency critical "low battery ($percentage%)"
+        elif (( percentage < 70 )); then
+            # Have some charge, but highlight how much time left
+            notify-send --urgency normal "$percentage% of battery left"
         fi
-        last_charging_status=$is_charging
-        boundary=100
+        floored=$((percentage / STEP * STEP))
+        echo $((floored - STEP)) > "$STATE_FILE"
     fi
+else
+    rm -f "$STATE_FILE"
+fi
 
-    if [[ $percentage -ge $boundary ]]; then
-        sleep 5
-        continue
-    fi
-
-    if [[ $percentage -lt 20 ]]; then
-        # We need charging
-        notify-send --urgency critical "low battery ($percentage%)"
-        boundary=$((percentage - 5))
-    elif [[ $percentage -lt 70 ]]; then
-        # Have some charge, but highlight how much time left
-        time_left=${battery_val[4]::-3}
-        notify-send --urgency normal "$time_left of battery left"
-        boundary=$((percentage - 20))
-    else
-        sleep 5
-    fi
-done
+exec snooze -H* -M*  $0
