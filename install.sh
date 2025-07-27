@@ -1,5 +1,12 @@
+#!/usr/bin/env bash
+
+LINKS_FILE="$PWD/links.conf"
+
+# Hyprland repository (https://wiki.hypr.land/0.42.0/Getting-Started/Installation/)
+echo "repository=https://raw.githubusercontent.com/Makrennel/hyprland-void/repository-x86_64-glibc" > /etc/xbps.d/hyprland-void.conf
+
 # Install packages
-sudo xbps-install \ 
+sudo xbps-install -S \ 
 	acpi \ 
 	base-devel \ 
 	base-system \ 
@@ -64,27 +71,33 @@ sudo xbps-install \
 # Pipewire setup
 mkdir -p /etc/pipewire/pipewire.conf.d
 ln -s /usr/share/examples/wireplumber/10-wireplumber.conf /etc/pipewire/pipewire.conf.d/
-
 sudo mkdir -p /etc/pipewire/pipewire.conf.d
 sudo ln -s /usr/share/examples/pipewire/20-pipewire-pulse.conf /etc/pipewire/pipewire.conf.d/
-
 sudo mkdir -p /etc/alsa/conf.d
 sudo ln -s /usr/share/alsa/alsa.conf.d/50-pipewire.conf /etc/alsa/conf.d
 sudo ln -s /usr/share/alsa/alsa.conf.d/99-pipewire-default.conf /etc/alsa/conf.d
 
-# Enable services
-sudo ln -s /etc/sv/dbus /var/service
-sudo ln -s /etc/sv/greetd /var/service
-sudo ln -s /etc/sv/polkitd /var/service
-sudo mkdir -p /etc/pipewire/pipewire.conf.d
-sudo ln -s /usr/share/examples/wireplumber/10-wireplumber.conf /etc/pipewire/pipewire.conf.d/
-sudo ln -s /usr/share/examples/pipewire/20-pipewire-pulse.conf /etc/pipewire/pipewire.conf.d/
-
 # Install dotfiles
-git clone https://github.com/scipunch/dotfiles $HOME/dotfiles
 mkdir -p $HOME/.config
-cd $HOME/dotfiles
-ln -s $PWD/.config/hypr $HOME/.config/hypr
+while read -r src target; do
+	# NOTE: Suppose there will be only links made by me
+	if [[ -e "$target" && ! -L "$target" ]]; then
+		cmd="mv '$target' '$target.back'"
+		if [[ "$target" =~ ^/ ]]; then
+			cmd="sudo $cmd"
+		fi
+		echo "executing $cmd"
+	fi
+	if [[ ! $src =~ ^/ ]]; then
+		# Link's "to" should be absolute in this case
+		src="$PWD/$src"
+	fi
+	cmd="ln -s '$src' '$target'"
+	if [[ "$target" =~ ^/ ]]; then
+		cmd="sudo $cmd"
+	fi
+	echo "executing $cmd"
+done < "$LINKS_FILE"
 
 # GoogleDot cursor
 cursor_file="GoogleDot-Black.tar.gz"
@@ -93,16 +106,13 @@ tar -xvf "$cursor_file"
 rm "$cursor_file"
 sudo mv GoogleDot-* /usr/share/icons/
 
-# Opencode
-curl -fsSL https://opencode.ai/install | bash
-
 # pnpm
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 
-# hyprnotify
-wget -O /tmp/hyprnotify.zip https://github.com/codelif/hyprnotify/releases/download/v0.8.0/hyprnotify.zip
-unzip /tmp/hyprnotify.zip -d $HOME/.local/bin/
-chmod +x $HOME/.local/bin/hyprnotify
+# Golang
+gotar="go1.24.5.linux-amd64.tar.gz"
+wget "https://go.dev/dl/$gotar" -O "/tmp/$gotar"
+sudo rm -rf /usr/local/go && tar -C /usr/local -xzf "/tmp/$gotar"
 
 # qBittorrent plugins
 plugins_path=$HOME/.local/share/qBittorrent/nova3/engines
