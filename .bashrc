@@ -37,6 +37,3 @@ alias g='git'
 alias p='podman'
 alias xi='sudo xbps-install'
 alias xq='xbps-query -Rs'
-
-# opencode
-export PATH=/home/user/.opencode/bin:$PATH
