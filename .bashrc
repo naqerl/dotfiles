@@ -26,10 +26,10 @@ pj() {
   dir=$(find code/ -maxdepth 5 -type d -name .git | xargs -I{} dirname {} | fzf)
   if [[ -z $dir ]]; then
       cd -
-      exit 0
+  else
+    echo "Jumped to project at ~/$dir"
+    cd "$dir"
   fi
-  echo "Jumped to project at ~/$dir"
-  cd "$dir"
 }
 
 # Aliases
