@@ -112,51 +112,6 @@ require('lazy').setup({
 			vim.keymap.set('n', '<leader>hP', gitsigns.preview_hunk)
 		end,
 	},
-	{ -- Fuzzy Finder (files, lsp, etc)
-		'nvim-telescope/telescope.nvim',
-		event = 'VimEnter',
-		dependencies = {
-			'nvim-lua/plenary.nvim',
-			{ 'nvim-telescope/telescope-ui-select.nvim' },
-		},
-		config = function()
-			require('telescope').setup {
-				extensions = {
-					['ui-select'] = {
-						require('telescope.themes').get_dropdown(),
-					},
-				},
-				defaults = require("telescope.themes").get_ivy({
-					file_ignore_patterns = { ".git/", ".venv/" },
-					mappings = {
-						i = {
-							['<C-p>'] = require('telescope.actions.layout').toggle_preview
-						}
-					},
-					preview = {
-						hide_on_startup = true -- hide previewer when picker starts
-					},
-					layout_config = {
-						height = vim.o.lines,
-						preview_cutoff = 10,
-					},
-					history = {
-						path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
-						limit = 100,
-					},
-				}),
-			}
-			pcall(require('telescope').load_extension, 'ui-select')
-
-			local builtin = require 'telescope.builtin'
-			vim.keymap.set('n', '<leader>f', function() builtin.find_files({hidden = true}) end)
-			vim.keymap.set('n', '<leader>g', builtin.live_grep)
-			vim.keymap.set('n', '<leader>b', builtin.buffers)
-			vim.keymap.set('n', '<leader>r', builtin.registers)
-			vim.keymap.set('n', '<leader>e', builtin.resume)
-			vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
-		end,
-	},
 	{ 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 	{ -- Collection of various small independent plugins/modules
 		'echasnovski/mini.nvim',
@@ -281,6 +236,27 @@ require('lazy').setup({
 	},
 	{
 		"smithbm2316/centerpad.nvim"
+	},
+	{
+		"junegunn/fzf.vim",
+		config = function()
+			vim.keymap.set("n", "<leader>f", "<cmd>Files<cr>")
+			vim.keymap.set("n", "<leader>r", "<cmd>Rg<cr>")
+			vim.keymap.set("n", "<leader>R", "<cmd>RG<cr>")
+			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
+			vim.fn.setenv("FZF_DEFAULT_OPTS", "--color=bg:#000000,gutter:-1,border:#000000")
+			vim.g.fzf_vim = {
+				preview_window = { 'hidden,right,70%', 'ctrl-/' }
+			}
+			vim.g.fzf_layout = {
+				window = {
+					width = 1,
+					height = 0.37,
+					yoffset = 0,
+					border = "bottom",
+				}
+			}
+		end,
 	},
 })
 
