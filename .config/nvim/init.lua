@@ -101,17 +101,15 @@ require('lazy').setup({
 				},
 			})
 			local gitsigns = require('gitsigns')
-			vim.keymap.set('n', "<M-)>", function()
+			vim.keymap.set('n', "<F7>", function()
 				gitsigns.nav_hunk('next')
 			end)
-			vim.keymap.set('n', "<M-(>", function()
+			vim.keymap.set('n', "<F6>", function()
 				gitsigns.nav_hunk('prev')
 			end)
 			vim.keymap.set('n', '<leader>hS', gitsigns.stage_buffer)
 			vim.keymap.set('n', '<leader>hR', gitsigns.reset_buffer)
-			vim.keymap.set('n', '<leader>hp', gitsigns.preview_hunk)
-			vim.keymap.set('n', '<leader>hi', gitsigns.preview_hunk_inline)
-			vim.keymap.set('n', '<leader>hd', gitsigns.diffthis)
+			vim.keymap.set('n', '<leader>hP', gitsigns.preview_hunk)
 		end,
 	},
 	{ -- Fuzzy Finder (files, lsp, etc)
@@ -119,19 +117,6 @@ require('lazy').setup({
 		event = 'VimEnter',
 		dependencies = {
 			'nvim-lua/plenary.nvim',
-			{ -- If encountering errors, see telescope-fzf-native README for installation instructions
-				'nvim-telescope/telescope-fzf-native.nvim',
-
-				-- `build` is used to run some command when the plugin is installed/updated.
-				-- This is only run then, not every time Neovim starts up.
-				build = 'make',
-
-				-- `cond` is a condition used to determine whether this plugin should be
-				-- installed and loaded.
-				cond = function()
-					return vim.fn.executable 'make' == 1
-				end,
-			},
 			{ 'nvim-telescope/telescope-ui-select.nvim' },
 		},
 		config = function()
@@ -142,7 +127,7 @@ require('lazy').setup({
 					},
 				},
 				defaults = require("telescope.themes").get_ivy({
-					file_ignore_patterns = { ".git/" },
+					file_ignore_patterns = { ".git/", ".venv/" },
 					mappings = {
 						i = {
 							['<C-p>'] = require('telescope.actions.layout').toggle_preview
@@ -155,19 +140,12 @@ require('lazy').setup({
 						height = vim.o.lines,
 						preview_cutoff = 10,
 					},
-					borderchars = {
-						{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-						prompt = {" ", " ", " ", " ", ' ', ' ', " ", " "},
-						results = {" ", " ", " ", " ", " ", " ", " ", " "},
-						preview = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-					},
 					history = {
 						path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
 						limit = 100,
 					},
 				}),
 			}
-			pcall(require('telescope').load_extension, 'fzf')
 			pcall(require('telescope').load_extension, 'ui-select')
 
 			local builtin = require 'telescope.builtin'
@@ -176,23 +154,7 @@ require('lazy').setup({
 			vim.keymap.set('n', '<leader>b', builtin.buffers)
 			vim.keymap.set('n', '<leader>r', builtin.registers)
 			vim.keymap.set('n', '<leader>e', builtin.resume)
-
-			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
-
-			-- It's also possible to pass additional configuration options.
-			--  See `:help telescope.builtin.live_grep()` for information about particular keys
-			vim.keymap.set('n', '<leader>s/', function()
-				builtin.live_grep {
-					grep_open_files = true,
-					prompt_title = 'Live Grep in Open Files',
-				}
-			end, { desc = '[S]earch [/] in Open Files' })
-
-			-- Shortcut for searching your Neovim configuration files
-			vim.keymap.set('n', '<leader>C', function()
-				builtin.find_files { cwd = vim.fn.stdpath 'config' }
-			end, { desc = '[S]earch [N]eovim files' })
 		end,
 	},
 	{ 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -204,6 +166,8 @@ require('lazy').setup({
 		config = function()
 			require('mini.surround').setup()
 			require('mini.pairs').setup()
+			require('mini.indentscope').setup()
+			require('mini.trailspace').setup()
 
 			local spec_treesitter = require('mini.ai').gen_spec.treesitter
 			require('mini.ai').setup {
@@ -247,16 +211,6 @@ require('lazy').setup({
 				},
 				indent = { enable = true },
 			})
-		end,
-	},
-	{
-		"slugbyte/lackluster.nvim",
-		lazy = false,
-		priority = 1000,
-		init = function()
-			vim.cmd.colorscheme("lackluster")
-			-- vim.cmd.colorscheme("lackluster-hack") -- my favorite
-			-- vim.cmd.colorscheme("lackluster-mint")
 		end,
 	},
 	{
