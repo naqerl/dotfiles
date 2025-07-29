@@ -32,9 +32,16 @@ pj() {
   fi
 }
 
+p() {
+  if [[ -z "$1" ]]; then
+    pj
+  else
+    podman $@
+  fi
+}
+
 # Aliases
 alias g='git'
-alias p='podman'
 alias xi='sudo xbps-install'
 alias xq='xbps-query -Rs'
 alias hexec='hyprctl dispatch exec'
