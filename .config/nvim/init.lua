@@ -29,37 +29,16 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
 	pattern = "*",
 })
 
--- Terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
--- Turn of highlight search
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
--- Window navigation
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-
--- Quick fix list
-vim.keymap.set('n', '<M-]>', '<cmd>cnext<cr>')
-vim.keymap.set('n', '<M-[>', '<cmd>cprev<cr>')
-vim.keymap.set('n', '<leader>oc', '<cmd>copen<cr>')
-
--- Reselect pasted
-vim.keymap.set('n', 'gV', '`[v`]')
-
--- Paster without yank
-vim.keymap.set("v", "<M-p>", '"_dp')
-
--- Replace word under cursor
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
-
--- Copy to system clipboard
-vim.keymap.set("v", "<leader>y", '"+y')
-
--- Paste without saving
-vim.keymap.set("v", "<leader>p", '"_dP')
+vim.keymap.set('n', '<M-]>', '<cmd>cnext<cr>', { desc = "quick fix next" })
+vim.keymap.set('n', '<M-[>', '<cmd>cprev<cr>', { desc = "quick fix prev" })
+vim.keymap.set('n', '<leader>oc', '<cmd>copen<cr>', { desc = "quick fix open" })
+vim.keymap.set('n', 'gV', '`[v`]', { desc = "Reselect pasted" })
+vim.keymap.set("v", "<M-p>", '"_dp', { desc = "Paster without yank" })
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+vim.keymap.set("v", "<leader>y", '"+y', { desc = "Copy to system clipboard" })
+vim.keymap.set("v", "<leader>p", '"_dP', { desc = "Paste without saving" })
 
 -- Make wrapped liens navigation human friendly
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent = true })
@@ -82,11 +61,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	end
 end
 
----@type vim.Option
-local rtp = vim.opt.rtp
-rtp:prepend(lazypath)
+vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
-	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
+	{
 		'lewis6991/gitsigns.nvim',
 		event = 'VimEnter',
 		config = function()
@@ -113,7 +90,7 @@ require('lazy').setup({
 		end,
 	},
 	{ 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-	{ -- Collection of various small independent plugins/modules
+	{
 		'echasnovski/mini.nvim',
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter-textobjects"
@@ -143,14 +120,11 @@ require('lazy').setup({
 			end
 		end,
 	},
-	{ -- Highlight, edit, and navigate code
+	{
 		'nvim-treesitter/nvim-treesitter',
 		build = ':TSUpdate',
-		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 		config = function()
 			require("nvim-treesitter.configs").setup({
-				ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go' },
-				-- Autoinstall languages that are not installed
 				auto_install = true,
 				highlight = {
 					enable = true,
@@ -179,12 +153,8 @@ require('lazy').setup({
 	},
 	{ "powerman/vim-plugin-ruscmd" },
 	{ "tpope/vim-rsi" },
-	{
-		"tpope/vim-fugitive",
-		dependencies = {
-			"tpope/vim-rhubarb",
-		}
-	},
+	{ "tpope/vim-fugitive" },
+	{ "tpope/vim-rhubarb" },
 	{
 		'nmac427/guess-indent.nvim',
 		config = function()
@@ -193,12 +163,9 @@ require('lazy').setup({
 	},
 	{
 		'mikesmithgh/kitty-scrollback.nvim',
-		enabled = true,
 		lazy = true,
 		cmd = { 'KittyScrollbackGenerateKittens', 'KittyScrollbackCheckHealth', 'KittyScrollbackGenerateCommandLineEditing' },
 		event = { 'User KittyScrollbackLaunch' },
-		-- version = '*', -- latest stable version, may have breaking changes if major version changed
-		-- version = '^6.0.0', -- pin major version, include fixes and features that do not have breaking changes
 		config = function()
 			require('kitty-scrollback').setup()
 		end,
@@ -235,15 +202,13 @@ require('lazy').setup({
 		ft = { "markdown" },
 	},
 	{
-		"smithbm2316/centerpad.nvim"
-	},
-	{
 		"junegunn/fzf.vim",
 		config = function()
 			vim.keymap.set("n", "<leader>f", "<cmd>Files<cr>")
 			vim.keymap.set("n", "<leader>r", "<cmd>Rg<cr>")
 			vim.keymap.set("n", "<leader>R", "<cmd>RG<cr>")
 			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
+			vim.keymap.set("n", "<leader>b", "<cmd>Buffers<cr>")
 			vim.fn.setenv("FZF_DEFAULT_OPTS", "--color=bg:#000000,gutter:-1,border:#000000")
 			vim.g.fzf_vim = {
 				preview_window = { 'hidden,right,70%', 'ctrl-/' }
@@ -275,15 +240,6 @@ if vim.g.neovide then
 	vim.g.neovide_padding_left = 0
 end
 
--- :make autocompletion
-vim.cmd([[
-	function! MakeCompletion(A,L,P) abort
-	let l:targets = systemlist('make -qp | awk -F'':'' ''/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}'' | grep -v Makefile | sort -u')
-	return filter(l:targets, 'v:val =~ "^' . a:A . '"')
-	endfunction
-	command! -nargs=* -complete=customlist,MakeCompletion Make !make <args>
-]])
-
 -- Custom plugins
-require("plugins/makex")
+require("plugins/makex").setup()
 require("plugins/marpoon").setup()
