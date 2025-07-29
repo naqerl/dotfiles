@@ -209,10 +209,19 @@ require('lazy').setup({
 			vim.keymap.set("n", "<leader>R", "<cmd>RG<cr>")
 			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
 			vim.keymap.set("n", "<leader>b", "<cmd>Buffers<cr>")
-			vim.fn.setenv("FZF_DEFAULT_OPTS", "--color=bg:#000000,gutter:-1,border:#000000")
+			vim.fn.setenv("FZF_DEFAULT_OPTS", "--color=bg:#000000,gutter:-1,border:#000000 --bind ctrl-a:select-all --history=/tmp/.fzf_history")
 			vim.g.fzf_vim = {
 				preview_window = { 'hidden,right,70%', 'ctrl-/' }
 			}
+			vim.cmd [[
+				function! s:build_quickfix_list(lines)
+				  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+				  copen
+				  cc
+				endfunction
+				let g:fzf_action = {
+					\ 'ctrl-q': function('s:build_quickfix_list'), }
+			]]
 			vim.g.fzf_layout = {
 				window = {
 					width = 1,
