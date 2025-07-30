@@ -19,6 +19,7 @@
 
 [alias]
 	cm = commit -m
+	ce = commit --amend --no-edit
 	a = add -p
 	po = push origin
 	pom = push origin main
