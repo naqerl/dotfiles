@@ -21,13 +21,7 @@ vim.o.colorcolumn = "80"
 vim.o.wrap = false
 vim.o.spell = true
 vim.o.expandtab = true
-
--- Update buffer after file change
 vim.o.autoread = true
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
-	command = "if mode() != 'c' | checktime | endif",
-	pattern = "*",
-})
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -39,6 +33,8 @@ vim.keymap.set("v", "<M-p>", '"_dp', { desc = "Paster without yank" })
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
 vim.keymap.set("v", "<leader>y", '"+y', { desc = "Copy to system clipboard" })
 vim.keymap.set("v", "<leader>p", '"_dP', { desc = "Paste without saving" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down & center" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up & center" })
 
 -- Make wrapped liens navigation human friendly
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent = true })
