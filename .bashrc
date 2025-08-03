@@ -40,6 +40,10 @@ p() {
   fi
 }
 
+wpe() {
+  bash -c "source <(pass show personal-env) && $@"
+}
+
 # Aliases
 alias g='git'
 alias xi='sudo xbps-install'

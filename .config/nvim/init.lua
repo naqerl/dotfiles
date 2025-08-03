@@ -25,8 +25,8 @@ vim.o.autoread = true
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-vim.keymap.set('n', '<M-]>', '<cmd>cnext<cr>', { desc = "quick fix next" })
-vim.keymap.set('n', '<M-[>', '<cmd>cprev<cr>', { desc = "quick fix prev" })
+-- vim.keymap.set('n', '<M-]>', '<cmd>cnext<cr>', { desc = "quick fix next" })
+-- vim.keymap.set('n', '<M-[>', '<cmd>cprev<cr>', { desc = "quick fix prev" })
 vim.keymap.set('n', '<leader>oc', '<cmd>copen<cr>', { desc = "quick fix open" })
 vim.keymap.set('n', 'gV', '`[v`]', { desc = "Reselect pasted" })
 vim.keymap.set("v", "<M-p>", '"_dp', { desc = "Paster without yank" })
@@ -228,6 +228,20 @@ require('lazy').setup({
 			}
 		end,
 	},
+	{
+		'maxmx03/solarized.nvim',
+		lazy = false,
+		priority = 1000,
+		opts = {
+			variant = "winter",
+		},
+		config = function(_, opts)
+			vim.o.termguicolors = true
+			vim.o.background = 'dark'
+			require('solarized').setup(opts)
+			vim.cmd.colorscheme 'solarized'
+		end,
+	}
 })
 
 if vim.g.neovide then
