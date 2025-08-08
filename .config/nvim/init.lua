@@ -205,6 +205,7 @@ require('lazy').setup({
 			vim.keymap.set("n", "<leader>R", "<cmd>RG<cr>")
 			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
 			vim.keymap.set("n", "<leader>b", "<cmd>Buffers<cr>")
+			vim.keymap.set("n", "<leader>/", "<cmd>Lines<cr>")
 			vim.fn.setenv("FZF_DEFAULT_OPTS", "--color=bg:#000000,gutter:-1,border:#000000 --bind ctrl-a:select-all --history=/tmp/.fzf_history")
 			vim.g.fzf_vim = {
 				preview_window = { 'hidden,right,70%', 'ctrl-/' }

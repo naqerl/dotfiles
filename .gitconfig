@@ -25,4 +25,5 @@
 	pom = push origin main
 	main = !git checkout main && git pull origin
 	s = status
-	l = log --oneline
+	l = log --graph --all --oneline
+	ll = log --graph --all
