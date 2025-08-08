@@ -201,8 +201,8 @@ require('lazy').setup({
 		"junegunn/fzf.vim",
 		config = function()
 			vim.keymap.set("n", "<leader>f", "<cmd>Files<cr>")
-			vim.keymap.set("n", "<leader>r", "<cmd>Rg<cr>")
-			vim.keymap.set("n", "<leader>R", "<cmd>RG<cr>")
+			vim.keymap.set("n", "<leader>r", "<cmd>RG<cr>")
+			vim.keymap.set("v", "<leader>r", '"vy<cmd>exec "RG" getreg("v")<cr>')
 			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
 			vim.keymap.set("n", "<leader>b", "<cmd>Buffers<cr>")
 			vim.keymap.set("n", "<leader>/", "<cmd>Lines<cr>")
