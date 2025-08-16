@@ -49,3 +49,6 @@ alias g='git'
 alias xi='sudo xbps-install'
 alias xq='xbps-query -Rs'
 alias hexec='hyprctl dispatch exec'
+
+# opencode
+export PATH=/home/user/.opencode/bin:$PATH

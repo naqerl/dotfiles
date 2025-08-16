@@ -19,14 +19,13 @@ vim.o.cmdheight = 1
 vim.o.guicursor = "i:block"
 vim.o.colorcolumn = "80"
 vim.o.wrap = false
-vim.o.spell = true
 vim.o.expandtab = true
 vim.o.autoread = true
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
--- vim.keymap.set('n', '<M-]>', '<cmd>cnext<cr>', { desc = "quick fix next" })
--- vim.keymap.set('n', '<M-[>', '<cmd>cprev<cr>', { desc = "quick fix prev" })
+vim.keymap.set('n', ']c', '<cmd>cnext<cr>', { desc = "quick fix next" })
+vim.keymap.set('n', '[c', '<cmd>cprev<cr>', { desc = "quick fix prev" })
 vim.keymap.set('n', '<leader>oc', '<cmd>copen<cr>', { desc = "quick fix open" })
 vim.keymap.set('n', 'gV', '`[v`]', { desc = "Reselect pasted" })
 vim.keymap.set("v", "<M-p>", '"_dp', { desc = "Paster without yank" })
@@ -74,10 +73,10 @@ require('lazy').setup({
 				},
 			})
 			local gitsigns = require('gitsigns')
-			vim.keymap.set('n', "<F7>", function()
+			vim.keymap.set('n', "]h", function()
 				gitsigns.nav_hunk('next')
 			end)
-			vim.keymap.set('n', "<F6>", function()
+			vim.keymap.set('n', "]h", function()
 				gitsigns.nav_hunk('prev')
 			end)
 			vim.keymap.set('n', '<leader>hS', gitsigns.stage_buffer)
@@ -141,7 +140,12 @@ require('lazy').setup({
 	{
 		'pechorin/any-jump.vim',
 		config = function()
-			vim.g.any_jump_window_width_ratio = 0.8
+			vim.g.any_jump_grouping_enabled = 1
+			vim.g.any_jump_window_width_ratio  = 1
+			vim.g.any_jump_window_height_ratio = 1
+			vim.g.any_jump_window_top_offset   = 0
+			vim.g.any_jump_list_numbers = 0
+			vim.g.any_jump_max_search_results = 100
 		end,
 		keys = {
 			{ "<leader>j", "<cmd>AnyJump<cr>" },
@@ -200,7 +204,7 @@ require('lazy').setup({
 	{
 		"junegunn/fzf.vim",
 		config = function()
-			vim.keymap.set("n", "<leader>f", "<cmd>Files<cr>")
+			vim.keymap.set("n", "<leader>f", "<cmd>GitFiles<cr>")
 			vim.keymap.set("n", "<leader>r", "<cmd>RG<cr>")
 			vim.keymap.set("v", "<leader>r", '"vy<cmd>exec "RG" getreg("v")<cr>')
 			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")

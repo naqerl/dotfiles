@@ -1,0 +1,9 @@
+font-family = "Iosevka Nerd Font"
+font-size = 17
+theme = "Builtin Solarized Dark"
+cursor-style = block
+shell-integration-features = no-cursor
+gtk-tabs-location = hidden
+
+keybind = "ctrl+shift+h=write_screen_file:paste"
+keybind = "ctrl+shift+j=text:\x01hx +1000000 \n"

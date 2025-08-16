@@ -8,5 +8,6 @@ vim.keymap.set(
 vim.o.tabstop = 8
 vim.o.shiftwidth = 8
 vim.o.expandtab = false
+vim.o.spell = true
 
 vim.cmd [[set errorformat^=vet:\ %f:%l:%c:\ %m]] -- go vet (important to prepend, otherwise 'vet' will be a part of the file path)
