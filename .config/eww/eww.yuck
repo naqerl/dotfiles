@@ -1,0 +1,13 @@
+(defwidget bar []
+  (layout))
+
+(defwidget layout []
+  (box :class "dot bg-red" :visible {kblayout}))
+
+(deflisten kblayout :initial "false" 
+  `socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$(ls $XDG_RUNTIME_DIR/hypr | head -n1)/.socket2.sock | awk 'tolower($0) ~ /activelayout.*russian/{print "true"; next} /activelayout/{print "false"}'`)
+
+(defwindow bar
+  :monitor 0
+  :geometry (geometry :anchor "top right")
+  (bar))
