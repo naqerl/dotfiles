@@ -52,3 +52,6 @@ alias hexec='hyprctl dispatch exec'
 
 # opencode
 export PATH=/home/user/.opencode/bin:$PATH
+
+# Turso
+export PATH="$PATH:/home/user/.turso"

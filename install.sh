@@ -137,3 +137,14 @@ cd $plugins_path
 for plugin in "${plugins[@]}"; do
 	wget "${source}/${plugin}"
 done
+
+# Fonts
+fonts_path=$HOME/.local/share/fonts
+mkdir -p /tmp/fonts
+cd /tmp/fonts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/IosevkaTerm.zip
+unzip IosevkaTerm.zip
+mkdir "$fonts_path"
+mv *.ttf "$fonts_path"
+fc-cache -fv
+cd -
