@@ -93,7 +93,6 @@ require('lazy').setup({
 		config = function()
 			require('mini.surround').setup()
 			require('mini.pairs').setup()
-			require('mini.indentscope').setup()
 			require('mini.trailspace').setup()
 
 			local spec_treesitter = require('mini.ai').gen_spec.treesitter
@@ -234,18 +233,16 @@ require('lazy').setup({
 		end,
 	},
 	{
-		'maxmx03/solarized.nvim',
+		"craftzdog/solarized-osaka.nvim",
 		lazy = false,
 		priority = 1000,
-		opts = {
-			variant = "winter",
-		},
-		config = function(_, opts)
-			vim.o.termguicolors = true
-			vim.o.background = 'dark'
-			require('solarized').setup(opts)
-			vim.cmd.colorscheme 'solarized'
-		end,
+		config = function()
+			require("solarized-osaka").setup({
+				transparent = true,
+				hide_inactive_statusline = true,
+			})
+			vim.cmd.colorscheme 'solarized-osaka'
+		end
 	},
 })
 
