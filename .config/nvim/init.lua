@@ -233,16 +233,23 @@ require('lazy').setup({
 		end,
 	},
 	{
-		"craftzdog/solarized-osaka.nvim",
+		'RRethy/base16-nvim',
+		lazy = false
+	},
+	{
+		'maxmx03/solarized.nvim',
 		lazy = false,
 		priority = 1000,
-		config = function()
-			require("solarized-osaka").setup({
-				transparent = true,
-				hide_inactive_statusline = true,
-			})
-			vim.cmd.colorscheme 'solarized-osaka'
-		end
+		opts = {
+			variant = "winter",
+		},
+		config = function(_, opts)
+			vim.o.termguicolors = true
+			vim.o.background = 'dark'
+			require('solarized').setup(opts)
+			vim.cmd.colorscheme 'solarized'
+			vim.api.nvim_set_hl(0, 'SpellBad', { underline = true })
+		end,
 	},
 })
 
