@@ -246,7 +246,7 @@ require('lazy').setup({
 			require('solarized').setup(opts)
 			vim.cmd.colorscheme 'solarized'
 		end,
-	}
+	},
 })
 
 if vim.g.neovide then
