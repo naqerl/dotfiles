@@ -26,10 +26,23 @@ pj() {
   dir=$(find code/ -maxdepth 5 -type d -name .git | xargs -I{} dirname {} | fzf)
   if [[ -z $dir ]]; then
       cd -
-  else
-    echo "Jumped to project at ~/$dir"
-    cd "$dir"
+      exit 1
   fi
+  name=$(basename "$dir")
+  switch_tmux() {
+    if [[ -n "$TMUX" ]]; then
+      tmux switch-client -t "$1"
+    else
+      tmux attach -s "$1"
+    fi
+  }
+  if ! tmux ls -F '#{session_name}' | grep -q "$name"; then
+    tmux new -d -s "$name" -c "$dir" 'nvim'
+    tmux new-window -t "$name" -n "opencode" -c "$dir" 'opencode'
+    tmux new-window -t "$name" -n "shell" -c "$dir"
+    tmux select-window -t "$name":0
+  fi
+  switch_tmux "$name"
 }
 
 p() {
