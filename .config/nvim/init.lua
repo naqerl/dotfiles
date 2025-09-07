@@ -152,7 +152,19 @@ require('lazy').setup({
 	},
 	{ "powerman/vim-plugin-ruscmd" },
 	{ "tpope/vim-rsi" },
-	{ "tpope/vim-fugitive" },
+	{ 
+		"tpope/vim-fugitive",
+		config = function()
+			vim.g.fugitive_git_executable = 'git'
+			-- Make :G open in full window instead of split
+			vim.api.nvim_create_autocmd('User', {
+				pattern = 'FugitiveGit',
+				callback = function()
+					vim.cmd('only')
+				end
+			})
+		end
+	},
 	{ "tpope/vim-rhubarb" },
 	{
 		'nmac427/guess-indent.nvim',
