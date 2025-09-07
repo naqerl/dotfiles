@@ -1,6 +1,7 @@
 #!/bin/bash
 
-MOUNT_POINT="$HOME/media"
+USER_HOME="/home/user"
+MOUNT_POINT="$USER_HOME/media"
 LOG_FILE="/var/log/nvme-media-mount.log"
 
 log_message() {

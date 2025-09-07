@@ -1,7 +1,8 @@
 #!/bin/bash
 
 NVME_DEVICE="/dev/nvme0n1p1"
-MOUNT_POINT="$HOME/media"
+USER_HOME="/home/user"
+MOUNT_POINT="$USER_HOME/media"
 LOG_FILE="/var/log/nvme-media-mount.log"
 
 log_message() {
@@ -32,7 +33,8 @@ mount_device() {
     for fstype in ext4 ntfs exfat vfat; do
         if mount -t "$fstype" "$NVME_DEVICE" "$MOUNT_POINT" 2>/dev/null; then
             log_message "Successfully mounted $NVME_DEVICE to $MOUNT_POINT using $fstype"
-            # Set proper permissions
+            # Set proper ownership and permissions for user access
+            chown user:user "$MOUNT_POINT"
             chmod 755 "$MOUNT_POINT"
             exit 0
         fi
@@ -41,6 +43,8 @@ mount_device() {
     # If all mount attempts failed, try without specifying filesystem
     if mount "$NVME_DEVICE" "$MOUNT_POINT"; then
         log_message "Successfully mounted $NVME_DEVICE to $MOUNT_POINT (auto-detected filesystem)"
+        # Set proper ownership and permissions for user access
+        chown user:user "$MOUNT_POINT"
         chmod 755 "$MOUNT_POINT"
     else
         log_message "ERROR: Failed to mount $NVME_DEVICE to $MOUNT_POINT"
