@@ -155,14 +155,13 @@ require('lazy').setup({
 	{ 
 		"tpope/vim-fugitive",
 		config = function()
-			vim.g.fugitive_git_executable = 'git'
-			-- Make :G open in full window instead of split
-			vim.api.nvim_create_autocmd('User', {
-				pattern = 'FugitiveGit',
-				callback = function()
+			-- Create custom :G command that opens fugitive in full window
+			vim.api.nvim_create_user_command('G', function(opts)
+				vim.cmd('Git ' .. (opts.args or ''))
+				vim.schedule(function()
 					vim.cmd('only')
-				end
-			})
+				end)
+			end, { nargs = '*', complete = 'file' })
 		end
 	},
 	{ "tpope/vim-rhubarb" },
