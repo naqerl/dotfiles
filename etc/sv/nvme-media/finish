@@ -1,0 +1,24 @@
+#!/bin/bash
+exec 2>&1
+
+MOUNT_POINT="$HOME/media"
+LOG_FILE="/var/log/nvme-media-mount.log"
+
+log_message() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+log_message "NVMe media mount service stopping, attempting to unmount..."
+
+if mountpoint -q "$MOUNT_POINT"; then
+    if umount "$MOUNT_POINT"; then
+        log_message "Successfully unmounted $MOUNT_POINT"
+    else
+        log_message "Graceful unmount failed, attempting lazy unmount"
+        umount -l "$MOUNT_POINT" && log_message "Lazy unmount successful"
+    fi
+else
+    log_message "Mount point not active"
+fi
+
+log_message "NVMe media mount service stopped"

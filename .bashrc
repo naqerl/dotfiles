@@ -33,7 +33,7 @@ pj() {
     if [[ -n "$TMUX" ]]; then
       tmux switch-client -t "$1"
     else
-      tmux attach -s "$1"
+      tmux attach -t "$1"
     fi
   }
   if ! tmux ls -F '#{session_name}' | grep -q "$name"; then

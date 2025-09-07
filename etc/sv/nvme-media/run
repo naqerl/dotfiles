@@ -1,0 +1,61 @@
+#!/bin/bash
+exec 2>&1
+
+SCRIPT_DIR="/home/user/dotfiles"
+MOUNT_POINT="$HOME/media"
+NVME_DEVICE="/dev/nvme0n1p1"
+LOG_FILE="/var/log/nvme-media-mount.log"
+
+log_message() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+check_and_mount() {
+    if [ ! -b "$NVME_DEVICE" ]; then
+        log_message "NVMe device $NVME_DEVICE not found, waiting..."
+        return 1
+    fi
+    
+    if mountpoint -q "$MOUNT_POINT"; then
+        log_message "Device already mounted at $MOUNT_POINT"
+        return 0
+    fi
+    
+    if [ ! -d "$MOUNT_POINT" ]; then
+        mkdir -p "$MOUNT_POINT"
+        log_message "Created mount point: $MOUNT_POINT"
+    fi
+    
+    # Try different filesystem types
+    for fstype in ext4 ntfs exfat vfat; do
+        if mount -t "$fstype" "$NVME_DEVICE" "$MOUNT_POINT" 2>/dev/null; then
+            log_message "Successfully mounted $NVME_DEVICE to $MOUNT_POINT using $fstype"
+            chmod 755 "$MOUNT_POINT"
+            return 0
+        fi
+    done
+    
+    # If all mount attempts failed, try without specifying filesystem
+    if mount "$NVME_DEVICE" "$MOUNT_POINT"; then
+        log_message "Successfully mounted $NVME_DEVICE to $MOUNT_POINT (auto-detected filesystem)"
+        chmod 755 "$MOUNT_POINT"
+        return 0
+    else
+        log_message "Failed to mount $NVME_DEVICE to $MOUNT_POINT"
+        return 1
+    fi
+}
+
+log_message "NVMe media mount service starting"
+
+# Initial mount attempt
+check_and_mount
+
+# Keep service running and check periodically
+while true; do
+    if ! mountpoint -q "$MOUNT_POINT"; then
+        log_message "Mount point lost, attempting to remount..."
+        check_and_mount
+    fi
+    sleep 30
+done
