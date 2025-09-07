@@ -148,3 +148,31 @@ mkdir "$fonts_path"
 mv *.ttf "$fonts_path"
 fc-cache -fv
 cd -
+
+# NVMe Auto-Mount Service
+echo "Setting up NVMe auto-mount service..."
+SERVICE_NAME="nvme-media"
+RUNIT_SERVICE_DIR="/etc/sv/$SERVICE_NAME"
+
+# Make scripts executable
+chmod +x "$PWD/mount-nvme-media.sh"
+chmod +x "$PWD/unmount-nvme-media.sh"
+chmod +x "$PWD/etc/sv/nvme-media/run"
+chmod +x "$PWD/etc/sv/nvme-media/finish"
+
+# Create log file with proper permissions
+sudo touch /var/log/nvme-media-mount.log
+sudo chown $USER:$USER /var/log/nvme-media-mount.log
+
+# Copy runit service to system directory
+sudo cp -r "$PWD/etc/sv/nvme-media" "$RUNIT_SERVICE_DIR"
+sudo chown -R root:root "$RUNIT_SERVICE_DIR"
+
+# Create service link to enable it
+sudo ln -sf "$RUNIT_SERVICE_DIR" /var/service/
+
+echo "NVMe auto-mount service installed!"
+echo "IMPORTANT: Edit etc/sv/nvme-media/run to set the correct NVMe device path"
+echo "Current default: /dev/nvme0n1p1"
+echo "To find your NVMe device: lsblk | grep nvme"
+echo "To start the service: sudo sv start $SERVICE_NAME"

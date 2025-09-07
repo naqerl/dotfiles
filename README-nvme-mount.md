@@ -26,8 +26,9 @@ This system automatically mounts your NVMe disk to `~/media` using runit service
 
 3. **Install the system:**
    ```bash
-   ./install-nvme-mount.sh
+   ./install.sh
    ```
+   (The NVMe mount service is automatically installed as part of the main installation)
 
 4. **Start the service:**
    ```bash
