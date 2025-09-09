@@ -4,14 +4,6 @@
 alias ls='ls --color=auto --hyperlink=auto'
 PS1='[\u@\h \W]\$ '
 
-# pnpm
-export PNPM_HOME="/home/user/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
-
 # Use bash-completion, if available
 [[ -f /usr/share/bash-completion/bash_completion ]] && \
     . /usr/share/bash-completion/bash_completion
@@ -19,7 +11,6 @@ esac
 # Use fzf completion, if available
 [[ -f $(which fzf) ]] && \
 		eval "$(fzf --bash)"
-
 
 pj() {
   cd $HOME
@@ -63,8 +54,6 @@ alias xi='sudo xbps-install'
 alias xq='xbps-query -Rs'
 alias hexec='hyprctl dispatch exec'
 
-# opencode
-export PATH=/home/user/.opencode/bin:$PATH
-
-# Turso
-export PATH="$PATH:/home/user/.turso"
+# Save each command to history immediately
+export HISTCONTROL=ignoredups:erasedups
+PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
