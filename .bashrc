@@ -57,3 +57,5 @@ alias hexec='hyprctl dispatch exec'
 # Save each command to history immediately
 export HISTCONTROL=ignoredups:erasedups
 PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+
+export FZF_DEFAULT_OPTS=--reverse
