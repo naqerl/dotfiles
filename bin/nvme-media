@@ -52,12 +52,51 @@ mount_device() {
     fi
 }
 
+unmount_device() {
+    if ! mountpoint -q "$MOUNT_POINT"; then
+        log_message "Device not mounted at $MOUNT_POINT"
+        exit 0
+    fi
+    
+    # Try to unmount gracefully
+    if umount "$MOUNT_POINT"; then
+        log_message "Successfully unmounted $MOUNT_POINT"
+    else
+        log_message "WARNING: Graceful unmount failed, attempting lazy unmount"
+        if umount -l "$MOUNT_POINT"; then
+            log_message "Successfully performed lazy unmount of $MOUNT_POINT"
+        else
+            log_message "ERROR: Failed to unmount $MOUNT_POINT"
+            exit 1
+        fi
+    fi
+}
+
+show_usage() {
+    echo "Usage: $0 {mount|unmount}"
+    echo "  mount   - Mount NVMe device to $MOUNT_POINT"
+    echo "  unmount - Unmount NVMe device from $MOUNT_POINT"
+}
+
 main() {
-    log_message "Starting NVMe media mount process"
-    check_device
-    create_mount_point
-    mount_device
-    log_message "NVMe media mount process completed successfully"
+    case "${1:-}" in
+        mount)
+            log_message "Starting NVMe media mount process"
+            check_device
+            create_mount_point
+            mount_device
+            log_message "NVMe media mount process completed successfully"
+            ;;
+        unmount)
+            log_message "Starting NVMe media unmount process"
+            unmount_device
+            log_message "NVMe media unmount process completed"
+            ;;
+        *)
+            show_usage
+            exit 1
+            ;;
+    esac
 }
 
 main "$@"
