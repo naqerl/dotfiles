@@ -76,7 +76,7 @@ require('lazy').setup({
 			vim.keymap.set('n', "]h", function()
 				gitsigns.nav_hunk('next')
 			end)
-			vim.keymap.set('n', "]h", function()
+			vim.keymap.set('n', "[h", function()
 				gitsigns.nav_hunk('prev')
 			end)
 			vim.keymap.set('n', '<leader>hS', gitsigns.stage_buffer)
@@ -250,6 +250,7 @@ require('lazy').setup({
 	{
 		'maxmx03/solarized.nvim',
 		lazy = false,
+		enabled = false,
 		priority = 1000,
 		opts = {
 			variant = "winter",
