@@ -263,6 +263,13 @@ require('lazy').setup({
 			vim.api.nvim_set_hl(0, 'SpellBad', { underline = true })
 		end,
 	},
+	{
+		"maxbrunsfeld/vim-yankstack",
+		cinfig = function()
+			vim.keymap.set("n", "<m-y>", "<Plug>yankstack_substitute_older_paste")
+			vim.keymap.set("n", "<m-s-y>", "<Plug>yankstack_substitute_newer_paste")
+		end
+	}
 })
 
 if vim.g.neovide then
@@ -283,4 +290,3 @@ end
 -- Custom plugins
 require("plugins/makex").setup()
 require("plugins/marpoon").setup()
-require("plugins/killring").setup()
