@@ -2,7 +2,7 @@ font-family = "Iosevka Term Nerd Font"
 font-size = 18
 font-synthetic-style = true
 
-theme = "Builtin Solarized Dark"
+theme = "Builtin Dark"
 cursor-style = block
 shell-integration-features = no-cursor
 gtk-tabs-location = hidden

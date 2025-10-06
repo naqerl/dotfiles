@@ -283,3 +283,4 @@ end
 -- Custom plugins
 require("plugins/makex").setup()
 require("plugins/marpoon").setup()
+require("plugins/killring").setup()
