@@ -265,11 +265,17 @@ require('lazy').setup({
 	},
 	{
 		"maxbrunsfeld/vim-yankstack",
-		cinfig = function()
+		config = function()
 			vim.keymap.set("n", "<m-y>", "<Plug>yankstack_substitute_older_paste")
 			vim.keymap.set("n", "<m-s-y>", "<Plug>yankstack_substitute_newer_paste")
 		end
-	}
+	},
+	{
+		"jakewvincent/mkdnflow.nvim",
+		config = function()
+			require("mkdnflow").setup()
+		end
+	},
 })
 
 if vim.g.neovide then
