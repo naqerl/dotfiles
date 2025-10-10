@@ -59,3 +59,4 @@ export HISTCONTROL=ignoredups:erasedups
 PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
 export FZF_DEFAULT_OPTS=--reverse
+. "$HOME/.cargo/env"

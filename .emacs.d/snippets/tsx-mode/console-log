@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: console-log
+# key: cl
+# expand-env: ((yas-wrap-around-region nil) (fc-name (file-name-sans-extension (buffer-name))))
+# --
+console.log($1);$0

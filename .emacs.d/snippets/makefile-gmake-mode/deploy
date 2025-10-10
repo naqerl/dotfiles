@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: deploy
+# expand-env: ((yas-indent-line nil) (yas-wrap-around-region 'nil))
+# --
+deploy-$1: install-collections
+	ansible-playbook $1.yml

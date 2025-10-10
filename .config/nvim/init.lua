@@ -214,7 +214,7 @@ require('lazy').setup({
 	{
 		"junegunn/fzf.vim",
 		config = function()
-			vim.keymap.set("n", "<leader>f", "<cmd>GitFiles<cr>")
+			vim.keymap.set("n", "<leader>f", "<cmd>Files<cr>")
 			vim.keymap.set("n", "<leader>r", "<cmd>RG<cr>")
 			vim.keymap.set("v", "<leader>r", '"vy<cmd>exec "RG" getreg("v")<cr>')
 			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
@@ -236,31 +236,11 @@ require('lazy').setup({
 			vim.g.fzf_layout = {
 				window = {
 					width = 1,
-					height = 0.37,
+					height = 0.63,
 					yoffset = 0,
 					border = "bottom",
 				}
 			}
-		end,
-	},
-	{
-		'RRethy/base16-nvim',
-		lazy = false
-	},
-	{
-		'maxmx03/solarized.nvim',
-		lazy = false,
-		enabled = false,
-		priority = 1000,
-		opts = {
-			variant = "winter",
-		},
-		config = function(_, opts)
-			vim.o.termguicolors = true
-			vim.o.background = 'dark'
-			require('solarized').setup(opts)
-			vim.cmd.colorscheme 'solarized'
-			vim.api.nvim_set_hl(0, 'SpellBad', { underline = true })
 		end,
 	},
 	{

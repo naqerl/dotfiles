@@ -13,3 +13,5 @@ Example:
 1. backend: implemented feature A
 2. docs: actualized README
 3. repo: make target for X
+
+There could be other job done, so analyze git worktree and add only edited by you parts, do not do `git add .` blindly
