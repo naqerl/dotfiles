@@ -1,5 +1,4 @@
 ;; TODO: Add bind for select inside of (progn (search-forward "\"") (set-mark-command nil) (search-forward "\"") (backward-char))
-
 ;;; UI\UX
 (setq make-backup-files nil
       create-lockfiles nil
@@ -75,8 +74,8 @@
 ;; Custom built-in binds
 (use-package emacs
   :bind
-  ("C-," . previous-buffer)
-  ("C-." . next-buffer)
+  ("M-[" . previous-buffer)
+  ("M-]" . next-buffer)
   ("C-x C-b" . ibuffer)
   ("C-x k" . kill-current-buffer)
   ("C-x K" . kill-buffer)
@@ -200,9 +199,10 @@
 (use-package f :ensure t)
 
 (use-package expand-region
+  :defer 1
   :ensure t
   :bind
-  ("C-;" . er/expand-region))
+  ("M-:" . er/expand-region))
 
 (use-package eat
   :ensure t
@@ -212,6 +212,7 @@
   (eshell-mode . eat-eshell-visual-command-mode))
 
 (use-package magit
+  :defer 1
   :ensure t
   :custom
   (magit-status-buffer-switch-function 'switch-to-buffer)
@@ -225,6 +226,7 @@
   :defer 1)
 
 (use-package git-gutter
+  :defer 1
   :ensure t
   :diminish git-gutter-mode
   :custom
@@ -238,6 +240,7 @@
   ((org-mode prog-mode) . git-gutter-mode))
 
 (use-package vertico
+  :defer 1
   :ensure t
   :custom
   (vertico-count 13)
@@ -247,6 +250,7 @@
   (vertico-mode))
 
 (use-package orderless
+  :defer 1
   :ensure t
   :custom
   (completion-styles '(orderless basic))
@@ -254,6 +258,7 @@
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package marginalia
+  :defer 1
   :ensure t
   :custom
   (marginalia-max-relative-age 0)
@@ -261,39 +266,8 @@
   :config
   (marginalia-mode))
 
-(use-package consult
-  :disabled
-  :ensure t
-  :config
-  (setq consult-ripgrep-args (concat consult-ripgrep-args " --hidden"))
-  :bind
-  ("C-x p g" . consult-ripgrep)
-  ("C-x b" . consult-buffer)
-  ("M-g i" . consult-imenu)
-  ("M-g l" . consult-line)
-  :config
-  (add-hook
-   'eshell-mode-hook
-   '(lambda () (bind-key "M-r" #'consult-history 'eshell-hist-mode-map))))
-
-(use-package embark
-  :ensure t
-  :bind
-  ("M-," . embark-act)
-  ("M-." . embark-dwim))
-
-(use-package embark-consult
-  :disabled
-  :ensure t
-  :after embark
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode)
-  :config
-  (dolist (override '((consult-grep . embark-export)
-                      (consult-ripgrep . embark-export)))
-    (add-to-list 'embark-default-action-overrides override)))
-
 (use-package golden-ratio
+  :defer 1
   :ensure t
   :diminish golden-ratio-mode
   :config
@@ -304,6 +278,7 @@
   (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*" "*Async Shell Command*")))
 
 (use-package dumb-jump
+  :defer 1
   :ensure t
   :custom
   (dumb-jump-rg-search-args "--pcre2 --max-filesize 80M --no-ignore --hidden")
@@ -348,6 +323,7 @@
 
 ;; Javascript
 (use-package jtsx
+  :defer 1
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
@@ -401,14 +377,17 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 (use-package undo-tree
+  :defer 1
   :ensure t
   :custom
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (use-package inheritenv
+  :defer 1
   :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
 
 (use-package claude-code :ensure t
+  :after inheritenv
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :diminish claude-code-mode
   :config
@@ -417,6 +396,13 @@
   :bind
   (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
 
-(set-face-attribute 'default nil :font "Iosevka Term Nerd Font-20")
-(set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-18")
+(add-hook 'after-init-hook
+          (lambda ()
+            (set-face-attribute 'default nil :font "Iosevka Term Nerd Font-20")
+            (set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-18")))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs started in %s" (emacs-init-time))))
+
 (message "Config loaded")

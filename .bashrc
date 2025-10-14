@@ -28,7 +28,7 @@ pj() {
     fi
   }
   if ! tmux ls -F '#{session_name}' | grep -q "$name"; then
-    tmux new -d -s "$name" -c "$dir" 'nvim'
+    tmux new -d -s "$name" -c "$dir" 'emacs -nw'
     tmux new-window -t "$name" -n "opencode" -c "$dir" 'opencode'
     tmux new-window -t "$name" -n "shell" -c "$dir"
     tmux select-window -t "$name":0
