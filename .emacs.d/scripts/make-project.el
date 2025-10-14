@@ -48,7 +48,7 @@
 (defvar make-project-column-margin 4
   "Amount of spaces during `completing-read' between Makefile target info.")
 
-(defvar make-project-compilation-buffer-name nil
+(defvar make-project-compilation-buffer-name "*compile*"
   "Name of the last make compilation command.")
 
 (defvar make-project--treesit-qeury

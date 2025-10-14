@@ -35,15 +35,9 @@
                          (right-fringe . 0)))
   (add-to-list 'default-frame-alist frame-setting)) ;; Remove unwanted UI
 
-(dolist (mode
-         '(prog-mode-hook
-           org-mode-hook
-           conf-mode-hook
-           text-mode))
-  (add-hook mode 'display-line-numbers-mode)) ;; Line numbers where they are needed
-
 ;; Builtin packages setup
 (use-package which-key
+  :disabled
   :diminish which-key-mode
   :config (which-key-mode t))
 
@@ -77,27 +71,6 @@
   :custom
   (ls-lisp-dirs-first t)
   (ls-lisp-use-insert-directory-program nil))
-
-;; Fonts
-(set-face-attribute 'default nil
-                    :font "Iosevka"
-                    :height 130
-                    :weight 'medium)
-(set-face-attribute 'variable-pitch nil
-                    :font "Iosevka"
-                    :height 130
-                    :weight 'medium)
-(set-face-attribute 'fixed-pitch nil
-                    :font "Iosevka"
-                    :height 1.0
-                    :weight 'medium)
-
-(use-package server ;; Start server on launch
-  :defer 1
-  :config
-  (setq server-client-instructions nil)
-  (unless (server-running-p)
-    (server-start)))
 
 ;; Custom built-in binds
 (use-package emacs
@@ -182,14 +155,6 @@
   (add-to-list
    'hippie-expand-try-functions-list 'try-complete-upcase-abbrev))
 
-(use-package auth-source
-  :custom
-  (auth-sources '("~/.authinfo.gpg"))
-  (auth-source-debug 'trivia)
-  (epg-pinentry-mode 'loopback)
-  :config
-  (auth-source-pass-enable))
-
 (use-package my-extensions :load-path "scripts")
 
 (use-package project
@@ -216,17 +181,6 @@
   :load-path "scripts"
   :config
   (load-theme 'koi t))
-
-(use-package llm-commit
-  :load-path "scripts"
-  :hook (git-commit-mode . llm-commit:generate))
-
-(use-package app-launcher
-  :load-path "scripts")
-
-(use-package pass-wtype
-  :load-path "scripts"
-  :after password-store)
 
 (use-package org
   :custom
@@ -263,9 +217,7 @@
   (magit-status-buffer-switch-function 'switch-to-buffer)
   (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   :bind
-  ("C-x g" . magit)
-  :hook
-  (magit-status-mode . display-line-numbers-mode))
+  ("C-x g" . magit))
 
 (use-package forge
   :after magit
@@ -310,6 +262,7 @@
   (marginalia-mode))
 
 (use-package consult
+  :disabled
   :ensure t
   :config
   (setq consult-ripgrep-args (concat consult-ripgrep-args " --hidden"))
@@ -330,6 +283,7 @@
   ("M-." . embark-dwim))
 
 (use-package embark-consult
+  :disabled
   :ensure t
   :after embark
   :hook
@@ -376,45 +330,6 @@
   ("M-4" . harpoon-go-to-4)
   ("M-5" . harpoon-go-to-5))
 
-(use-package gptel
-  :ensure t
-  :defer 1
-  :config
-  (setq
-   gptel-log-level 'info
-   gptel-default-mode 'markdown-mode
-   gptel-model 'gemini-2.0-flash
-   gptel-backend
-   (gptel-make-gemini
-       "Gemini"
-     :key 'gptel-api-key-from-auth-source
-     :stream t))
-  (let* ((prompts-path (expand-file-name "prompts" user-emacs-directory))
-         (prompts (eval (car (read-from-string (f-read prompts-path))))))
-    (dolist (prompt prompts)
-      (add-to-list 'gptel-directives prompt)))
-  :bind ("C-c g" . gptel-menu))
-
-(use-package eradio
-  :ensure t
-  :defer 1
-  :demand
-  :custom
-  (eradio-player '("mpv" "--no-video" "--no-terminal"))
-  (eradio-channels
-   (eval (car (read-from-string (f-read (expand-file-name
-                                         "eradio-playlist"
-                                         user-emacs-directory)))))))
-
-(use-package password-store :ensure t)
-
-(use-package elcord
-  :ensure t
-  :custom
-  (elcord-idle-message "Hanging around..")
-  :config
-  (elcord-mode))
-
 ;;; Languages setup:
 ;; Python
 (use-package python
@@ -452,8 +367,8 @@
   :ensure t
   :config
   (defun user/go-mode-hook ()
-    (setq tab-width 2
-     standard-indent 2
+    (setq tab-width 8
+     standard-indent 8
      indent-tabs-mode nil))
   :hook
   (go-mode . user/go-mode-hook))
@@ -467,6 +382,7 @@
 ;; Snippets
 (use-package yasnippet
   :ensure t
+  :diminish yas-minor-mode
   :custom
   (yas-snippet-dirs `(,(expand-file-name
                         "snippets"
@@ -476,8 +392,7 @@
 
 ;; Do not require config
 (use-package yaml-mode
-  :ensure t
-  :hook (yaml-mode . display-line-numbers-mode))
+  :ensure t)
 (use-package markdown-mode :ensure t)
 (use-package solidity-mode :ensure t)
 (use-package dockerfile-mode :ensure t)
@@ -485,37 +400,23 @@
 (use-package treesit-auto :ensure t)
 (put 'dired-find-alternate-file 'disabled nil)
 
-;; Evil
-(use-package evil
-  :ensure t
-  :after undo-tree
-  :custom
-  (evil-undo-system 'undo-tree)
-  :bind (:map evil-insert-state-map
-	      ("C-g" . evil-normal-state))
-  :config (evil-mode 1)
-  ;; Evil-states per major mode
-  (setq evil-default-state 'emacs
-  evil-normal-state-modes '(fundamental-mode
-                                  ssh-config-mode
-                                  conf-mode
-                                  prog-mode
-				  harpoon-mode
-                                  text-mode
-                                  repos-mode
-                                  dired-mode))
-  ;; Minor mode evil states
-  (add-hook 'with-editor-mode-hook 'evil-insert-state)
-  ;; Per mode cursors
-  (setq evil-insert-state-cursor '(box "#c4b28a"))
-  (setq evil-normal-state-cursor '(box "#87a987"))
-  (setq evil-emacs-state-cursor '(bar "#C34043"))
-  (setq evil-replace-state-cursor '(box "#8ea4a2"))
-  (setq evil-visual-state-cursor '(box "#7E9CD8")))
-
 (use-package undo-tree
   :ensure t
   :custom
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
+(use-package inheritenv
+  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :diminish claude-code-mode
+  :config
+  (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+  :bind
+  (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
+
+(set-face-attribute 'default nil :font "Iosevka Term Nerd Font-20")
+(set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-18")
 (message "Config loaded")
