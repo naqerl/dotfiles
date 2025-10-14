@@ -95,10 +95,19 @@
   (interactive)
   (scroll-up (floor (/ (window-height) 2))))
 
+(defun user/smart-kill-back()
+  "Kill word back if region is not selected else kill region."
+  (interactive)
+  (call-interactively
+   (if (region-active-p)
+       'kill-region
+       'backward-kill-word)))
+
 (use-package emacs
   :bind
   ("C-v" . user/scroll-half-up)
-  ("M-v" . user/scroll-half-down))
+  ("M-v" . user/scroll-half-down)
+  ("C-w" . user/smart-kill-back))
 
 (use-package eshell
   :bind
