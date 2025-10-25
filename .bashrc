@@ -12,30 +12,6 @@ PS1='[\u@\h \W]\$ '
 [[ -f $(which fzf) ]] && \
 		eval "$(fzf --bash)"
 
-pj() {
-  cd $HOME
-  dir=$(find code/ -maxdepth 5 -type d -name .git | xargs -I{} dirname {} | fzf)
-  if [[ -z $dir ]]; then
-      cd -
-      exit 1
-  fi
-  name=$(basename "$dir")
-  switch_tmux() {
-    if [[ -n "$TMUX" ]]; then
-      tmux switch-client -t "$1"
-    else
-      tmux attach -t "$1"
-    fi
-  }
-  if ! tmux ls -F '#{session_name}' | grep -q "$name"; then
-    tmux new -d -s "$name" -c "$dir" 'emacs -nw'
-    tmux new-window -t "$name" -n "opencode" -c "$dir" 'opencode'
-    tmux new-window -t "$name" -n "shell" -c "$dir"
-    tmux select-window -t "$name":0
-  fi
-  switch_tmux "$name"
-}
-
 p() {
   if [[ -z "$1" ]]; then
     pj

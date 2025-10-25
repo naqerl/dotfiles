@@ -16,7 +16,9 @@
       backward-delete-char-untabify-method 'hungry
       display-line-numbers-type 'visual
       indent-tabs-mode nil
-      custom-file (expand-file-name ".emacs.custom.el" user-emacs-directory))
+      custom-file (expand-file-name ".emacs.custom.el" user-emacs-directory)
+      dired-kill-when-opening-new-dired-buffer t)
+
 (setopt use-short-answers t)
 
 (blink-cursor-mode 1)
@@ -74,8 +76,6 @@
 ;; Custom built-in binds
 (use-package emacs
   :bind
-  ("M-[" . previous-buffer)
-  ("M-]" . next-buffer)
   ("C-x C-b" . ibuffer)
   ("C-x k" . kill-current-buffer)
   ("C-x K" . kill-buffer)
@@ -186,7 +186,7 @@
 			(concat "*" (downcase name-of-mode) "*")))))
 
 (use-package koi-theme
-  :load-path "scripts"
+  :load-path "themes"
   :config
   (load-theme 'koi t))
 
@@ -229,11 +229,6 @@
   :bind
   ("C-x g" . magit))
 
-(use-package forge
-  :after magit
-  :ensure t
-  :defer 1)
-
 (use-package git-gutter
   :defer 1
   :ensure t
@@ -249,7 +244,6 @@
   ((org-mode prog-mode) . git-gutter-mode))
 
 (use-package vertico
-  :defer 1
   :ensure t
   :custom
   (vertico-count 13)
@@ -259,21 +253,11 @@
   (vertico-mode))
 
 (use-package orderless
-  :defer 1
   :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
-
-(use-package marginalia
-  :defer 1
-  :ensure t
-  :custom
-  (marginalia-max-relative-age 0)
-  (marginalia-align 'left)
-  :config
-  (marginalia-mode))
 
 (use-package golden-ratio
   :defer 1
@@ -301,18 +285,6 @@
   :bind
   ("M-i" . change-inner)
   ("M-o" . change-outer))
-
-(use-package harpoon
-  :ensure t
-  :bind
-  ("C-c h <return>" . harpoon-add-file)
-  ("C-c h f" . harpoon-toggle-file)
-  ("C-c h c" . harpoon-clear)
-  ("M-1" . harpoon-go-to-1)
-  ("M-2" . harpoon-go-to-2)
-  ("M-3" . harpoon-go-to-3)
-  ("M-4" . harpoon-go-to-4)
-  ("M-5" . harpoon-go-to-5))
 
 ;;; Languages setup:
 ;; Python
@@ -353,10 +325,14 @@
   :config
   (defun user/go-mode-hook ()
     (setq tab-width 8
-     standard-indent 8
-     indent-tabs-mode nil))
+	  standard-indent 8
+	  indent-tabs-mode nil))
+  (defalias 'user/go-insert-err-check
+    (kmacro "C-e RET i f SPC e r r SPC ! = SPC n i l SPC { RET r e t u r n SPC e r r"))
   :hook
-  (go-mode . user/go-mode-hook))
+  (go-mode . user/go-mode-hook)
+  :bind (:map go-mode-map
+	      ("C-c C-e" . user/go-insert-err-check)))
 
 (use-package go-doc
   :after go-mode
@@ -376,12 +352,10 @@
   (yas-global-mode 1))
 
 ;; Do not require config
-(use-package yaml-mode
-  :ensure t)
+(use-package yaml-mode :ensure t)
 (use-package markdown-mode :ensure t)
 (use-package solidity-mode :ensure t)
 (use-package dockerfile-mode :ensure t)
-
 (use-package treesit-auto :ensure t)
 (put 'dired-find-alternate-file 'disabled nil)
 
@@ -391,19 +365,9 @@
   :custom
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
-(use-package inheritenv
-  :defer 1
-  :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
-
-(use-package claude-code :ensure t
-  :after inheritenv
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :diminish claude-code-mode
-  :config
-  (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map)
-  :bind
-  (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
+(use-package clipetty
+  :ensure t
+  :bind ("M-w" . clipetty-kill-ring-save))
 
 (add-hook 'after-init-hook
           (lambda ()
@@ -413,5 +377,28 @@
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "Emacs started in %s" (emacs-init-time))))
+
+(defun user/revert-all-file-buffers ()
+  "Refresh all open file buffers without confirmation.
+Buffers in modified (not yet saved) state in emacs will not be reverted. They
+will be reverted though if they were modified outside emacs.
+Buffers visiting files which do not exist any more or are no longer readable
+will be killed."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (let ((filename (buffer-file-name buf)))
+      ;; Revert only buffers containing files, which are not modified;
+      ;; do not try to revert non-file buffers like *Messages*.
+      (when (and filename
+                 (not (buffer-modified-p buf)))
+        (if (file-readable-p filename)
+            ;; If the file exists and is readable, revert the buffer.
+            (with-current-buffer buf
+              (revert-buffer :ignore-auto :noconfirm :preserve-modes))
+          ;; Otherwise, kill the buffer.
+          (let (kill-buffer-query-functions) ; No query done when killing buffer
+            (kill-buffer buf)
+            (message "Killed non-existing/unreadable file buffer: %s" filename))))))
+  (message "Finished reverting buffers containing unmodified files."))
 
 (message "Config loaded")

@@ -48,7 +48,8 @@
     output))
 
 (defconst koi-theme-colors
-  `(:fg-2 "#393836"
+  `(:region "#4e4e4e"
+    :fg-2 "#393836"
     :fg-1 "#717C7C"
     :fg "#c5c9c5"
     :fg+1 "#a6a69c"
@@ -69,7 +70,7 @@
  '(
    (default :background bg :foreground fg)
    (cursor :background green :foreground bg :weight bold)
-   (region :background fg-2)
+   (region :background region)
    (line-number :background bg :foreground fg-2)
    (line-number-current-line :background bg :foreground green :weight bold)
    (mode-line :background bg-1)
@@ -121,10 +122,7 @@
    (git-gutter:modified :foreground yellow)
    (git-gutter:added :foreground green)
    (git-gutter:deleted :foreground red)
-
-   (completions-notations :foreground fg-1)
-   (marginalia-documentation :foreground fg-1)
-   (gptel-context-highlight-face :background bg)))
+   ))
 
 ;;;###autoload
 (and load-file-name

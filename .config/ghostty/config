@@ -6,6 +6,7 @@ theme = "Builtin Dark"
 cursor-style = block
 shell-integration-features = no-cursor
 gtk-tabs-location = hidden
+link-url = false
 
 window-padding-balance = false
 window-padding-color = extend
