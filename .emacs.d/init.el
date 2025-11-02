@@ -167,7 +167,19 @@
 
 (use-package project
   :custom
-  (project-mode-line t))
+  (project-mode-line t)
+  :config
+  ;; During the work many unrelated buffers to the current project files
+  ;; are used, which lead to using of a wrong project or multiple
+  ;; "choose project" prompts. Given hack sets a global project
+  ;; and uses it until project switched intentionally
+  (defvar user/global-project nil "Use single proect per frame")
+  (defun user/set-global-project (DIR)
+      (setq user/global-project DIR))
+  (defun user/get-global-project (orig-fun &optional MAYBE-PROMPT DIRECTORY)
+    (apply orig-fun `(MAYBE-PROMPT ,(if DIRECTORY DIRECTORY user/global-project))))
+  (advice-add 'project-switch-project :before #'user/set-global-project)
+  (advice-add 'project-current :around #'user/get-global-project))
 
 (use-package project-ext
   :after project
