@@ -48,6 +48,7 @@
 (defvar make-project-column-margin 4
   "Amount of spaces during `completing-read' between Makefile target info.")
 
+;;;###autoload
 (defvar make-project-compilation-buffer-name "*compile*"
   "Name of the last make compilation command.")
 

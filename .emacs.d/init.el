@@ -17,7 +17,10 @@
       display-line-numbers-type 'visual
       indent-tabs-mode nil
       custom-file (expand-file-name ".emacs.custom.el" user-emacs-directory)
-      dired-kill-when-opening-new-dired-buffer t)
+      dired-kill-when-opening-new-dired-buffer t
+      remote-file-name-inhibit-locks t
+      tramp-use-scp-direct-remote-copying t
+      remote-file-name-inhibit-auto-save-visited t)
 
 (setopt use-short-answers t)
 
@@ -130,15 +133,6 @@
    '(lambda ()
       (bind-key "C-c C-o" #'user/eshell-copy-last-output 'eshell-mode-map))))
 
-;; Tramp
-(setq remote-file-name-inhibit-cache nil
-      tramp-completion-use-auth-sources nil
-      vc-ignore-dir-regexp
-      (format "%s\\|%s"
-              vc-ignore-dir-regexp
-              tramp-file-name-regexp)
-      tramp-verbose 1)
-
 ;; SSH shortcut
 (defun ssh()
   "Completing read ssh server and connect to it."
@@ -197,11 +191,6 @@
 			  make-project-compilation-buffer-name
 			(concat "*" (downcase name-of-mode) "*")))))
 
-(use-package koi-theme
-  :load-path "themes"
-  :config
-  (load-theme 'koi t))
-
 (use-package org
   :custom
   (org-edit-src-content-indentation 0))
@@ -212,7 +201,6 @@
                          ("elpa" . "https://elpa.gnu.org/packages/")
                          ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 (require 'package)
-(setq package-quickstart t)
 (require 'use-package)
 
 (use-package diminish :ensure t)
@@ -258,11 +246,15 @@
 (use-package vertico
   :ensure t
   :custom
-  (vertico-count 13)
-  (vertico-resize nil)
-  (vertico-cycle nil)
+  (vertico-count 7)
   :config
-  (vertico-mode))
+  (vertico-mode t)
+  (vertico-multiform-mode t))
+
+(use-package embark
+  :ensure t
+  :bind
+  (:map minibuffer-default ("M-," . embark-export)))
 
 (use-package orderless
   :ensure t
@@ -316,7 +308,7 @@
 
 ;; Javascript
 (use-package jtsx
-  :defer 1
+  :disabled
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))
@@ -326,6 +318,7 @@
 
 (use-package web-mode
   :ensure t
+  :disabled
   :config
   (setq web-mode-engines-alist
 	'(("go"    . "\\.html\\'")))
@@ -367,7 +360,6 @@
 (use-package yaml-mode :ensure t)
 (use-package markdown-mode :ensure t)
 (use-package solidity-mode :ensure t)
-(use-package dockerfile-mode :ensure t)
 (use-package treesit-auto :ensure t)
 (put 'dired-find-alternate-file 'disabled nil)
 
@@ -378,39 +370,17 @@
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (use-package clipetty
+  :disabled
   :ensure t
   :bind ("M-w" . clipetty-kill-ring-save))
 
 (add-hook 'after-init-hook
           (lambda ()
             (set-face-attribute 'default nil :font "Iosevka Term Nerd Font-20")
-            (set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-18")))
+            (set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-14")))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "Emacs started in %s" (emacs-init-time))))
-
-(defun user/revert-all-file-buffers ()
-  "Refresh all open file buffers without confirmation.
-Buffers in modified (not yet saved) state in emacs will not be reverted. They
-will be reverted though if they were modified outside emacs.
-Buffers visiting files which do not exist any more or are no longer readable
-will be killed."
-  (interactive)
-  (dolist (buf (buffer-list))
-    (let ((filename (buffer-file-name buf)))
-      ;; Revert only buffers containing files, which are not modified;
-      ;; do not try to revert non-file buffers like *Messages*.
-      (when (and filename
-                 (not (buffer-modified-p buf)))
-        (if (file-readable-p filename)
-            ;; If the file exists and is readable, revert the buffer.
-            (with-current-buffer buf
-              (revert-buffer :ignore-auto :noconfirm :preserve-modes))
-          ;; Otherwise, kill the buffer.
-          (let (kill-buffer-query-functions) ; No query done when killing buffer
-            (kill-buffer buf)
-            (message "Killed non-existing/unreadable file buffer: %s" filename))))))
-  (message "Finished reverting buffers containing unmodified files."))
 
 (message "Config loaded")
