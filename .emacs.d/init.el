@@ -20,7 +20,8 @@
       dired-kill-when-opening-new-dired-buffer t
       remote-file-name-inhibit-locks t
       tramp-use-scp-direct-remote-copying t
-      remote-file-name-inhibit-auto-save-visited t)
+      remote-file-name-inhibit-auto-save-visited t
+      split-width-threshold 1) ;; Prever side by side splits
 
 (setopt use-short-answers t)
 
@@ -110,7 +111,9 @@
   :bind
   ("C-v" . user/scroll-half-up)
   ("M-v" . user/scroll-half-down)
-  ("C-w" . user/smart-kill-back))
+  ("C-w" . user/smart-kill-back)
+  ("C-M-p" . previous-buffer)
+  ("C-M-n" . next-buffer))
 
 (use-package eshell
   :bind
@@ -167,13 +170,17 @@
   ;; are used, which lead to using of a wrong project or multiple
   ;; "choose project" prompts. Given hack sets a global project
   ;; and uses it until project switched intentionally
-  (defvar user/global-project nil "Use single proect per frame")
-  (defun user/set-global-project (DIR)
-      (setq user/global-project DIR))
-  (defun user/get-global-project (orig-fun &optional MAYBE-PROMPT DIRECTORY)
-    (apply orig-fun `(MAYBE-PROMPT ,(if DIRECTORY DIRECTORY user/global-project))))
-  (advice-add 'project-switch-project :before #'user/set-global-project)
-  (advice-add 'project-current :around #'user/get-global-project))
+  (defvar user/global-project nil
+    "Use single project per frame.")
+  (defun user/set-global-project (dir)
+    (setq user/global-project dir))
+  (defun user/get-global-project (orig-fun &optional maybe-prompt directory)
+    (funcall orig-fun
+             maybe-prompt
+             (or directory user/global-project)))
+  (with-eval-after-load 'project
+    (advice-add 'project-switch-project :before #'user/set-global-project)
+    (advice-add 'project-current :around #'user/get-global-project)))
 
 (use-package project-ext
   :after project
@@ -219,6 +226,18 @@
   :hook
   (eshell-mode . eat-eshell-mode)
   (eshell-mode . eat-eshell-visual-command-mode))
+
+(defun claude ()
+    "Open an EAT terminal named *claude <project-name>* in the project root and run `claude` process."
+    (interactive)
+    (let* ((project (project-current t))
+           (project-root (project-root project))
+           (project-name (file-name-nondirectory (directory-file-name project-root)))
+           (buffer-name (generate-new-buffer-name (format "*claude %s*" project-name)))
+           (default-directory project-root))
+      (with-current-buffer (eat "claude")
+	(rename-buffer buffer-name))
+      (message "Spawned claude in %s" buffer-name)))
 
 (use-package magit
   :defer 1
