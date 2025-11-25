@@ -1,12 +1,10 @@
 ;; TODO: Add bind for select inside of (progn (search-forward "\"") (set-mark-command nil) (search-forward "\"") (backward-char))
 ;;; UI\UX
-(setq make-backup-files nil
+(setq-default make-backup-files nil
+      truncate-lines nil
       create-lockfiles nil
       auto-save-default nil
       save-interprogram-paste-before-kill t
-      scroll-margin 7
-      left-margin-width 1
-      right-margin-width 0
       async-shell-command-buffer 'new-buffer
       help-window-select t
       history-length 25
@@ -35,6 +33,7 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
+(put 'dired-find-alternate-file 'disabled nil)
 
 (dolist (frame-setting '((left-fringe . 0)
                          (right-fringe . 0)))
@@ -89,16 +88,6 @@
   ("C-c R" . replace-string))
 
 ;; Custom simple binds
-(defun user/scroll-half-down ()
-  "Scroll down half a window."
-  (interactive)
-  (scroll-down (floor (/ (window-height) 2))))
-
-(defun user/scroll-half-up ()
-  "Scroll up half a window."
-  (interactive)
-  (scroll-up (floor (/ (window-height) 2))))
-
 (defun user/smart-kill-back()
   "Kill word back if region is not selected else kill region."
   (interactive)
@@ -109,8 +98,8 @@
 
 (use-package emacs
   :bind
-  ("C-v" . user/scroll-half-up)
-  ("M-v" . user/scroll-half-down)
+  ("C-v" . scroll-up)
+  ("M-v" . scroll-down)
   ("C-w" . user/smart-kill-back)
   ("C-M-p" . previous-buffer)
   ("C-M-n" . next-buffer))
@@ -128,7 +117,7 @@
    eshell-buffer-maximum-lines 10000
    eshell-scroll-to-bottom-on-input t
    eshell-history-append t
-   eshell-visual-commands '("make" "bash" "btop" "ssh" "psql")
+   eshell-visual-commands '("ssh" "psql")
    eshell-visual-subcommands '(("podman" "run")))
   (add-to-list 'savehist-additional-variables '(eshell-history . 255))
   (add-hook
@@ -136,31 +125,8 @@
    '(lambda ()
       (bind-key "C-c C-o" #'user/eshell-copy-last-output 'eshell-mode-map))))
 
-;; SSH shortcut
-(defun ssh()
-  "Completing read ssh server and connect to it."
-  (interactive)
-  (let* ((default-directory (read-file-name "SSH host: " "/ssh:"))
-	(eat-buffer-name (concat "*" default-directory "*")))
-    (eat)))
-
-;; Dired
-(advice-add 'dired-delete-file :before
-            (lambda (file &rest rest)
-              (when-let ((buf (get-file-buffer file)))
-                (kill-buffer buf))))
-
 (use-package hippie-exp ;; Completion
   :bind ("M-/" . hippie-expand))
-
-(use-package upcase-abbrev-expand
-  :after hippie-exp
-  :load-path "scripts"
-  :config
-  (add-to-list
-   'hippie-expand-try-functions-list 'try-complete-upcase-abbrev))
-
-(use-package my-extensions :load-path "scripts")
 
 (use-package project
   :custom
@@ -168,7 +134,7 @@
   :config
   ;; During the work many unrelated buffers to the current project files
   ;; are used, which lead to using of a wrong project or multiple
-  ;; "choose project" prompts. Given hack sets a global project
+  ;; "choose project" prompts. This hack sets a global project
   ;; and uses it until project switched intentionally
   (defvar user/global-project nil
     "Use single project per frame.")
@@ -194,9 +160,11 @@
   :load-path "scripts"
   :bind ("C-x p c" . make-project-run)
   :custom (compilation-buffer-name-function
-	  (lambda (_) (if make-project-compilation-buffer-name
-			  make-project-compilation-buffer-name
-			(concat "*" (downcase name-of-mode) "*")))))
+	   (lambda (_) (if (and
+                            (boundp 'make-project-compilation-buffer-name)
+                            make-project-compilation-buffer-name)
+			   make-project-compilation-buffer-name
+			 "*compile*"))))
 
 (use-package org
   :custom
@@ -218,7 +186,7 @@
   :defer 1
   :ensure t
   :bind
-  ("M-:" . er/expand-region))
+  ("M-;" . er/expand-region))
 
 (use-package eat
   :ensure t
@@ -226,18 +194,6 @@
   :hook
   (eshell-mode . eat-eshell-mode)
   (eshell-mode . eat-eshell-visual-command-mode))
-
-(defun claude ()
-    "Open an EAT terminal named *claude <project-name>* in the project root and run `claude` process."
-    (interactive)
-    (let* ((project (project-current t))
-           (project-root (project-root project))
-           (project-name (file-name-nondirectory (directory-file-name project-root)))
-           (buffer-name (generate-new-buffer-name (format "*claude %s*" project-name)))
-           (default-directory project-root))
-      (with-current-buffer (eat "claude")
-	(rename-buffer buffer-name))
-      (message "Spawned claude in %s" buffer-name)))
 
 (use-package magit
   :defer 1
@@ -290,16 +246,14 @@
   (golden-ratio-mode 1)
   (add-hook 'ediff-startup-hook '(lambda () (golden-ratio-mode -1)) t)
   :custom
-  (golden-ratio-auto-scale t)
-  (golden-ratio-exclude-buffer-names '("*Occur*" "*xref*" "*Async Shell Command*")))
+  (golden-ratio-auto-scale t))
 
 (use-package dumb-jump
   :defer 1
   :ensure t
   :custom
-  (dumb-jump-rg-search-args "--pcre2 --max-filesize 80M --no-ignore --hidden")
+  (dumb-jump-rg-search-args "--pcre2 --max-filesize 80M")
   (dumb-jump-force-searcher 'rg)
-  (dumb-jump-functions-only t)
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
@@ -314,11 +268,8 @@
 (use-package python
   :custom
   (python-indent-def-block-scale 1)
-  :hook (before-save . delete-trailing-whitespace))
-
-(use-package python-tests
-  :after python
-  :bind (:map python-mode-map ("C-x t r" . python-tests-run)))
+  :hook
+  (before-save . delete-trailing-whitespace))
 
 ;; Emacs lisp
 (use-package flymake
@@ -364,23 +315,28 @@
   :bind (:map go-mode-map
               ("C-c s" . go-doc)))
 
-;; Snippets
-(use-package yasnippet
+(use-package markdown-mode
   :ensure t
-  :diminish yas-minor-mode
-  :custom
-  (yas-snippet-dirs `(,(expand-file-name
-                        "snippets"
-                        user-emacs-directory)))
   :config
-  (yas-global-mode 1))
+  (defun user/markdown-anchor-link ()
+    "Replaces selected region with span with generated id.
+Stores markdown link to it in kill ring."
+    (interactive)
+    (let* ((contents (buffer-substring-no-properties (region-beginning) (region-end)))
+           (kebab-case (replace-regexp-in-string
+                        " " "-"
+                        (string-trim (replace-regexp-in-string
+                                      "[^a-z0-9]+" " "
+                                      (downcase contents))))))
+      (delete-region (region-beginning) (region-end))
+      (insert (format "<span id=\"#%s\">%s</span>" kebab-case contents))
+      (kill-new (format "[%s](#%s)" contents kebab-case))
+      (message "Link saved to kill ring"))))
 
 ;; Do not require config
 (use-package yaml-mode :ensure t)
-(use-package markdown-mode :ensure t)
 (use-package solidity-mode :ensure t)
 (use-package treesit-auto :ensure t)
-(put 'dired-find-alternate-file 'disabled nil)
 
 (use-package undo-tree
   :defer 1
@@ -388,10 +344,10 @@
   :custom
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
-(use-package clipetty
-  :disabled
+(use-package doom-themes
   :ensure t
-  :bind ("M-w" . clipetty-kill-ring-save))
+  :config
+  (load-theme 'doom-solarized-dark t))
 
 (add-hook 'after-init-hook
           (lambda ()

@@ -35,3 +35,6 @@ export HISTCONTROL=ignoredups:erasedups
 PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
 export FZF_DEFAULT_OPTS=--reverse
+
+# opencode
+export PATH=/home/user/.opencode/bin:$PATH
