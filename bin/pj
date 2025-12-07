@@ -14,8 +14,7 @@ switch_tmux() {
   fi
 }
 if ! tmux ls -F '#{session_name}' | grep -q "$name"; then
-  tmux new -d -s "$name" -c "$dir" 'emacs -nw'
-  tmux new-window -t "$name" -n "claude" -c "$dir" 'claude'
+  tmux new -d -s "$name" -c "$dir" 'nvim'
   tmux new-window -t "$name" -n "shell" -c "$dir"
   tmux select-window -t "$name":0
 fi
