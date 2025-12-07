@@ -28,10 +28,9 @@ vim.keymap.set('n', ']c', '<cmd>cnext<cr>', { desc = "quick fix next" })
 vim.keymap.set('n', '[c', '<cmd>cprev<cr>', { desc = "quick fix prev" })
 vim.keymap.set('n', '<leader>oc', '<cmd>copen<cr>', { desc = "quick fix open" })
 vim.keymap.set('n', 'gV', '`[v`]', { desc = "Reselect pasted" })
-vim.keymap.set("v", "<M-p>", '"_dp', { desc = "Paster without yank" })
+vim.keymap.set("v", "<M-p>", '"_dp', { desc = "Paste without yank" })
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
 vim.keymap.set("v", "<leader>y", '"+y', { desc = "Copy to system clipboard" })
-vim.keymap.set("v", "<leader>p", '"_dP', { desc = "Paste without saving" })
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down & center" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up & center" })
 
@@ -59,6 +58,34 @@ end
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
 	{
+		'nvim-telescope/telescope.nvim', tag = 'v0.2.0',
+		dependencies = { 'nvim-lua/plenary.nvim' },
+		config = function()
+			require('telescope').setup({
+				pickers = {
+					find_files = {
+						theme = "ivy",
+						 hidden = true,
+					},
+					live_grep = {
+						theme = "ivy",
+					},
+					buffers = {
+						theme = "ivy",
+					}
+				},
+			})
+			local builtin = require('telescope.builtin')
+			vim.keymap.set('n', '<leader>f', function()
+				require('telescope.builtin').find_files({
+					find_command = {'rg', '--files', '--hidden', '-g', '!.git' }
+				})
+			end, { desc = 'Telescope find files' })
+			vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = 'Telescope live grep' })
+			vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Telescope buffers' })
+		end
+	},
+	{
 		'lewis6991/gitsigns.nvim',
 		event = 'VimEnter',
 		config = function()
@@ -84,7 +111,6 @@ require('lazy').setup({
 			vim.keymap.set('n', '<leader>hP', gitsigns.preview_hunk)
 		end,
 	},
-	{ 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 	{
 		'echasnovski/mini.nvim',
 		dependencies = {
@@ -152,7 +178,7 @@ require('lazy').setup({
 	},
 	{ "powerman/vim-plugin-ruscmd" },
 	{ "tpope/vim-rsi" },
-	{ 
+	{
 		"tpope/vim-fugitive",
 		config = function()
 			-- Create custom :G command that opens fugitive in full window
@@ -169,15 +195,6 @@ require('lazy').setup({
 		'nmac427/guess-indent.nvim',
 		config = function()
 			require('guess-indent').setup({})
-		end,
-	},
-	{
-		'mikesmithgh/kitty-scrollback.nvim',
-		lazy = true,
-		cmd = { 'KittyScrollbackGenerateKittens', 'KittyScrollbackCheckHealth', 'KittyScrollbackGenerateCommandLineEditing' },
-		event = { 'User KittyScrollbackLaunch' },
-		config = function()
-			require('kitty-scrollback').setup()
 		end,
 	},
 	{
@@ -212,38 +229,6 @@ require('lazy').setup({
 		ft = { "markdown" },
 	},
 	{
-		"junegunn/fzf.vim",
-		config = function()
-			vim.keymap.set("n", "<leader>f", "<cmd>Files<cr>")
-			vim.keymap.set("n", "<leader>r", "<cmd>RG<cr>")
-			vim.keymap.set("v", "<leader>r", '"vy<cmd>exec "RG" getreg("v")<cr>')
-			vim.keymap.set("n", "<leader>m", "<cmd>Marks<cr>")
-			vim.keymap.set("n", "<leader>b", "<cmd>Buffers<cr>")
-			vim.keymap.set("n", "<leader>/", "<cmd>Lines<cr>")
-			vim.fn.setenv("FZF_DEFAULT_OPTS", "--color=bg:#000000,gutter:-1,border:#000000 --bind ctrl-a:select-all --history=/tmp/.fzf_history")
-			vim.g.fzf_vim = {
-				preview_window = { 'hidden,right,70%', 'ctrl-/' }
-			}
-			vim.cmd [[
-				function! s:build_quickfix_list(lines)
-				  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-				  copen
-				  cc
-				endfunction
-				let g:fzf_action = {
-					\ 'ctrl-q': function('s:build_quickfix_list'), }
-			]]
-			vim.g.fzf_layout = {
-				window = {
-					width = 1,
-					height = 0.63,
-					yoffset = 0,
-					border = "bottom",
-				}
-			}
-		end,
-	},
-	{
 		"maxbrunsfeld/vim-yankstack",
 		config = function()
 			vim.keymap.set("n", "<m-y>", "<Plug>yankstack_substitute_older_paste")
@@ -251,28 +236,16 @@ require('lazy').setup({
 		end
 	},
 	{
-		"jakewvincent/mkdnflow.nvim",
-		config = function()
-			require("mkdnflow").setup()
-		end
-	},
+		'maxmx03/solarized.nvim',
+		lazy = false,
+		priority = 1000,
+		---@type solarized.config
+		opts = {},
+		config = function(_, opts)
+			vim.o.termguicolors = true
+			vim.o.background = 'dark'
+			require('solarized').setup(opts)
+			vim.cmd.colorscheme 'solarized'
+		end,
+	}
 })
-
-if vim.g.neovide then
-	vim.o.guifont = "0xProto Nerd Font:h16"
-	vim.g.neovide_cursor_animate_command_line = false
-	vim.g.neovide_position_animation_length = 0
-	vim.g.neovide_cursor_smooth_blink = true
-	vim.g.neovide_hide_mouse_when_typing = true
-	vim.g.neovide_cursor_trail_size = 0
-	vim.g.neovide_cursor_animation_length = 0.05
-	vim.g.neovide_cursor_antialiasing = true
-	vim.g.neovide_padding_top = 0
-	vim.g.neovide_padding_bottom = 0
-	vim.g.neovide_padding_right = 0
-	vim.g.neovide_padding_left = 0
-end
-
--- Custom plugins
-require("plugins/makex").setup()
-require("plugins/marpoon").setup()
