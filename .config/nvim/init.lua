@@ -58,31 +58,73 @@ end
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
 	{
-		'nvim-telescope/telescope.nvim', tag = 'v0.2.0',
-		dependencies = { 'nvim-lua/plenary.nvim' },
+		"folke/snacks.nvim",
 		config = function()
-			require('telescope').setup({
-				pickers = {
-					find_files = {
-						theme = "ivy",
-						 hidden = true,
+
+			snacks = require("snacks")
+			snacks.setup({
+				picker = {
+					icons = {
+						files = {
+							enabled = false,
+						},
 					},
-					live_grep = {
-						theme = "ivy",
+					matcher = {
+						frecency = true,
 					},
-					buffers = {
-						theme = "ivy",
+					layouts = {
+						ivy = {
+							layout = {
+								box = "vertical",
+								backdrop = false,
+								row = 1,
+								width = 0,
+								height = 0.99,
+								border = "top",
+								title = " {title} {live} {flags}",
+								title_pos = "right",
+								{ win = "input", height = 1, border = "none" },
+								{
+									box = "horizontal",
+									{ win = "list", border = "none" },
+								},
+							},
+						},
 					}
-				},
+				}
 			})
-			local builtin = require('telescope.builtin')
 			vim.keymap.set('n', '<leader>f', function()
-				require('telescope.builtin').find_files({
-					find_command = {'rg', '--files', '--hidden', '-g', '!.git' }
+				snacks.picker.files({
+					layout = "ivy",
+					hidden = true,
 				})
-			end, { desc = 'Telescope find files' })
-			vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = 'Telescope live grep' })
-			vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Telescope buffers' })
+			end)
+			vim.keymap.set('n', '<leader>b', function()
+				snacks.picker.buffers({
+					layout = "ivy"
+				})
+			end)
+			vim.keymap.set('n', '<leader>g', function()
+				snacks.picker.grep({
+					layout = "ivy"
+				})
+			end)
+			vim.keymap.set('n', '<leader>r', function()
+				snacks.picker.resume({
+					layout = "ivy"
+				})
+			end)
+			vim.keymap.set('v', '<leader>g', function()
+				snacks.picker.grep_word({
+					layout = "ivy",
+				})
+			end)
+			vim.keymap.set('n', '<leader>l', function()
+				snacks.picker.lines({
+					layout = "ivy",
+				})
+			end)
+
 		end
 	},
 	{
@@ -248,4 +290,22 @@ require('lazy').setup({
 			vim.cmd.colorscheme 'solarized'
 		end,
 	}
+})
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+  callback = function()
+    local ev = vim.v.event
+    if not ev.regcontents or #ev.regcontents == 0 then return end
+    -- join multi-line deletions to inspect length
+    local text = table.concat(ev.regcontents, "\n")
+    -- threshold: only treat as "small deletion"
+    if #text > 80 then return end
+    -- rotate registers 1–9
+    for i = 9, 2, -1 do
+      vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i)))
+      vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i - 1)))
+    end
+    -- put newest deletion into register "1
+    vim.fn.setreg("1", text)
+  end,
 })

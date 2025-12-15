@@ -1,7 +1,7 @@
 ;; TODO: Add bind for select inside of (progn (search-forward "\"") (set-mark-command nil) (search-forward "\"") (backward-char))
 ;;; UI\UX
 (setq-default make-backup-files nil
-      truncate-lines nil
+      truncate-lines t
       create-lockfiles nil
       auto-save-default nil
       save-interprogram-paste-before-kill t
@@ -62,10 +62,11 @@
   ("<f8>" . recompile)
   ("<f9>" . project-compile)
   :config
-  (dolist (regex '((biome-lint "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1)
-                   (tsc "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1)))
-    (add-to-list 'compilation-error-regexp-alist-alist regex)
-    (add-to-list 'compilation-error-regexp-alist-alist (car regex))))
+  (dolist (regex '('(biome-lint "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s.*\s━+$" 1 2 3 2 1)
+                 '(tsc "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)\s-\serror\s.*$" 1 2 3 2 1)
+                 '(ruff "^ *--> \\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\)$" 1 2 3)))
+  (add-to-list 'compilation-error-regexp-alist-alist regex)
+  (add-to-list 'compilation-error-regexp-alist-alist (car regex))))
 
 (use-package eldoc ;; There is no place for the annoying documentation
   :config
@@ -352,7 +353,8 @@ Stores markdown link to it in kill ring."
 (add-hook 'after-init-hook
           (lambda ()
             (set-face-attribute 'default nil :font "Iosevka Term Nerd Font-20")
-            (set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-14")))
+            (set-face-attribute 'mode-line nil :font "Iosevka Term Nerd Font-14")
+            (set-face-attribute 'mode-line-inactive nil :font "Iosevka Term Nerd Font-14")))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
