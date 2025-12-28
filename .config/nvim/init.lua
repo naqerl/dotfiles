@@ -111,12 +111,14 @@ require('lazy').setup({
 			end)
 			vim.keymap.set('n', '<leader>r', function()
 				snacks.picker.resume({
-					layout = "ivy"
+					layout = "ivy",
+					hidden = true,
 				})
 			end)
 			vim.keymap.set('v', '<leader>g', function()
 				snacks.picker.grep_word({
 					layout = "ivy",
+					hidden = true,
 				})
 			end)
 			vim.keymap.set('n', '<leader>l', function()
@@ -124,7 +126,6 @@ require('lazy').setup({
 					layout = "ivy",
 				})
 			end)
-
 		end
 	},
 	{
@@ -262,6 +263,28 @@ require('lazy').setup({
 		end
 	},
 	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			local harpoon = require("harpoon")
+			harpoon:setup()
+
+			vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end, { desc = "Harpoon add file" })
+			vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = "Harpoon menu" })
+
+			vim.keymap.set("n", "<F1>", function() harpoon:list():select(1) end, { desc = "Harpoon file 1" })
+			vim.keymap.set("n", "<F2>", function() harpoon:list():select(2) end, { desc = "Harpoon file 2" })
+			vim.keymap.set("n", "<F3>", function() harpoon:list():select(3) end, { desc = "Harpoon file 3" })
+			vim.keymap.set("n", "<F4>", function() harpoon:list():select(4) end, { desc = "Harpoon file 4" })
+			vim.keymap.set("n", "<F5>", function() harpoon:list():select(5) end, { desc = "Harpoon file 5" })
+
+			-- Toggle previous & next buffers stored within Harpoon list
+			vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end, { desc = "Harpoon prev" })
+			vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end, { desc = "Harpoon next" })
+		end,
+	},
+	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
 		build = "cd app && pnpm install",
@@ -269,13 +292,6 @@ require('lazy').setup({
 			vim.g.mkdp_filetypes = { "markdown" }
 		end,
 		ft = { "markdown" },
-	},
-	{
-		"maxbrunsfeld/vim-yankstack",
-		config = function()
-			vim.keymap.set("n", "<m-y>", "<Plug>yankstack_substitute_older_paste")
-			vim.keymap.set("n", "<m-s-y>", "<Plug>yankstack_substitute_newer_paste")
-		end
 	},
 	{
 		'maxmx03/solarized.nvim',
@@ -292,20 +308,3 @@ require('lazy').setup({
 	}
 })
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-  callback = function()
-    local ev = vim.v.event
-    if not ev.regcontents or #ev.regcontents == 0 then return end
-    -- join multi-line deletions to inspect length
-    local text = table.concat(ev.regcontents, "\n")
-    -- threshold: only treat as "small deletion"
-    if #text > 80 then return end
-    -- rotate registers 1–9
-    for i = 9, 2, -1 do
-      vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i)))
-      vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i - 1)))
-    end
-    -- put newest deletion into register "1
-    vim.fn.setreg("1", text)
-  end,
-})
