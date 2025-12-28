@@ -16,6 +16,7 @@ switch_tmux() {
 if ! tmux ls -F '#{session_name}' | grep -q "$name"; then
   tmux new -d -s "$name" -c "$dir" 'nvim'
   tmux new-window -t "$name" -n "shell" -c "$dir"
+  tmux new-window -t "$name" -n "opencode" -c "$dir" 'opencode'
   tmux select-window -t "$name":0
 fi
 switch_tmux "$name"
