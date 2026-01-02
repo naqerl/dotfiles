@@ -4,7 +4,7 @@ agent: general
 subtask: false
 ---
 
-Read the current contents of ~/.config/opencode/AGENTS.md file.
+Read the current contents of $HOME/.config/opencode/AGENTS.md file.
 
 Then append the following new instruction to the file:
 
