@@ -6,6 +6,23 @@ Makefiles may be nested in the corresponding directory in the project, so if you
 # Git commits
 When the user asks to commit changes, always use the Task tool with `subagent_type="git"` to launch the specialized git agent. Do not handle git commits directly.
 
+# Deployment infrastructure
+When the user asks to set up deployment, create deployment files, or configure CD/CI for Python, Golang, or React projects, use the Task tool with `subagent_type="deploy"` to launch the specialized deployment agent. Do not handle deployment setup directly.
+
+Common use cases:
+- Setting up initial deployment infrastructure (deploy/ directory, systemd services, Makefiles)
+- Creating deployment configuration for new projects
+- Upgrading existing deployment to newer vps-setup versions
+- Adding staging/production environments
+- Configuring Caddy reverse proxy for web services
+- Migrating deployment patterns between projects
+
+Example: When asked "set up deployment for this project", use the deploy agent to:
+1. Analyze project to detect language and build process
+2. Fetch templates from vps-setup repository (with version tracking)
+3. Generate deploy/ directory with all necessary files
+4. Provide clear documentation and next steps
+
 # Tmux sessions and process monitoring
 When the user asks to check logs, monitor running processes, or run interactive/long-running commands, use the Task tool with `subagent_type="tmux"` to launch the specialized tmux agent. Do not handle tmux operations directly.
 
