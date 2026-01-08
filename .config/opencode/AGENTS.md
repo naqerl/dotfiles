@@ -6,6 +6,8 @@ Makefiles may be nested in the corresponding directory in the project, so if you
 # Git commits
 When the user asks to commit changes, always use the Task tool with `subagent_type="git"` to launch the specialized git agent. Do not handle git commits directly.
 
+The git agent should only commit changes when explicitly asked by the user. Do not automatically commit other changes or be proactive about committing - wait for explicit user instruction to commit.
+
 # Deployment infrastructure
 When the user asks to set up deployment, create deployment files, or configure CD/CI for Python, Golang, or React projects, use the Task tool with `subagent_type="deploy"` to launch the specialized deployment agent. Do not handle deployment setup directly.
 
@@ -22,6 +24,20 @@ Example: When asked "set up deployment for this project", use the deploy agent t
 2. Fetch templates from vps-setup repository (with version tracking)
 3. Generate deploy/ directory with all necessary files
 4. Provide clear documentation and next steps
+
+# Go development patterns
+When planning new features, adding handlers, services, or any significant code changes in Go projects, use the Task tool with `subagent_type="knowledge"` to fetch relevant patterns and best practices from the knowledge base.
+
+Common use cases:
+- Adding new HTTP handlers or routes
+- Implementing services (interface-based or channel-based)
+- Working with SQLC queries and transactions
+- Adding HTMX interactivity
+- Telegram bot integration
+
+Example: When asked "add a new endpoint for user profiles", use the knowledge agent to:
+1. Fetch relevant patterns for handlers and routing
+2. Apply the patterns to implement the feature
 
 # Tmux sessions and process monitoring
 When the user asks to check logs, monitor running processes, or run interactive/long-running commands, use the Task tool with `subagent_type="tmux"` to launch the specialized tmux agent. Do not handle tmux operations directly.
@@ -41,3 +57,6 @@ Example: When asked "are there any errors in the logs?", use the tmux agent to:
 - Do not create summary documents until directly asked to do it
 - Do not write a summary of what you've done until directly asked to do it
 - Ensure that summary of changes will not be created after finishing work
+
+# Responding to questions
+When the user asks questions like "why", "what", "how", or any other informational question, treat it as a request for explanation or information. Do not interpret these questions as indirect requests to modify code or make changes. The user wants to understand reasons, decisions, and context - simply provide clear answers and explanations without making any modifications unless explicitly requested.
