@@ -2,5 +2,14 @@
   "$schema": "https://opencode.ai/config.json",
   "lsp": false,
   "permission": {
+  },
+  "mcpServers": {
+    "asana": {
+      "command": "npx",
+      "args": ["-y", "@roychri/mcp-server-asana"],
+      "env": {
+        "ASANA_ACCESS_TOKEN": "2/1207350113192444/1212712360408247:d1962a0f00341cab7adec2ec33c54657"
+      }
+    }
   }
 }
