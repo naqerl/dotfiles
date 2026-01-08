@@ -3,10 +3,10 @@
   "lsp": false,
   "permission": {
   },
-  "mcpServers": {
+  "mcp": {
     "asana": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.asana.com/sse"]
+      "type": "remote",
+      "url": "https://mcp.asana.com/sse"
     }
   }
 }
