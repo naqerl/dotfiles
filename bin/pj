@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 cd $HOME
-dir=$(find code/ -maxdepth 5 -type d -name .git | xargs -I{} dirname {} | fzf)
-if [[ -z $dir ]]; then
-    cd -
+if [[ -n "$1" ]]; then
+  dir="code/$1"
+  if [[ ! -d "$dir" ]]; then
+    echo "Error: Project directory '$dir' not found"
     exit 1
+  fi
+else
+  dir=$(find code/ -maxdepth 5 -type d -name .git | xargs -I{} dirname {} | fzf)
+  if [[ -z $dir ]]; then
+      cd -
+      exit 1
+  fi
 fi
 name=$(basename "$dir")
 switch_tmux() {
@@ -16,7 +24,7 @@ switch_tmux() {
 if ! tmux ls -F '#{session_name}' | grep -q "$name"; then
   tmux new -d -s "$name" -c "$dir" 'nvim'
   tmux new-window -t "$name" -n "shell" -c "$dir"
-  tmux new-window -t "$name" -n "opencode" -c "$dir" 'opencode'
+  tmux new-window -t "$name" -n "opencode" -c "$dir" '$HOME/.opencode/bin/opencode'
   tmux select-window -t "$name":0
 fi
 switch_tmux "$name"
