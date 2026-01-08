@@ -7,12 +7,9 @@ Desktop notifications for OpenCode events.
 Sends `notify-send` desktop notifications for:
 
 - **Session Idle**: When OpenCode finishes work and is ready for your next request
-- **Session Error**: When an error occurs during a session  
-- **Permission Required**: When OpenCode needs your permission to proceed (only once per unique permission)
+- **Session Error**: When an error occurs during a session
 
 Each notification includes the project name from the current directory.
-
-The plugin tracks permissions to avoid duplicate notifications and clears tracking when sessions become idle.
 
 ## Requirements
 
@@ -31,7 +28,6 @@ No additional configuration needed.
 |-------|---------|----------|---------|
 | Session Idle | Normal | 5s | "Session completed! Ready for your next request." |
 | Session Error | Critical | 10s | "Session error occurred. Check the terminal for details." |
-| Permission Required | Normal | 8s | "Permission required - check the terminal" |
 
 ## Customization
 
