@@ -38,3 +38,11 @@ export FZF_DEFAULT_OPTS=--reverse
 
 # opencode
 export PATH=/home/user/.opencode/bin:$PATH
+
+# pnpm
+export PNPM_HOME="/home/user/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
