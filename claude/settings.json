@@ -1,0 +1,57 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "*"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send \"Claude Code\" \"Needs your attention\" --icon=dialog-information --expire-time=0"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send \"Claude Code\" \"Task completed\" --icon=emblem-default --expire-time=5000"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send \"Claude Code\" \"Session ended\" --icon=dialog-information --expire-time=3000"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "notify-send \"Claude Code\" \"Permission required\" --icon=dialog-warning --urgency=critical --expire-time=0"
+          }
+        ]
+      }
+    ]
+  }
+}
