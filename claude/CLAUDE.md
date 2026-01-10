@@ -1,6 +1,6 @@
 - Prefer using makefiles in the project instead of running commands directly. If you need some command commonly and it's not in a make file, then add it, if it's usable. Also makefile populates required .env file, so there is no need to mess with it
 
-- When you finish your task create a commit (or several), but never run blindly `git add .` I can work in parallel with you and git history will be messed. Use the same commit style as exists in the project. Also if we debug something in multiple prompts, then do `--amend --no-edit`, so commits will stay complete and not highly dense. Keep the message short and do not mention Claude Code
+- Only commit when directly asked (e.g., /commit or explicit request). Never run blindly `git add .` as user may work in parallel. Use the same commit style as exists in the project. If debugging something in multiple prompts, use `--amend --no-edit` to keep commits complete. Keep messages short and do not mention Claude Code
 
 - always keep helper function under main / public ones, stuff is moved to helper function to reduce amount of stupid code, not to show it off
 
