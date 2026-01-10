@@ -66,3 +66,16 @@ Example: When asked "are there any errors in the logs?", use the tmux agent to:
 
 # Responding to questions
 When the user asks questions like "why", "what", "how", or any other informational question, treat it as a request for explanation or information. Do not interpret these questions as indirect requests to modify code or make changes. The user wants to understand reasons, decisions, and context - simply provide clear answers and explanations without making any modifications unless explicitly requested.
+
+# Sending notifications via ntfy.sh
+The ntfy topic is stored in the `$NTFY_TOPIC` environment variable.
+
+**IMPORTANT:** Only send notifications when explicitly asked by the user (e.g., "send a notification to my phone"). Automatic notifications are handled by configured hooks (Stop, PermissionRequest). Do not send notifications proactively after completing tasks.
+
+How to send when asked:
+```bash
+curl -H "Title: Your Title" -H "Priority: default" -H "Tags: bell" -d "Message content" ntfy.sh/$NTFY_TOPIC
+```
+
+Available priorities: `min`, `low`, `default`, `high`, `urgent`
+Common tags: `white_check_mark`, `warning`, `fire`, `rocket`, `bell`, `computer`, `tada`

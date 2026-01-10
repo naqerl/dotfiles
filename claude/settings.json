@@ -22,7 +22,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.cwd | split(\"/\") | last' | xargs -I {} notify-send '[cc:{}]' 'Task completed' --icon=emblem-default"
+            "command": "jq -r '.cwd | split(\"/\") | last' | xargs -I {} curl -H 'Title: Claude Code: {}' -H 'Priority: default' -H 'Tags: white_check_mark' -d 'Task completed' ntfy.sh/b79ee89d5e91acb0660e3266580b1eb0"
           }
         ]
       }
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.cwd | split(\"/\") | last' | xargs -I {} notify-send '[cc:{}]' 'Permission required' --icon=dialog-warning"
+            "command": "jq -r '.cwd | split(\"/\") | last' | xargs -I {} curl -H 'Title: Claude Code: {}' -H 'Priority: high' -H 'Tags: warning' -d 'Permission required' ntfy.sh/b79ee89d5e91acb0660e3266580b1eb0"
           }
         ]
       }
