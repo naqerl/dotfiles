@@ -46,3 +46,6 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# ntfy.sh topic for notifications
+export NTFY_TOPIC="b79ee89d5e91acb0660e3266580b1eb0"
