@@ -22,7 +22,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.cwd | split(\"/\") | last' | xargs -I {} curl -H 'Title: Claude Code: {}' -H 'Priority: default' -H 'Tags: white_check_mark' -d 'Task completed' ntfy.sh/b79ee89d5e91acb0660e3266580b1eb0"
+            "command": "sh -c 'PROJECT=$(pwd | xargs basename); curl -s -H \"Title: ntfy send [cc:$PROJECT]\" -H \"Priority: default\" -H \"Tags: white_check_mark\" -H \"Click: android-app://com.termux\" -d \"Task completed in $PROJECT\" ntfy.sh/$NTFY_TOPIC > /dev/null'"
           }
         ]
       }
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.cwd | split(\"/\") | last' | xargs -I {} curl -H 'Title: Claude Code: {}' -H 'Priority: high' -H 'Tags: warning' -d 'Permission required' ntfy.sh/b79ee89d5e91acb0660e3266580b1eb0"
+            "command": "sh -c 'PROJECT=$(pwd | xargs basename); curl -s -H \"Title: ntfy send [cc:$PROJECT]\" -H \"Priority: high\" -H \"Tags: warning\" -H \"Click: android-app://com.termux\" -d \"Permission required in $PROJECT\" ntfy.sh/$NTFY_TOPIC > /dev/null'"
           }
         ]
       }
